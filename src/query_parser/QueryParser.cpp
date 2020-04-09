@@ -2,23 +2,30 @@
 
 #include "QueryParser.h"
 
+#include "SelectParser.cpp"
+#include "StringHelper.cpp"
+
 QueryObject QueryParser::parse(string query) {
-    // get first word of query(which is command)
-    string command = query.substr(0, query.find(" "));
-    // make command uppercase
-    transform(command.begin(), command.end(),command.begin(), ::toupper);
+    StringHelper::removeSpaces(query);
+
+    string command = StringHelper::getFirstWord(query); 
+    StringHelper::toUpperCase(command);
+
+    StringHelper::removeFirstWord(query);
 
     if (command == "SELECT") {
-        // TODO: selectParser.parse(query)
+        SelectParser::parse(query);
     } else if (command == "INSERT") {
-        // TODO: insertParser.parse(query)
+        // TODO: InsertParser.parse(query);
     } else if (command == "UPDATE") {
-        // TODO: updateParser.parse(query)
+        // TODO: UpdateParser.parse(query);
     } else if (command == "DELETE") {
-        // TODO: deleteParser.parse(query)
+        // TODO: DeleteParser.parse(query);
     } else if (command == "CREATE") {
-        // TODO: createParser.parse(query)
+        // TODO: CreateParser.parse(query);
     } else if (command == "DROP") {
-        // TODO: dropParser.parse(query)
+        // TODO: DropParser.parse(query);
+    } else {
+        // TODO: throw QueryException("Unknown command: " + command);
     }
 }

@@ -4,6 +4,8 @@
 #include "socket/ServerSocket.cpp"
 #include "socket/ClientSocket.cpp"
 
+#include "query_parser/QueryParser.cpp"
+
 using namespace std;
 
 #define PORT 8080
@@ -18,14 +20,17 @@ void handler(ClientSocket clientSocket) {
 }
 
 int main() {
-    ServerSocket serverSocket(PORT);
-    serverSocket.listen();
+    // ServerSocket serverSocket(PORT);
+    // serverSocket.listen();
 
-    while (1) {
-        ClientSocket clientSocket = serverSocket.accept();
-        clientSocket.handle(handler);
-    }
+    // while (1) {
+    //     ClientSocket clientSocket = serverSocket.accept();
+    //     clientSocket.handle(handler);
+    // }
 
-    serverSocket.close();
+    // serverSocket.close();
+
+    QueryParser::parse("SELECT f1,  f2,f3,   f4    ,f5,f6,f7   FROM t;");
+
     return 0;
 }

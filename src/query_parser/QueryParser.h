@@ -5,14 +5,13 @@
 #include <iostream>
 #include <algorithm>
 
-#include "BaseParser.h"
 #include "QueryObject.h"
 
 using namespace std;
 
-class QueryParser: public BaseParser {
+class QueryParser {
     public:
-        QueryObject parse(string query);
+        static QueryObject parse(string query);
 };
 
 #endif
