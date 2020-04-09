@@ -30,7 +30,7 @@ int main() {
 
     // serverSocket.close();
 
-    QueryParser::parse("SELECT f1,  f2,f3,   f4    ,f5,f6,f7   FROM t;");
+    QueryParser::parseQuery("SELECT f1,  f2,f3   ,   f4    ,f5,f6,f7   FROM t  WHERE f3= 5 AND f2='a';");
 
     return 0;
 }
