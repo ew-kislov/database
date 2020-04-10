@@ -30,7 +30,7 @@ int main() {
 
     // serverSocket.close();
 
-    QueryParser::parseQuery("SELECT f1,  f2,f3   ,   f4    ,f5,f6,f7   FROM t  WHERE f3= 5 AND f2='a';");
+    QueryParser::parseQuery("SELECT f1, f2, f3, f4, f5, f6, f7 FROM t WHERE f1=5 OR f2='a' AND (f3 IN (1,2,3) OR f1=2) OR f3 LIKE 'b%';");
 
     return 0;
 }
