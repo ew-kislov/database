@@ -9,21 +9,21 @@
 namespace QueryParser {
     QueryObject parseQuery(string query);
 
-    QueryObject parseSelectQuery(vector<string> queryVector);
-    QueryObject parseInsertQuery(vector<string> queryVector);
-    QueryObject parseUpdateQuery(vector<string> queryVector);
-    QueryObject parseDeleteQuery(vector<string> queryVector);
-    QueryObject parseCreateQuery(vector<string> queryVector);
-    QueryObject parseDropQuery(vector<string> queryVector);
+    QueryObject parseSelectQuery(vector<string> queryTokens);
+    QueryObject parseInsertQuery(vector<string> queryTokens);
+    QueryObject parseUpdateQuery(vector<string> queryTokens);
+    QueryObject parseDeleteQuery(vector<string> queryTokens);
+    QueryObject parseCreateQuery(vector<string> queryTokens);
+    QueryObject parseDropQuery(vector<string> queryTokens);
 
-    void parseWhereClause(vector<string> queryVector, QueryObject &queryObject);
-    void parseLogicExpression(vector<string> queryVector, QueryObject &queryObject);
-    void parseLogicTerm(vector<string> queryVector, QueryObject &queryObject);
-    void parseLogicFactor(vector<string> queryVector, QueryObject &queryObject);
-    void parseLogicOperation(vector<string> queryVector, QueryObject &queryObject);
-    void parseRelation(vector<string> queryVector, QueryObject &queryObject);
-    void parseStringOperation(vector<string> queryVector, QueryObject &queryObject);
-    void parseSetOperation(vector<string> queryVector, QueryObject &queryObject);
+    void parseWhereClause(vector<string> queryTokens, QueryObject &queryObject);
+    void parseLogicExpression(vector<string> queryTokens, QueryObject &queryObject);
+    void parseLogicTerm(vector<string> queryTokens, QueryObject &queryObject);
+    void parseLogicFactor(vector<string> queryTokens, QueryObject &queryObject);
+    void parseOperation(vector<string> queryTokens, QueryObject &queryObject);
+    void parseRelation(vector<string> queryTokens, QueryObject &queryObject);
+    void parseStringOperation(vector<string> queryTokens, QueryObject &queryObject);
+    void parseSetOperation(vector<string> queryTokens, QueryObject &queryObject);
 }
 
 #endif

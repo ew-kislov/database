@@ -8,6 +8,13 @@
 using namespace std;
 
 namespace StringHelper {
+    /*
+     * Replaces substrings to specific string by regular expression
+     * @param inpString - input string
+     * @param patternString - string which contains regular expression
+     * @param replacementString - string which will replace substrings selected by regular expression
+     * @returns string with replaced pattern
+     */
     void replace(string &inpString, string patternString, string replacementString) {
         regex pattern(patternString);
         string outString;
@@ -16,6 +23,12 @@ namespace StringHelper {
         inpString = outString;
     }
 
+    /*
+     * Splits string into string vector by char delimeter
+     * @param inpString - input string
+     * @param delimeter - char delimeneter
+     * @returns vector of strings splitted by delimeter
+     */
     vector<string> split(string inpString, char delimeter) {
         vector<string> stringVector;
         istringstream stringStream(inpString);
@@ -28,18 +41,36 @@ namespace StringHelper {
         return stringVector;
     }
 
+    /*
+     * Gets first word of string(all chars before space)
+     * @param inpString - input string
+     * @returns first word of string
+     */ 
     string getFirstWord(string inpString) {
         return inpString.substr(0, inpString.find(" "));
     }
 
+    /*
+     * Removes first word from string(all chars before space)
+     * @param inpString - input string
+     */
     void removeFirstWord(string &inpString) {
         inpString = inpString.substr(inpString.find(" ") + 1);
     }
 
+    /*
+     * Makes all string chars upper case
+     * @param inpString - input string
+     */
     void toUpperCase(string &inpString) {
         transform(inpString.begin(), inpString.end(), inpString.begin(), ::toupper);
     }
 
+    /*
+     * Returns string with all chars in upper case
+     * @param inpString - input string
+     * @returns string with all chars in upper case
+     */
     string getUpperString(string inpString) {
         transform(inpString.begin(), inpString.end(), inpString.begin(), ::toupper);
         return inpString;

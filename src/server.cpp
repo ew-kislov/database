@@ -22,26 +22,6 @@ void handler(ClientSocket clientSocket) {
 }
 
 int main() {
-<<<<<<< HEAD
-    try {
-        throw SocketException("try");
-        cout << "me" << endl;
-        ServerSocket serverSocket(PORT);
-        serverSocket.listen();
-
-        while (1) {
-            ClientSocket clientSocket = serverSocket.accept();
-            clientSocket.handle(handler);
-        }
-
-        serverSocket.close();
-
-        //    QueryParser::parse("SELECT f1,  f2,f3,   f4    ,f5,f6,f7   FROM t;");
-    } catch (SocketException & ex) {
-        cout << ex.what() << endl;
-    }
-     
-=======
     // ServerSocket serverSocket(PORT);
     // serverSocket.listen();
 
@@ -52,8 +32,8 @@ int main() {
 
     // serverSocket.close();
 
-    QueryParser::parseQuery("SELECT f1,  f2,f3   ,   f4    ,f5,f6,f7   FROM t  WHERE f3= 5 AND f2='a';");
->>>>>>> 51b58d10fa1aed77767bc7ff65a9dbd29cccb939
+    QueryParser::parseQuery("SELECT f1, f2, f3, f4, f5, f6, f7 FROM t WHERE f1=5 OR f2='a' AND (f3 IN (1,2,3) OR f1=2) OR f3 LIKE 'b%';");
+
 
     return 0;
 }

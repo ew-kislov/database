@@ -11,22 +11,18 @@
 QueryObject QueryParser::parseQuery(string query) {
     if (query.find(';') != query.size() - 1) {
         // TODO: throw QueryParserException("Query must end with semicolon")
+        cout << "Query must end with semicolon" << endl;
     }
 
-    StringHelper::replace(query, "\\s*[,]\\s*", ",");
-    StringHelper::replace(query, "\\s*\\s\\s*", " ");
-    StringHelper::replace(query, "\\s*;\\s*", ";");
-    StringHelper::replace(query, "\\s*=\\s*", "=");
-
-    vector<string> queryVector = StringHelper::split(query, ' ');
-
-    string command = queryVector[0];
-    StringHelper::toUpperCase(command);
+    vector<string> queryTokens = QueryHelper::queryToTokenVector(query);
+    queryTokens.pop_back();
+    
+    string command = StringHelper::getUpperString(queryTokens[0]);
 
     QueryObject queryObject;
 
     if (command == "SELECT") {
-        queryObject = QueryParser::parseSelectQuery(queryVector);
+        queryObject = QueryParser::parseSelectQuery(queryTokens);
     } else if (command == "INSERT") {
         // TODO: InsertParser::parse(query);
     } else if (command == "UPDATE") {
@@ -45,66 +41,104 @@ QueryObject QueryParser::parseQuery(string query) {
 }
 
 // <SELECT-statement> ::= SELECT <field list> FROM <table name> [ <WHERE-clause> ]
-QueryObject QueryParser::parseSelectQuery(vector<string> queryVector) {
-    QueryObject queryObject;
-    queryObject.table = queryVector[0];
-    queryObject.fields = StringHelper::split(queryVector[1], ',');
-    queryObject.table = queryVector[2];
+QueryObject QueryParser::parseSelectQuery(vector<string> queryTokens) {
+    if (QueryHelper::searchKeyWordInVector(queryTokens, "FROM") == -1) {
+        // TODO: throw QueryParserException("Wrong SELECT query syntax")
+        cout << "Wrong SELECT query syntax" << endl;
+    }
 
-    if (queryVector.size() > 4) {
-        QueryParser::parseWhereClause(VectorHelper::slice(queryVector, 4), queryObject);
+    QueryObject queryObject;
+    queryObject.table = queryTokens[0];
+    queryObject.fields = StringHelper::split(queryTokens[1], ',');
+    queryObject.table = queryTokens[2];
+
+    if (queryTokens.size() > 4) {
+        QueryParser::parseWhereClause(VectorHelper::slice(queryTokens, 4), queryObject);
     }
 
     return queryObject;
 }
 
 // <WHERE-cluase> ::= WHERE <logic expression> | WHERE ALL
-void QueryParser::parseWhereClause(vector<string> queryVector, QueryObject &queryObject) {
-    VectorHelper::print(queryVector);
-
-    string command = queryVector[0];
+void QueryParser::parseWhereClause(vector<string> queryTokens, QueryObject &queryObject) {
+    string command = queryTokens[0];
     StringHelper::toUpperCase(command);
 
     if (command != "WHERE") {
         // TODO: throw QueryParserException("Invalid syntax for WHERE clause");
+        cout << "Invalid syntax for WHERE clause" << endl;
     }
 
-    if (QueryHelper::searchKeyWordInVector(queryVector, "ALL") == -1) {
-        QueryParser::parseLogicExpression(queryVector, queryObject);
+    if (QueryHelper::searchKeyWordInVector(queryTokens, "ALL") == -1) {
+        QueryParser::parseLogicExpression(VectorHelper::slice(queryTokens, 1), queryObject);
     }
 }
 
 // <logic expression> ::= <logic term> { OR <logic term> }
-void QueryParser::parseLogicExpression(vector<string> queryVector, QueryObject &queryObject) {
+void QueryParser::parseLogicExpression(vector<string> queryTokens, QueryObject &queryObject) {
+    // DEBUG
+    cout << "Parsing logic expression: ";
+    VectorHelper::print(queryTokens);
 
+    for (int i = 0; i < queryTokens.size(); i++) {
+        if (StringHelper::getUpperString(queryTokens[i]) == "OR" && !QueryHelper::isTokenNested(queryTokens, i)) {
+            QueryParser::parseLogicTerm(VectorHelper::slice(queryTokens, 0, i - 1), queryObject);
+            queryTokens = VectorHelper::slice(queryTokens, i + 1);
+        }
+    }
+
+    QueryParser::parseLogicTerm(queryTokens, queryObject);
 }
 
 // <logic term> ::= <logic factor> { AND <logic factor> }
-void QueryParser::parseLogicTerm(vector<string> queryVector, QueryObject &queryObject) {
+void QueryParser::parseLogicTerm(vector<string> queryTokens, QueryObject &queryObject) {
+    // DEBUG
+    cout << "Parsing logic term: ";
+    VectorHelper::print(queryTokens);
 
+    for (int i = 0; i < queryTokens.size(); i++) {
+        if (StringHelper::getUpperString(queryTokens[i]) == "AND" && !QueryHelper::isTokenNested(queryTokens, i)) {
+            QueryParser::parseLogicFactor(VectorHelper::slice(queryTokens, 0, i - 1), queryObject);
+            queryTokens = VectorHelper::slice(queryTokens, i + 1);
+        }
+    }
+
+    QueryParser::parseLogicFactor(queryTokens, queryObject);
 }
 
-// <logic factor> ::= NOT <logic factor> | (<logic expression>) | <logic operation>
-void QueryParser::parseLogicFactor(vector<string> queryVector, QueryObject &queryObject) {
+// <logic factor> ::= (NOT <logic factor>) | ((<logic expression>)) | <operation>
+void QueryParser::parseLogicFactor(vector<string> queryTokens, QueryObject &queryObject) {
+    // DEBUG
+    cout << "Parsing logic factor: ";
+    VectorHelper::print(queryTokens);
 
+    if (StringHelper::getUpperString(queryTokens[0]) == "NOT") {
+        QueryParser::parseLogicFactor(VectorHelper::slice(queryTokens, 1), queryObject);
+    } else if (queryTokens[0] == "(" && queryTokens[queryTokens.size() - 1] == ")") {
+        QueryParser::parseLogicExpression(VectorHelper::slice(queryTokens, 1, queryTokens.size() - 2), queryObject);
+    } else {
+        QueryParser::parseOperation(queryTokens, queryObject);
+    }
 }
 
-// <logic operation> ::= <relation> | <string operation> | <set operation>
-void QueryParser::parseLogicOperation(vector<string> queryVector, QueryObject &queryObject) {
-
+// <operation> ::= <relation> | <string operation> | <set operation>
+void QueryParser::parseOperation(vector<string> queryTokens, QueryObject &queryObject) {
+    // DEBUG
+    cout << "Parsing operation: ";
+    VectorHelper::print(queryTokens);
 }
 
-// <relation> ::= (<string expression> <comparasion operation> <string expression>) | (<number expression> <comparasion operation> <number expression>)
-void QueryParser::parseRelation(vector<string> queryVector, QueryObject &queryObject) {
+// <relation> ::= (<string expression> <comparasion operator> <string expression>) | (<number expression> <comparasion operation> <number expression>)
+void QueryParser::parseRelation(vector<string> queryTokens, QueryObject &queryObject) {
 
 }
 
 // <string operation> ::= <field> [ NOT ] LIKE <string>
-void QueryParser::parseStringOperation(vector<string> queryVector, QueryObject &queryObject) {
+void QueryParser::parseStringOperation(vector<string> queryTokens, QueryObject &queryObject) {
 
 }
 
 // <set operation> ::= <field> [ NOT ] IN <set>
-void QueryParser::parseSetOperation(vector<string> queryVector, QueryObject &queryObject) {
+void QueryParser::parseSetOperation(vector<string> queryTokens, QueryObject &queryObject) {
 
 }
