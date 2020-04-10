@@ -14,16 +14,9 @@ QueryObject QueryParser::parseQuery(string query) {
         cout << "Query must end with semicolon" << endl;
     }
 
-    StringHelper::replace(query, "\\s*[,]\\s*", ",");
-    StringHelper::replace(query, "\\s*;\\s*", " ;");
-    StringHelper::replace(query, "\\s*=\\s*", " = ");
-    StringHelper::replace(query, "\\s*[(]\\s*", " ( ");
-    StringHelper::replace(query, "\\s*[)]\\s*", " ) ");
-    StringHelper::replace(query, "\\s*\\s\\s*", " ");
-
-    vector<string> queryTokens = StringHelper::split(query, ' ');
+    vector<string> queryTokens = QueryHelper::queryToTokenVector(query);
     queryTokens.pop_back();
-
+    
     string command = StringHelper::getUpperString(queryTokens[0]);
 
     QueryObject queryObject;

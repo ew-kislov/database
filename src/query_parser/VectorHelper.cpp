@@ -6,6 +6,10 @@
 using namespace std;
 
 namespace VectorHelper {
+    /*
+     * Prints vector on the same line, elements divided by space
+     * @param inpVector - input vector
+     */
     template<class T> void print(vector<T> inpVector) {
         for (int i = 0; i < inpVector.size(); i++) {
             cout << inpVector[i] << " ";
@@ -13,6 +17,14 @@ namespace VectorHelper {
         cout << endl;
     }
 
+    /*
+     * Returns vector with elements [startIndex; endIndex] of input array
+     * If end index not specified then [startIndex; inputVector.size()] is returned
+     * @param inpVector - input vector
+     * @param startIndex - start index of new vector
+     * @param endIndex - end index of new vector
+     * @returns vector with elements [startIndex; endIndex] of input array
+     */
     template<class T> vector<T> slice(vector<T> inpVector, int startIndex, int endIndex = -1) {
         if (endIndex == -1) {
             endIndex = inpVector.size() - 1;
