@@ -106,7 +106,7 @@ void QueryParser::parseLogicTerm(vector<string> queryTokens, QueryObject &queryO
     QueryParser::parseLogicFactor(queryTokens, queryObject);
 }
 
-// <logic factor> ::= NOT <logic factor> | (<logic expression>) | <operation>
+// <logic factor> ::= (NOT <logic factor>) | ((<logic expression>)) | <operation>
 void QueryParser::parseLogicFactor(vector<string> queryTokens, QueryObject &queryObject) {
     // DEBUG
     cout << "Parsing logic factor: ";
