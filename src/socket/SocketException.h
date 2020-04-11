@@ -9,8 +9,7 @@ class SocketException: public std::exception {
 protected:
     string message;
 public:
-    SocketException(const string & msg);
-    string get_message() const;
+    SocketException(string msg);
     const char * what() const throw ();
     
     ~SocketException() throw();

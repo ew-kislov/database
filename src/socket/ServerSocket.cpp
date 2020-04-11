@@ -14,14 +14,12 @@ ServerSocket::ServerSocket(int port) {
 
     this->socketFd = socket(AF_INET, SOCK_STREAM, 0);
     if (this->socketFd < 0) {
-        // TODO: throw SocketException("Couldn't create socket");
-        exit(0);
+        throw SocketException("Couldn't create socket");
     }
 
     int bindResult = bind(this->socketFd, (struct sockaddr *)&serverParams, sizeof(serverParams));
     if (bindResult < 0) {
-        // TODO: throw SocketException("Couldn't bind socket");
-        exit(0);
+        throw SocketException("Couldn't bind socket");
     }
 
     this->port = port;

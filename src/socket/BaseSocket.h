@@ -1,6 +1,8 @@
 #ifndef BASE_SOCKET_H
 #define BASE_SOCKET_H
 
+#include "SocketException.h"
+
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/stat.h>

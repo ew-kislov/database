@@ -11,9 +11,7 @@ string BaseSocket::read() {
     int bytesReceived = recv(this->socketFd, buffer, this->BUFFER_SIZE, 0);
 
     if (bytesReceived <= 0) {
-        // TODO: throw SocketException("Connection is broken");
-        // TODO: remove string below
-        exit(0);
+        throw SocketException("Connection is broken");
     } else {
         return buffer;
     }
@@ -24,8 +22,7 @@ void BaseSocket::write(string message) {
     int bytesSent = send(this->socketFd, message.c_str(), message.length(), 0);
 
     if (bytesSent < 0) {
-        // TODO: throw SocketException("Connection is broken");
-        exit(0);
+        throw SocketException("Connection is broken");
     }
 }
 
