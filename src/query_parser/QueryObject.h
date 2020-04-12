@@ -5,21 +5,17 @@
 #include <string>
 #include <vector>
 
-#include "QueryType.h"
+#include "QueryTypeEnum.h"
 
 using namespace std;
 
 struct QueryObject {
-    QueryType queryType;
+    QueryTypeEnum type;
     string table;
     vector<string> fields;
     vector<string> fieldTypes;
     vector<pair<string, string> > filter;
     map<string, string> values;
-
-    // TODO: make getters/setters with immutable fields(except queryType/table)
-    // TODO: implement operator<<
-    // TODO: inheritence ?
 };
 
 #endif

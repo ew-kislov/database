@@ -1,7 +1,7 @@
-#ifndef QUERY_TYPE_H
-#define QUERY_TYPE_H
+#ifndef QUERY_TYPE_ENUM_H
+#define QUERY_TYPE_ENUM_H
 
-enum QueryType {
+enum QueryTypeEnum {
     Select = 1,
     Insert = 2,
     Update = 3,
