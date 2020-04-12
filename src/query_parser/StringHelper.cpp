@@ -75,4 +75,55 @@ namespace StringHelper {
         transform(inpString.begin(), inpString.end(), inpString.begin(), ::toupper);
         return inpString;
     }
+
+    /*
+     * Checks if input string is a <string>
+     * @param inpString - input string
+     * @returns true if string is a <string>, false if not
+     */
+    bool isString(string &inpString) {
+        if (inpString[0] == '\'' && inpString.find('\'', 1) == inpString.size() - 1 && inpString.size() > 2)
+            return true;
+        return false;
+    }
+
+    /*
+     * Checks if input string is a number
+     * @param inpString - input string
+     * @returns true if string is a number, false if not
+     */
+    bool isNumber(string &inpString) {
+        string::const_iterator iter = inpString.begin();
+        while (iter != inpString.end() && (isdigit(*iter) || *iter == '.'))
+            ++iter;
+        return !inpString.empty() && iter == inpString.end();
+    }
+
+    /*
+     * Checks if string is a set of elements of one type (without brackets)
+     * @param inpString - input string
+     * @return true if string is a set, false if not
+     */
+    bool isSet(string &inpString) {
+        int occurrencesOfComa = std::count(inpString.begin(), inpString.end(), ',');
+        
+        vector<string> inpVector = StringHelper::split(inpString, ',');
+        
+        if (inpVector.size() != occurrencesOfComa + 1)
+            return false;
+        
+        bool isElementString = StringHelper::isString(inpVector[0]);
+        bool isElementNumber = StringHelper::isNumber(inpVector[0]);
+
+        if (!isElementString && !isElementNumber)
+            return false;
+
+        for (int i = 1; i < inpVector.size(); ++i) {
+            if (StringHelper::isString(inpVector[i]) != isElementString
+                || StringHelper::isNumber(inpVector[i]) != isElementNumber)
+                return false;
+        }
+
+        return true;
+    }
 }
