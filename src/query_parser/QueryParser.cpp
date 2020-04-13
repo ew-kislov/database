@@ -10,8 +10,7 @@
 //                 <DELETE-statement> | <CREATE-statement> | <DROP-statement>);
 QueryObject QueryParser::parseQuery(string query) {
     if (query.find(';') != query.size() - 1) {
-        // TODO: throw QueryParserException("Query must end with semicolon")
-        cout << "Query must end with semicolon" << endl;
+        throw QueryException("Query must end with semicolon");
     }
 
     vector<string> queryTokens = QueryHelper::queryToTokenVector(query);
@@ -34,7 +33,7 @@ QueryObject QueryParser::parseQuery(string query) {
     } else if (command == "DROP") {
         // TODO: DropParser::parse(query);
     } else {
-        // TODO: throw QueryParserException("Unknown command: " + command);
+        throw QueryException("Unknown command: " + command);
     }
 
     return queryObject;
@@ -43,8 +42,7 @@ QueryObject QueryParser::parseQuery(string query) {
 // <SELECT-statement> ::= SELECT <field list> FROM <table name> [ <WHERE-clause> ]
 QueryObject QueryParser::parseSelectQuery(vector<string> queryTokens) {
     if (QueryHelper::searchKeyWordInVector(queryTokens, "FROM") == -1) {
-        // TODO: throw QueryParserException("Wrong SELECT query syntax")
-        cout << "Wrong SELECT query syntax" << endl;
+        throw QueryException("Wrong SELECT query syntax");
     }
 
     QueryObject queryObject;
@@ -65,8 +63,7 @@ void QueryParser::parseWhereClause(vector<string> queryTokens, QueryObject &quer
     StringHelper::toUpperCase(command);
 
     if (command != "WHERE") {
-        // TODO: throw QueryParserException("Invalid syntax for WHERE clause");
-        cout << "Invalid syntax for WHERE clause" << endl;
+        throw QueryException("Invalid syntax for WHERE clause");
     }
 
     if (QueryHelper::searchKeyWordInVector(queryTokens, "ALL") == -1) {
@@ -76,9 +73,13 @@ void QueryParser::parseWhereClause(vector<string> queryTokens, QueryObject &quer
 
 // <logic expression> ::= <logic term> { OR <logic term> }
 void QueryParser::parseLogicExpression(vector<string> queryTokens, QueryObject &queryObject) {
-    // DEBUG
     cout << "Parsing logic expression: ";
     VectorHelper::print(queryTokens);
+    
+    if (StringHelper::getUpperString(queryTokens[0]) == "OR"
+        || StringHelper::getUpperString(queryTokens[queryTokens.size() - 1]) == "OR") {
+        throw QueryException("Invalid syntax for WHERE clause: logic expression");
+    }
 
     for (int i = 0; i < queryTokens.size(); i++) {
         if (StringHelper::getUpperString(queryTokens[i]) == "OR" && !QueryHelper::isTokenNested(queryTokens, i)) {
@@ -92,9 +93,13 @@ void QueryParser::parseLogicExpression(vector<string> queryTokens, QueryObject &
 
 // <logic term> ::= <logic factor> { AND <logic factor> }
 void QueryParser::parseLogicTerm(vector<string> queryTokens, QueryObject &queryObject) {
-    // DEBUG
     cout << "Parsing logic term: ";
     VectorHelper::print(queryTokens);
+    
+    if (StringHelper::getUpperString(queryTokens[0]) == "AND"
+        || StringHelper::getUpperString(queryTokens[queryTokens.size() - 1]) == "AND") {
+        throw QueryException("Invalid syntax for WHERE clause: logic term");
+    }
 
     for (int i = 0; i < queryTokens.size(); i++) {
         if (StringHelper::getUpperString(queryTokens[i]) == "AND" && !QueryHelper::isTokenNested(queryTokens, i)) {
@@ -108,7 +113,6 @@ void QueryParser::parseLogicTerm(vector<string> queryTokens, QueryObject &queryO
 
 // <logic factor> ::= (NOT <logic factor>) | ((<logic expression>)) | <operation>
 void QueryParser::parseLogicFactor(vector<string> queryTokens, QueryObject &queryObject) {
-    // DEBUG
     cout << "Parsing logic factor: ";
     VectorHelper::print(queryTokens);
 
@@ -123,22 +127,96 @@ void QueryParser::parseLogicFactor(vector<string> queryTokens, QueryObject &quer
 
 // <operation> ::= <relation> | <string operation> | <set operation>
 void QueryParser::parseOperation(vector<string> queryTokens, QueryObject &queryObject) {
-    // DEBUG
     cout << "Parsing operation: ";
     VectorHelper::print(queryTokens);
+    
+    if (QueryHelper::searchKeyWordInVector(queryTokens, "=") != -1
+        || QueryHelper::searchKeyWordInVector(queryTokens, ">") != -1
+        || QueryHelper::searchKeyWordInVector(queryTokens, "<") != -1) {
+        QueryParser::parseRelation(queryTokens, queryObject);
+    } else if (QueryHelper::searchKeyWordInVector(queryTokens, "LIKE") != -1) {
+        QueryParser::parseStringOperation(queryTokens, queryObject);
+    } else if (QueryHelper::searchKeyWordInVector(queryTokens, "IN") != -1) {
+        QueryParser::parseSetOperation(queryTokens, queryObject);
+    } else {
+        throw QueryException("Invalid syntax for WHERE clause: operation");
+    }
 }
 
 // <relation> ::= (<string expression> <comparasion operator> <string expression>) | (<number expression> <comparasion operation> <number expression>)
 void QueryParser::parseRelation(vector<string> queryTokens, QueryObject &queryObject) {
-
+    cout << "Parsing relation: ";
+    VectorHelper::print(queryTokens);
+    
+    // TODO: add operands type check (may be fields)
+    
+    if (queryTokens.size() == 3) {
+        if (QueryHelper::searchKeyWordInVector(queryTokens, "=") != 1
+            && QueryHelper::searchKeyWordInVector(queryTokens, ">") != 1
+            && QueryHelper::searchKeyWordInVector(queryTokens, "<") != 1) {
+            throw QueryException("Invalid syntax for WHERE clause: relation operation");
+        }
+    } else if (queryTokens.size() == 4) {
+        if (QueryHelper::searchKeyWordInVector(queryTokens, "=") != 2) {
+            throw QueryException("Invalid syntax for WHERE clause: relation operation");
+        }
+        if (QueryHelper::searchKeyWordInVector(queryTokens, "!") != 1
+            && QueryHelper::searchKeyWordInVector(queryTokens, ">") != 1
+            && QueryHelper::searchKeyWordInVector(queryTokens, "<") != 1) {
+            throw QueryException("Invalid syntax for WHERE clause: relation operation");
+        }
+    } else {
+        throw QueryException("Invalid syntax for WHERE clause: relation operation");
+    }
 }
 
 // <string operation> ::= <field> [ NOT ] LIKE <string>
 void QueryParser::parseStringOperation(vector<string> queryTokens, QueryObject &queryObject) {
-
+    cout << "Parsing string operation: ";
+    VectorHelper::print(queryTokens);
+    
+    if (QueryHelper::searchKeyWordInVector(queryTokens, "NOT") == -1) {
+        if (!(QueryHelper::searchKeyWordInVector(queryTokens, "LIKE") == 1 && queryTokens.size() == 3)) {
+            throw QueryException("Invalid syntax for WHERE clause: string operation");
+        }
+        if (!StringHelper::isString(queryTokens[2])) {
+            throw QueryException("Invalid syntax for WHERE clause: string operation");
+        }
+    } else if (QueryHelper::searchKeyWordInVector(queryTokens, "NOT") != 1) {
+        throw QueryException("Invalid syntax for WHERE clause: string operation");
+    } else if (!(QueryHelper::searchKeyWordInVector(queryTokens, "LIKE") == 2 && queryTokens.size() == 4)) {
+        throw QueryException("Invalid syntax for WHERE clause: string operation");
+    } else if (!StringHelper::isString(queryTokens[3])) {
+        throw QueryException("Invalid syntax for WHERE clause: string operation");
+    }
 }
 
 // <set operation> ::= <field> [ NOT ] IN <set>
 void QueryParser::parseSetOperation(vector<string> queryTokens, QueryObject &queryObject) {
-
+    cout << "Parsing set operation: ";
+    VectorHelper::print(queryTokens);
+    
+    if (QueryHelper::searchKeyWordInVector(queryTokens, "NOT") == -1) {
+        if (QueryHelper::searchKeyWordInVector(queryTokens, "IN") != 1) {
+            throw QueryException("Invalid syntax for WHERE clause: set operation");
+        }
+        if (!(QueryHelper::searchKeyWordInVector(queryTokens, "(") == 2
+              && QueryHelper::searchKeyWordInVector(queryTokens, ")") == 4)) {
+            throw QueryException("Invalid syntax for WHERE clause: set operation");
+        }
+        if (!StringHelper::isSet(queryTokens[3])) {
+            throw QueryException("Invalid syntax for WHERE clause: set operation");
+        }
+    } else if (QueryHelper::searchKeyWordInVector(queryTokens, "NOT") != 1) {
+        throw QueryException("Invalid syntax for WHERE clause: set operation");
+    } else if (QueryHelper::searchKeyWordInVector(queryTokens, "IN") != 2) {
+        throw QueryException("Invalid syntax for WHERE clause: set operation");
+    } else if (!(QueryHelper::searchKeyWordInVector(queryTokens, "(") == 3
+                 && QueryHelper::searchKeyWordInVector(queryTokens, ")") == 5)) {
+        throw QueryException("Invalid syntax for WHERE clause: set operation");
+    } else {
+        if (!StringHelper::isSet(queryTokens[4])) {
+            throw QueryException("Invalid syntax for WHERE clause: set operation");
+        }
+    }
 }

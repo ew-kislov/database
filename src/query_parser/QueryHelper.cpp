@@ -5,6 +5,7 @@
 #include <stack>
 
 #include "StringHelper.cpp"
+#include "QueryException.h"
 
 using namespace std;
 
@@ -38,8 +39,7 @@ namespace QueryHelper {
             if (queryTokens[i] == "(") {
                 closures.push("(");
             } else if (queryTokens[i] == ")" && closures.empty()) {
-                // TODO: throw QueryParserException("Wrong braces placement");
-                cout << "Wrong braces placement" << endl;
+                throw QueryException("Wrong braces placement");
             } else if (queryTokens[i] == ")" && !closures.empty()) {
                 closures.pop();
             }
