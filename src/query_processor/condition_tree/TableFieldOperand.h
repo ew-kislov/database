@@ -2,6 +2,7 @@
 #define TABLE_FIELD_OPERAND_H
 
 #include <set>
+#include <string>
 
 #include "BaseOperand.h"
 
@@ -9,10 +10,11 @@ using namespace std;
 
 class TableFieldOperand : public BaseOperand {
     protected:
-        OperandTypeEnum type = OperandTypeEnum::TableField;
+        OperandTypeEnum type;
         string value;
     public:
         TableFieldOperand(string value);
+        string getValue();
 };
 
 #endif

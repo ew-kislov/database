@@ -12,6 +12,13 @@
 #include "QueryObject.cpp"
 #include "QueryTypeEnum.h"
 
+#include "condition_tree/BaseCondition.h"
+#include "condition_tree/BinaryCondition.cpp"
+#include "condition_tree/InCondition.cpp"
+#include "condition_tree/BaseOperand.cpp"
+#include "condition_tree/TableFieldOperand.cpp"
+#include "condition_tree/NumberSetOperand.cpp"
+
 #include "QueryResult.cpp"
 #include "QueryStatusEnum.h"
 
@@ -64,8 +71,27 @@ QueryResult QueryProcessor::executeSelect(QueryObject queryObject) {
     return QueryResult(queryObject.getTable(), QueryStatusEnum::Success, 0);
 }
 
-// int main() {
-//     // QueryObject queryObject;
+int main() {
+    // QueryObject queryObject;
 
-//     // QueryProcessor::executeQuery(queryObject);
-// }
+    // QueryProcessor::executeQuery(queryObject);
+
+    set<long double> numberSet;
+    numberSet.insert(9);
+    numberSet.insert(16);
+    numberSet.insert(25);
+
+    BinaryCondition* conditionTree = new InCondition(new TableFieldOperand("f3"), new NumberSetOperand(numberSet));
+
+    vector<TableField> fields;
+    fields.push_back(TableField("f1", DataTypeEnum::NUMBER));
+    fields.push_back(TableField("f2", DataTypeEnum::VARCHAR));
+    fields.push_back(TableField("f3", DataTypeEnum::NUMBER));
+
+    vector<DataType*> rows;
+    rows.push_back(new Number("1"));
+    rows.push_back(new Varchar("'string'"));
+    rows.push_back(new Number("16"));
+
+    conditionTree->calculate(fields, rows);
+}

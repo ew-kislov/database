@@ -2,6 +2,10 @@
 
 #include "TableFieldOperand.h"
 
-TableFieldOperand::TableFieldOperand(string value) {
+TableFieldOperand::TableFieldOperand(string value) : BaseOperand(OperandTypeEnum::TABLE_FIELD) {
     this->value = value;
+}
+
+string TableFieldOperand::getValue() {
+    return value;
 }

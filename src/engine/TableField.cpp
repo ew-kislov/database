@@ -14,3 +14,7 @@ string TableField::getName() {
 DataTypeEnum TableField::getType() {
     return this->type;
 }
+
+bool TableField::operator ==(const TableField &tableField) const {
+    return this->name == tableField.name && this->type == tableField.type;
+}

@@ -1,13 +1,13 @@
 #ifndef OPERAND_TYPE_ENUM_CONDITION_H
 #define OPERAND_TYPE_ENUM_CONDITION_H
 
-enum class OperandTypeEnum {
-    TableField = 1,
-    Number = 2,
-    String = 3,
-    NumberSet = 4,
-    StringSet = 5,
-    RegExp = 6
-}
+enum OperandTypeEnum {
+    TABLE_FIELD = 1,
+    NUMBER = 2,
+    STRING = 3,
+    NUMBER_SET = 4,
+    STRING_SET = 5,
+    REG_EXP = 6
+};
 
 #endif

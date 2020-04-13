@@ -10,7 +10,7 @@ using namespace std;
 
 class BaseCondition {
     public:
-        virtual bool calculate(vector<TableField> fields, vector<DataType*> row);
+        virtual bool calculate(vector<TableField> fields, vector<DataType*> row) = 0;
 };
 
 #endif

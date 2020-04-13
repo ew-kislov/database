@@ -12,9 +12,9 @@ using namespace std;
 
 class MultipleCondition: public BaseCondition {
     protected:
-        vector<BaseCondition> operands;
+        vector<BaseCondition*> operands;
     public:
-        virtual bool calculate(vector<TableField> fields, vector<DataType*> row);
+        virtual bool calculate(vector<TableField> fields, vector<DataType*> row) = 0;
 };
 
 #endif
