@@ -7,7 +7,10 @@ class BaseOperand {
     protected:
         OperandTypeEnum type;
     public:
-        OperandTypeEnum getType();
+        BaseOperand();
+        BaseOperand(OperandTypeEnum type);
+
+        virtual OperandTypeEnum getType();
 };
 
 #endif

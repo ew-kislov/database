@@ -9,10 +9,12 @@ using namespace std;
 
 class NumberSetOperand : public BaseOperand {
     protected:
-        OperandTypeEnum type = OperandTypeEnum::NumberSet;
+        OperandTypeEnum type;
         set<long double> value;
     public:
         NumberSetOperand(set<long double> value);
+
+        bool contains(Number number);
 };
 
 #endif

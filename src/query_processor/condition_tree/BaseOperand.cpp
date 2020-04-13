@@ -5,3 +5,11 @@
 OperandTypeEnum BaseOperand::getType() {
     return type;
 }
+
+BaseOperand::BaseOperand() {
+
+}
+
+BaseOperand::BaseOperand(OperandTypeEnum type) {
+    this->type = type;
+}

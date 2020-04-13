@@ -76,6 +76,6 @@ Table Engine::loadTable(string tableName, bool withRows) {
     return Table(tableName, fields, rows);
 }
 
-int main() {
-    Engine::loadTable("cats");
-}
+// int main() {
+//     Engine::loadTable("cats");
+// }

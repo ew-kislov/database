@@ -11,9 +11,9 @@ using namespace std;
 
 namespace DataTypeFactory {
     DataType* create(string valueString, DataTypeEnum dataTypeEnum) {
-        if (dataTypeEnum == DataTypeEnum::Number) {
+        if (dataTypeEnum == DataTypeEnum::NUMBER) {
             return new Number(valueString);
-        } else if (dataTypeEnum == DataTypeEnum::Varchar) {
+        } else if (dataTypeEnum == DataTypeEnum::VARCHAR) {
             return new Varchar(valueString);
         }
     }
