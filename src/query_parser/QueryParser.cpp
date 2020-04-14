@@ -6,6 +6,8 @@
 #include "VectorHelper.cpp"
 #include "QueryHelper.cpp"
 
+#include "../query_processor/condition_tree/OrCondition.cpp"
+
 #include <set>
 
 // <SQL-query> ::= (<SELECT-statement> | <INSERT -statement> | <UPDATE-statement> |
@@ -94,7 +96,7 @@ void QueryParser::parseLogicExpression(vector<string> queryTokens, BaseCondition
         throw QueryException("Invalid syntax for WHERE clause: logic expression");
     }
     
-//    OrCondition orObject;
+   OrCondition orObject;
     
 //    treeRoot = new OrCondition;
 
