@@ -15,8 +15,6 @@ class TableFieldOperand : public BaseOperand {
     public:
         TableFieldOperand(string value);
         string getValue();
-    
-        ~TableFieldOperand() {};
 };
 
 #endif

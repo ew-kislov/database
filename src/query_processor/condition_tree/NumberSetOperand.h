@@ -15,8 +15,6 @@ class NumberSetOperand : public BaseOperand {
         NumberSetOperand(set<long double> value);
 
         bool contains(Number number);
-    
-        ~NumberSetOperand() {};
 };
 
 #endif

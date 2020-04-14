@@ -14,8 +14,6 @@ using namespace std;
 class OrCondition: public MultipleCondition, NegatableCondition {
 public:
     bool calculate(vector<TableField> fields, vector<DataType*> row);
-    
-    ~OrCondition() {};
 };
 
 #endif

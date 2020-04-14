@@ -11,8 +11,6 @@ class BaseOperand {
         BaseOperand(OperandTypeEnum type);
 
         virtual OperandTypeEnum getType();
-    
-        virtual ~BaseOperand() = 0;
 };
 
 #endif

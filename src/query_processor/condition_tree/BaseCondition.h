@@ -11,8 +11,6 @@ using namespace std;
 class BaseCondition {
     public:
         virtual bool calculate(vector<TableField> fields, vector<DataType*> row) = 0;
-        
-        virtual ~BaseCondition() = 0;
 };
 
 #endif

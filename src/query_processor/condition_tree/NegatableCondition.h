@@ -8,8 +8,6 @@ class NegatableCondition {
         bool isNegated = false;
     public:
         bool negate();
-    
-        virtual ~NegatableCondition() = 0;
 };
 
 #endif

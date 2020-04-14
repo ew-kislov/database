@@ -25,6 +25,7 @@ QueryObject* QueryParser::parseQuery(string query) {
     if (command == "SELECT") {
         SelectObject selectObject = QueryParser::parseSelectQuery(queryTokens);
         queryObject = &selectObject;
+//        queryObject =QueryParser::parseSelectQuery(queryTokens);
     } else if (command == "INSERT") {
         // TODO: InsertParser::parse(query);
     } else if (command == "UPDATE") {
@@ -38,6 +39,8 @@ QueryObject* QueryParser::parseQuery(string query) {
     } else {
         throw QueryException("Unknown command: " + command);
     }
+    
+    cout << "table: " << queryObject->getTable() << endl;
     
 //    SelectObject* pSelect = static_cast<SelectObject*>(queryObject);
 
@@ -91,7 +94,7 @@ void QueryParser::parseLogicExpression(vector<string> queryTokens, BaseCondition
         throw QueryException("Invalid syntax for WHERE clause: logic expression");
     }
     
-    OrCondition orObject;
+//    OrCondition orObject;
     
 //    treeRoot = new OrCondition;
 
