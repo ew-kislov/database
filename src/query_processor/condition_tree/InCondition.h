@@ -10,6 +10,8 @@ class InCondition : public BinaryCondition {
         InCondition(BaseOperand* operand1, BaseOperand* operand2) : BinaryCondition(operand1, operand2) {};
 
         bool calculate(vector<TableField> fields, vector<DataType*> row);
+    
+        ~InCondition() {};
 };
 
 #endif

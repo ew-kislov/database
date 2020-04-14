@@ -6,13 +6,11 @@ NumberSetOperand::NumberSetOperand(set<long double> value) : BaseOperand(Operand
     this->value = value;
 }
 
-bool NumberSetOperand::contains(Number number) {
-    set<long double>::iterator it = value.begin();
-    while (it != value.end()) {
+bool NumberSetOperand::contains(Number number) {   
+    for (set<long double>::iterator it = value.begin(); it != value.end(); ++it) {
         if (number == *it) {
             return true;
         }
-        it++;
     }
     return false;
 }

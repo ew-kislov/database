@@ -14,6 +14,7 @@ class QueryObject {
         QueryTypeEnum type;
         string table;
     public:
+        QueryObject(QueryTypeEnum type, string table);
         QueryTypeEnum getType();
         string getTable();
 };

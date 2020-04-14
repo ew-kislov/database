@@ -102,7 +102,7 @@ namespace StringHelper {
     /*
      * Checks if string is a set of elements of one type (without brackets)
      * @param inpString - input string
-     * @return true if string is a set, false if not
+     * @return set if string is a set, empty set if not
      */
     bool isSet(string &inpString) {
         int occurrencesOfComa = std::count(inpString.begin(), inpString.end(), ',');

@@ -63,7 +63,7 @@ QueryResult QueryProcessor::executeSelect(QueryObject queryObject) {
         cout << "error" << endl;
     }
 
-    // TODO filter by WHERE clause
+    // TODO: filter by WHERE clause
 
     cout << (*(table.getRows()[0][1]) == "kuzya") << endl;
     cout << (*(table.getRows()[0][3]) == 4) << endl;
