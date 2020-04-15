@@ -10,7 +10,7 @@ class RelationCondition : public BinaryCondition {
     protected:
         RelationTypeEnum relationType;
     public:
-        RelationCondition(BaseOperand* operand1, BaseOperand* operand2);
+        RelationCondition(BaseOperand* operand1, BaseOperand* operand2, string relationType);
 
         bool calculate(vector<TableField> fields, vector<DataType*> row);
 };

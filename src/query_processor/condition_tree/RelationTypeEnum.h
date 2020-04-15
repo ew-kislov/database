@@ -8,6 +8,6 @@ enum RelationTypeEnum {
     EGREATER = 4,
     LESS = 5,
     ELESS = 6
-}
+};
 
 #endif

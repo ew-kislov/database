@@ -125,6 +125,17 @@ namespace StringHelper {
     }
 
     /*
+     * Checks if input string is a table field
+     * @param inpString - input string
+     * @returns true if string is a field, false if not
+     */
+    bool isField(string &inpString) {
+        if (inpString[0] != '\'' && inpString[inpString.size() - 1] != '\'' && inpString.size() > 0)
+            return true;
+        return false;
+    }
+
+    /*
      * Checks if input string is a number
      * @param inpString - input string
      * @returns true if string is a number, false if not

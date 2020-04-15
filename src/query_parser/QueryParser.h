@@ -5,17 +5,20 @@
 #include <string>
 
 #include "../query_processor/QueryObject.h"
-#include "../query_processor/QueryObject.cpp"
 #include "../query_processor/SelectObject.h"
-#include "../query_processor/SelectObject.cpp"
-//#include "../query_processor/condition_tree/BaseCondition.h"
+
 #include "../query_processor/condition_tree/OrCondition.h"
 #include "../query_processor/condition_tree/AndCondition.h"
 #include "../query_processor/condition_tree/RelationCondition.h"
 #include "../query_processor/condition_tree/LikeCondition.h"
 #include "../query_processor/condition_tree/InCondition.h"
 
-#include "../query_processor/condition_tree/BaseOperand.h"
+#include "../query_processor/condition_tree/NumberSetOperand.h"
+#include "../query_processor/condition_tree/StringSetOperand.h"
+#include "../query_processor/condition_tree/NumberOperand.h"
+#include "../query_processor/condition_tree/StringOperand.h"
+#include "../query_processor/condition_tree/TableFieldOperand.h"
+
 
 
 namespace QueryParser {

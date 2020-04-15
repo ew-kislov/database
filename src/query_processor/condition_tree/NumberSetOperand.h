@@ -11,7 +11,6 @@ using namespace std;
 
 class NumberSetOperand : public BaseOperand {
     protected:
-        OperandTypeEnum type;
         set<long double> value;
     public:
         NumberSetOperand(set<long double> value);

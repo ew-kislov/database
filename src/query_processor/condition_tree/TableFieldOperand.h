@@ -10,7 +10,6 @@ using namespace std;
 
 class TableFieldOperand : public BaseOperand {
     protected:
-        OperandTypeEnum type;
         string value;
     public:
         TableFieldOperand(string value);

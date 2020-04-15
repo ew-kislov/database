@@ -6,12 +6,22 @@
 #include "VectorHelper.cpp"
 #include "QueryHelper.cpp"
 
+#include "../query_processor/QueryObject.cpp"
+#include "../query_processor/SelectObject.cpp"
+
 #include "../query_processor/condition_tree/OrCondition.cpp"
 #include "../query_processor/condition_tree/AndCondition.cpp"
 #include "../query_processor/condition_tree/MultipleCondition.cpp"
 #include "../query_processor/condition_tree/BinaryCondition.cpp"
 #include "../query_processor/condition_tree/InCondition.cpp"
+#include "../query_processor/condition_tree/RelationCondition.cpp"
+
 #include "../query_processor/condition_tree/BaseOperand.cpp"
+#include "../query_processor/condition_tree/NumberSetOperand.cpp"
+#include "../query_processor/condition_tree/StringSetOperand.cpp"
+#include "../query_processor/condition_tree/NumberOperand.cpp"
+#include "../query_processor/condition_tree/StringOperand.cpp"
+#include "../query_processor/condition_tree/TableFieldOperand.cpp"
 
 #include <set>
 
@@ -152,11 +162,10 @@ BinaryCondition* QueryParser::parseOperation(vector<string> queryTokens) {
     cout << "Parsing operation: ";
     VectorHelper::print(queryTokens);
     
-    
     if (QueryHelper::searchKeyWordInVector(queryTokens, "=") != -1
         || QueryHelper::searchKeyWordInVector(queryTokens, ">") != -1
         || QueryHelper::searchKeyWordInVector(queryTokens, "<") != -1) {
-//        return QueryParser::parseRelation(queryTokens);
+        return QueryParser::parseRelation(queryTokens);
     } else if (QueryHelper::searchKeyWordInVector(queryTokens, "LIKE") != -1) {
 //        return QueryParser::parseStringOperation(queryTokens);
     } else if (QueryHelper::searchKeyWordInVector(queryTokens, "IN") != -1) {
@@ -171,12 +180,15 @@ RelationCondition* QueryParser::parseRelation(vector<string> queryTokens) {
     cout << "Parsing relation: ";
     VectorHelper::print(queryTokens);
     
+    string relationType;
+    
     if (queryTokens.size() == 3) {
         if (QueryHelper::searchKeyWordInVector(queryTokens, "=") != 1
             && QueryHelper::searchKeyWordInVector(queryTokens, ">") != 1
             && QueryHelper::searchKeyWordInVector(queryTokens, "<") != 1) {
             throw QueryException("Invalid syntax for WHERE clause: relation operation");
         }
+        relationType = queryTokens[1];
     } else if (queryTokens.size() == 4) {
         if (QueryHelper::searchKeyWordInVector(queryTokens, "=") != 2) {
             throw QueryException("Invalid syntax for WHERE clause: relation operation");
@@ -186,9 +198,34 @@ RelationCondition* QueryParser::parseRelation(vector<string> queryTokens) {
             && QueryHelper::searchKeyWordInVector(queryTokens, "<") != 1) {
             throw QueryException("Invalid syntax for WHERE clause: relation operation");
         }
+        relationType = queryTokens[1] + queryTokens[2];
     } else {
         throw QueryException("Invalid syntax for WHERE clause: relation operation");
     }
+    
+    BaseOperand* operand1;
+    BaseOperand* operand2;
+    
+    if (StringHelper::isField(queryTokens[0])) {
+        operand1 = new TableFieldOperand(queryTokens[0]);
+        if (StringHelper::isString(queryTokens[queryTokens.size() - 1])) {
+            operand2 = new StringOperand(queryTokens[queryTokens.size() - 1]);
+        } else if (StringHelper::isNumber(queryTokens[queryTokens.size() - 1])) {
+            
+        }
+    } else if (StringHelper::isString(queryTokens[0])) {
+        StringOperand* operand1 = new StringOperand(queryTokens[0]);
+        
+    } else if (StringHelper::isNumber(queryTokens[0])) {
+
+        
+    } else {
+        throw QueryException("Invalid syntax for WHERE clause: relation operation");
+    }
+    
+    RelationCondition* leaf = new RelationCondition(operand1, operand2, relationType);
+    
+    return leaf;
 }
 
 // <string operation> ::= <field> [ NOT ] LIKE <string>
