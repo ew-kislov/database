@@ -40,4 +40,8 @@ namespace VectorHelper {
 
         return vector<T>(inpVector.begin() + startIndex, inpVector.begin() + endIndex + 1);
     }
+
+    template<class T> void removeByIndex(vector<T> inpVector, int index) {
+        inpVector.erase(inpVector.begin() + index);
+    }
 }

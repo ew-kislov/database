@@ -24,6 +24,10 @@ string Varchar::toString() {
     return '\'' + this->value + '\'';
 }
 
+string Varchar::getValue() {
+    return this->value;
+}
+
 bool Varchar::operator == (const Varchar &string) const {
     return this->value == string.value;
 }

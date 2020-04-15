@@ -1,19 +1,39 @@
 #include "LikeCondition.h"
 
+#include "TableFieldOperand.cpp"
+#include "StringOperand.cpp"
+
+#include "../VectorHelper2.cpp"
+#include "../../query_parser/StringHelper.cpp"
+
+#include "../../engine/Varchar.cpp"
+
 LikeCondition::LikeCondition(BaseOperand* operand1, BaseOperand* operand2) : BinaryCondition(operand1, operand2) {}
 
 bool LikeCondition::calculate(vector<TableField> fields, vector<DataType*> row) {
     if (
         operand1->getType() != OperandTypeEnum::TABLE_FIELD ||
-        operand2->getType() != OperandTypeEnum::STRING)
+        operand2->getType() != OperandTypeEnum::STRING
     ) {
         cout << "Wrong arguments" << endl;
         // TODO: throw exception
     }
     
     TableFieldOperand* fieldOperand = dynamic_cast<TableFieldOperand*>(operand1);
-    
-    field = new TableField(fieldOperand->getValue(), DataTypeEnum::STRING);
-    
-    
+    TableField* field = new TableField(fieldOperand->getValue(), DataTypeEnum::VARCHAR);
+
+    int fieldIndex = VectorHelper2::findInVector(fields, *field);
+    if (fieldIndex == -1) {
+        cout << "Couldn't find field with this type";
+        // TODO: throw exception
+    }
+
+    Varchar* varcharOperand = dynamic_cast<Varchar*>(row[fieldIndex]);
+    StringOperand* stringOperand = dynamic_cast<StringOperand*>(operand2);
+
+    string regex = stringOperand->getValue();
+    StringHelper::replace(regex, "%", ".*");
+    StringHelper::replace(regex, "_", ".");
+
+    return StringHelper::matches(varcharOperand->getValue(), regex);
 }

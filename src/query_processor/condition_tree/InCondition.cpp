@@ -26,7 +26,7 @@ bool InCondition::calculate(vector<TableField> fields, vector<DataType*> row) {
     TableFieldOperand* fieldOperand = dynamic_cast<TableFieldOperand*>(operand1);
 
     TableField* field;
-    if (OperandTypeEnum::NUMBER_SET) {
+    if (operand2->getType() == OperandTypeEnum::NUMBER_SET) {
         field = new TableField(fieldOperand->getValue(), DataTypeEnum::NUMBER);
     } else {
         field = new TableField(fieldOperand->getValue(), DataTypeEnum::VARCHAR);
@@ -35,9 +35,10 @@ bool InCondition::calculate(vector<TableField> fields, vector<DataType*> row) {
     int fieldIndex = VectorHelper2::findInVector(fields, *field);
     if (fieldIndex == -1) {
         cout << "Couldn't find field with this type";
+        // TODO: throw exception
     }
 
-    if (OperandTypeEnum::NUMBER_SET) {
+    if (operand2->getType() == OperandTypeEnum::NUMBER_SET) {
         NumberSetOperand* setOperand = dynamic_cast<NumberSetOperand*>(operand2);
         Number* numberOperand = dynamic_cast<Number*>(row[fieldIndex]);
         return setOperand->contains(*numberOperand);

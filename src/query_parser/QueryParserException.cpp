@@ -10,6 +10,5 @@ const char * QueryException::what() const throw () {
     return message.c_str();
 }
 
-
 QueryException::~QueryException() throw() {
 }

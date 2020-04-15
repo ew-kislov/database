@@ -25,6 +25,17 @@ namespace StringHelper {
     }
 
     /*
+     * Check if string matches regular expression
+     * @param inpString - input string
+     * @param patternString - string which contains regular expression
+     * @returns string with replaced pattern
+     */
+    bool matches(string inpString, string patternString) {
+        regex pattern(patternString);
+        return regex_match(inpString, pattern);
+    }
+
+    /*
      * Splits string into string vector by char delimeter
      * @param inpString - input string
      * @param delimeter - char delimeneter

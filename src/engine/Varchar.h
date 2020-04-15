@@ -16,6 +16,7 @@ class Varchar: public DataType {
     public:
         Varchar(string valueString);
 
+        string getValue();
         string toString();
 
         bool operator == (const Varchar &varchar) const;

@@ -6,6 +6,8 @@
 #include "VectorHelper.cpp"
 #include "QueryHelper.cpp"
 
+#include "LexicParser.cpp"
+
 #include "../query_processor/QueryObject.cpp"
 #include "../query_processor/SelectObject.cpp"
 
@@ -15,6 +17,7 @@
 #include "../query_processor/condition_tree/BinaryCondition.cpp"
 #include "../query_processor/condition_tree/InCondition.cpp"
 #include "../query_processor/condition_tree/RelationCondition.cpp"
+#include "../query_processor/condition_tree/LikeCondition.cpp"
 
 #include "../query_processor/condition_tree/BaseOperand.cpp"
 #include "../query_processor/condition_tree/NumberSetOperand.cpp"
@@ -24,6 +27,7 @@
 #include "../query_processor/condition_tree/TableFieldOperand.cpp"
 
 #include <set>
+#include <string>
 
 // <SQL-query> ::= (<SELECT-statement> | <INSERT -statement> | <UPDATE-statement> |
 //                 <DELETE-statement> | <CREATE-statement> | <DROP-statement>);
@@ -167,7 +171,7 @@ BinaryCondition* QueryParser::parseOperation(vector<string> queryTokens) {
         || QueryHelper::searchKeyWordInVector(queryTokens, "<") != -1) {
         return QueryParser::parseRelation(queryTokens);
     } else if (QueryHelper::searchKeyWordInVector(queryTokens, "LIKE") != -1) {
-//        return QueryParser::parseStringOperation(queryTokens);
+       return QueryParser::parseLikeOperation(queryTokens);
     } else if (QueryHelper::searchKeyWordInVector(queryTokens, "IN") != -1) {
         return QueryParser::parseSetOperation(queryTokens);
     } else {
@@ -229,24 +233,26 @@ RelationCondition* QueryParser::parseRelation(vector<string> queryTokens) {
 }
 
 // <string operation> ::= <field> [ NOT ] LIKE <string>
-LikeCondition* QueryParser::parseStringOperation(vector<string> queryTokens) {
-    cout << "Parsing string operation: ";
-    VectorHelper::print(queryTokens);
-    
-    if (QueryHelper::searchKeyWordInVector(queryTokens, "NOT") == -1) {
-        if (!(QueryHelper::searchKeyWordInVector(queryTokens, "LIKE") == 1 && queryTokens.size() == 3)) {
-            throw QueryException("Invalid syntax for WHERE clause: string operation");
-        }
-        if (!StringHelper::isString(queryTokens[2])) {
-            throw QueryException("Invalid syntax for WHERE clause: string operation");
-        }
-    } else if (QueryHelper::searchKeyWordInVector(queryTokens, "NOT") != 1) {
-        throw QueryException("Invalid syntax for WHERE clause: string operation");
-    } else if (!(QueryHelper::searchKeyWordInVector(queryTokens, "LIKE") == 2 && queryTokens.size() == 4)) {
-        throw QueryException("Invalid syntax for WHERE clause: string operation");
-    } else if (!StringHelper::isString(queryTokens[3])) {
-        throw QueryException("Invalid syntax for WHERE clause: string operation");
+LikeCondition* QueryParser::parseLikeOperation(vector<string> queryTokens) {
+    int notKeyWordIndex = QueryHelper::searchKeyWordInVector(queryTokens, "NOT");
+    bool isNegated = notKeyWordIndex != -1;
+
+    if (isNegated && notKeyWordIndex != 1) {
+        throw QueryException("QueryParser::parseLikeOperation(): NOT keyword has wrong position");
+    } else if (isNegated) {
+        VectorHelper::removeByIndex(queryTokens, notKeyWordIndex);
     }
+
+    if (
+        queryTokens.size() != 3 ||
+        QueryHelper::searchKeyWordInVector(queryTokens, "LIKE") != 1 ||
+        !StringHelper::isField(queryTokens[0]) ||
+        !StringHelper::isString(queryTokens[2])
+    ) {
+        throw QueryException("QueryParser::parseLikeOperation(): invalid syntax for LIKE condition");
+    }
+    
+    return new LikeCondition(new TableFieldOperand(queryTokens[0]), new StringOperand(queryTokens[2]));
 }
 
 // <set operation> ::= <field> [ NOT ] IN <set>

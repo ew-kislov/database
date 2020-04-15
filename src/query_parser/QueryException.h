@@ -2,6 +2,7 @@
 #define QUERY_EXCEPTION_H
 
 #include <exception>
+#include <string>
 
 using namespace std;
 
