@@ -15,6 +15,7 @@ class MultipleCondition: public BaseCondition {
         vector<BaseCondition*> operands;
     public:
         virtual bool calculate(vector<TableField> fields, vector<DataType*> row) = 0;
+        void addOperand(BaseCondition* operand);
 };
 
 #endif

@@ -2,7 +2,7 @@
 #define SELECT_OBJECT_H
 
 #include "QueryObject.h"
-#include "condition_tree/BaseCondition.h"
+#include "condition_tree/OrCondition.h"
 
 using namespace std;
 
@@ -10,7 +10,7 @@ class SelectObject: public QueryObject {
     protected:
         vector<string> fields;
     public:
-        BaseCondition* treeRoot;
+        OrCondition* treeRoot;
     
         SelectObject(string table, vector<string> fields);
     

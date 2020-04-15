@@ -61,7 +61,7 @@ namespace QueryHelper {
         StringHelper::replace(query, "\\s*[)]\\s*", " ) ");
         StringHelper::replace(query, "\\s*\\s\\s*", " ");
 
-        vector<string> queryTokens = StringHelper::split(query, ' ');
+        vector<string> queryTokens = StringHelper::splitToVector(query, ' ');
 
         return queryTokens;
     }

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <set>
 #include <string>
 #include <sstream>
 #include <iostream>
@@ -29,7 +30,7 @@ namespace StringHelper {
      * @param delimeter - char delimeneter
      * @returns vector of strings splitted by delimeter
      */
-    vector<string> split(string inpString, char delimeter) {
+    vector<string> splitToVector(string inpString, char delimeter) {
         vector<string> stringVector;
         istringstream stringStream(inpString);
         string token;
@@ -39,6 +40,42 @@ namespace StringHelper {
         }
 
         return stringVector;
+    }
+
+    /*
+     * Splits string into set of strings by char delimeter
+     * @param inpString - input string
+     * @param delimeter - char delimeneter
+     * @returns set of elements splitted by delimeter
+     */
+    set<string> splitToStringSet(string inpString, char delimeter) {
+        set<string> outpSet;
+        istringstream stringStream(inpString);
+        string token;
+        
+        while (getline(stringStream, token, delimeter)) {
+            outpSet.insert(token);
+        }
+        
+        return outpSet;
+    }
+
+    /*
+     * Splits string into set of long double by char delimeter
+     * @param inpString - input string
+     * @param delimeter - char delimeneter
+     * @returns set of elements splitted by delimeter
+     */
+    set<long double> splitToDoubleSet(string inpString, char delimeter) {
+        set<long double> outpSet;
+        istringstream stringStream(inpString);
+        string token;
+        
+        while (getline(stringStream, token, delimeter)) {
+            outpSet.insert(stold(token));
+        }
+        
+        return outpSet;
     }
 
     /*
@@ -107,7 +144,7 @@ namespace StringHelper {
     bool isSet(string &inpString) {
         int occurrencesOfComa = std::count(inpString.begin(), inpString.end(), ',');
         
-        vector<string> inpVector = StringHelper::split(inpString, ',');
+        vector<string> inpVector = StringHelper::splitToVector(inpString, ',');
         
         if (inpVector.size() != occurrencesOfComa + 1)
             return false;

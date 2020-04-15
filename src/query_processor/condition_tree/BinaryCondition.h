@@ -12,12 +12,9 @@ class BinaryCondition : public BaseCondition {
         BaseOperand* operand1;
         BaseOperand* operand2;
     public:
-    BinaryCondition() {};
         BinaryCondition(BaseOperand* operand1, BaseOperand* operand2);
 
         virtual bool calculate(vector<TableField> fields, vector<DataType*> row) = 0;
-        
-        virtual ~BinaryCondition() = 0;
 };
 
 #endif

@@ -2,6 +2,9 @@
 
 #include "NumberSetOperand.h"
 
+#include "../../engine/Number.cpp"
+#include "../../engine/EngineException.cpp"
+
 NumberSetOperand::NumberSetOperand(set<long double> value) : BaseOperand(OperandTypeEnum::NUMBER_SET) {
     this->value = value;
 }

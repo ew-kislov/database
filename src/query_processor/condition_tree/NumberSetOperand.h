@@ -4,6 +4,8 @@
 #include <set>
 
 #include "BaseOperand.h"
+#include "../../engine/Number.h"
+#include "../../engine/EngineException.h"
 
 using namespace std;
 

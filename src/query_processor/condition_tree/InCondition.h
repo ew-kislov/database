@@ -7,7 +7,7 @@ using namespace std;
 
 class InCondition : public BinaryCondition {
     public:
-        InCondition(BaseOperand* operand1, BaseOperand* operand2) : BinaryCondition(operand1, operand2) {};
+        InCondition(BaseOperand* operand1, BaseOperand* operand2);
 
         bool calculate(vector<TableField> fields, vector<DataType*> row);
 };

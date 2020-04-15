@@ -10,6 +10,10 @@
 
 using namespace std;
 
+InCondition::InCondition(BaseOperand* operand1, BaseOperand* operand2) : BinaryCondition(operand1, operand2) {
+    
+}
+
 bool InCondition::calculate(vector<TableField> fields, vector<DataType*> row) {
     if (
         operand1->getType() != OperandTypeEnum::TABLE_FIELD ||
