@@ -5,6 +5,9 @@
 #include <iostream>
 #include <fstream>
 
+#include "fcntl.h"
+#include "unistd.h"
+
 #include "Engine.h"
 
 #include "Table.cpp"
@@ -76,6 +79,35 @@ Table Engine::loadTable(string tableName, bool withRows) {
     return Table(tableName, fields, rows);
 }
 
+void Engine::createTable(string tableName, vector<TableField*> fields) {
+    int tableFd = open((Config::STORAGE_LOCATION + tableName + Config::TABLE_FILE_EXTENSION).c_str(), O_WRONLY | O_CREAT, 0666);
+    
+    if (tableFd == -1) {
+        throw "Error while creating file";
+        // TODO: determine type and throw custom exception
+    }
+    
+    size_t fieldNumber = fields.size();
+    write(tableFd, &fieldNumber, sizeof(fieldNumber));
+
+    for (TableField* field : fields) {
+        char fieldNameSize = field->getName().length();
+        const char* fieldName = field->getName().c_str();
+        char fieldType = field->getType();
+
+        write(tableFd, &fieldNameSize, sizeof(char));
+        write(tableFd, fieldName, sizeof(fieldName));
+        write(tableFd, &fieldType, sizeof(char));
+    }
+
+    close(tableFd);
+}
+
 // int main() {
-//     Engine::loadTable("cats");
+//     vector<TableField*> fields;
+//     fields.push_back(new TableField("f1", DataTypeEnum::NUMBER));
+//     fields.push_back(new TableField("f2", DataTypeEnum::VARCHAR));
+//     fields.push_back(new TableField("f3", DataTypeEnum::NUMBER));
+
+//     Engine::createTable("table", fields);
 // }
