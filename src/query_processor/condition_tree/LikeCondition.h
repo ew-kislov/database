@@ -5,9 +5,9 @@
 
 using namespace std;
 
-class LikeCondition : public BinaryCondition {
+class LikeCondition : public BinaryCondition, public NegatableCondition {
     public:
-        LikeCondition(BaseOperand* operand1, BaseOperand* operand2);
+        LikeCondition(BaseOperand* operand1, BaseOperand* operand2, bool doNegate = false);
 
         bool calculate(vector<TableField> fields, vector<DataType*> row);
 };

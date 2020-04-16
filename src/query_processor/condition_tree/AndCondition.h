@@ -11,7 +11,7 @@
 
 using namespace std;
 
-class AndCondition: public MultipleCondition, NegatableCondition {
+class AndCondition: public MultipleCondition, public NegatableCondition {
     public:
         bool calculate(vector<TableField> fields, vector<DataType*> row);
 };

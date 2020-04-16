@@ -34,14 +34,17 @@ int main() {
 //
 //        serverSocket.close();
 
-//        QueryParser::parseQuery("SELECT f1, f2 FROM t WHERE f2 IN ('as','d') AND f1 NOT IN (1,2);");
-        
-        // QueryParser::parseQuery("SELECT f1, f2 FROM t WHERE f2 IN ('as','d') AND f1 = 'fuck';");
-
-        QueryParser::parseQuery("SELECT f1, f2 FROM t WHERE f2 LIKE 'ab_';");
-
-//        QueryParser::parseQuery("SELECT f1, f2, f3, f4, f5, f6, f7 FROM t WHERE f1=5 OR f2 = 'a' AND (f3 IN ('1' , '2' , '3') OR f1=2) OR f3 LIKE 'b%';");
-//        QueryParser::parseQuery("select f1,f2 from t where ((f1 in (1,2,3) or f2=5) and (f3=0)) and (f4 like 'b%');");
+        QueryParser::parseQuery("SELECT f1, f2 FROM t WHERE f2 IN ('as','d') AND f1 NOT IN (1,2);");
+        cout << endl;
+         QueryParser::parseQuery("SELECT f1, f2 FROM t WHERE f2 IN ('as','d') AND f1 = 'fuck';");
+        cout << endl;
+        QueryParser::parseQuery("SELECT f1, f2 FROM t WHERE f2 LIKE 'ab_' OR f2 IN ('as','d') AND f1 NOT IN (1,2);");
+        cout << endl;
+        QueryParser::parseQuery("SELECT f1, f2 FROM t WHERE ALL;");
+        cout << endl;
+        QueryParser::parseQuery("SELECT f1, f2, f3, f4, f5, f6, f7 FROM t WHERE f1=5 OR NOT f2 = 'a' AND (f3 NOT IN ('1' , '2' , '3') OR f1=2) OR f3 NOT LIKE 'b%';");
+        cout << endl;
+        QueryParser::parseQuery("select f1,f2 from t where ((f1 in (1,2,3) or f2=5) and (f3=0)) and (f4 like 'b%');");
     } catch (const SocketException & ex) {
         cout << "Socket exception:\n\t" << ex.what() << endl;
     } catch (const QueryException & ex) {

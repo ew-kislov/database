@@ -34,7 +34,7 @@ namespace QueryParser {
     OrCondition* parseWhereClause(vector<string> queryTokens);
     OrCondition* parseLogicExpression(vector<string> queryTokens);
     AndCondition* parseLogicTerm(vector<string> queryTokens);
-    AndCondition* parseLogicFactor(vector<string> queryTokens);
+    BaseCondition* parseLogicFactor(vector<string> queryTokens);
     BinaryCondition* parseOperation(vector<string> queryTokens);
     RelationCondition* parseRelation(vector<string> queryTokens);
     LikeCondition* parseLikeOperation(vector<string> queryTokens);

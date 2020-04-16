@@ -5,8 +5,10 @@ using namespace std;
 
 class NegatableCondition {
     protected:
-        bool isNegated = false;
+        bool isNegated;
     public:
+        NegatableCondition(bool doNegated = false);
+    
         bool negate();
 };
 

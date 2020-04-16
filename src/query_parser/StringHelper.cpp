@@ -54,42 +54,6 @@ namespace StringHelper {
     }
 
     /*
-     * Splits string into set of strings by char delimeter
-     * @param inpString - input string
-     * @param delimeter - char delimeneter
-     * @returns set of elements splitted by delimeter
-     */
-    set<string> splitToStringSet(string inpString, char delimeter) {
-        set<string> outpSet;
-        istringstream stringStream(inpString);
-        string token;
-        
-        while (getline(stringStream, token, delimeter)) {
-            outpSet.insert(token);
-        }
-        
-        return outpSet;
-    }
-
-    /*
-     * Splits string into set of long double by char delimeter
-     * @param inpString - input string
-     * @param delimeter - char delimeneter
-     * @returns set of elements splitted by delimeter
-     */
-    set<long double> splitToDoubleSet(string inpString, char delimeter) {
-        set<long double> outpSet;
-        istringstream stringStream(inpString);
-        string token;
-        
-        while (getline(stringStream, token, delimeter)) {
-            outpSet.insert(stold(token));
-        }
-        
-        return outpSet;
-    }
-
-    /*
      * Gets first word of string(all chars before space)
      * @param inpString - input string
      * @returns first word of string
@@ -165,7 +129,6 @@ namespace StringHelper {
      */
     bool isSet(string &inpString) {
         int occurrencesOfComa = std::count(inpString.begin(), inpString.end(), ',');
-        
         vector<string> inpVector = StringHelper::splitToVector(inpString, ',');
         
         if (inpVector.size() != occurrencesOfComa + 1)
@@ -178,9 +141,12 @@ namespace StringHelper {
             return false;
 
         for (int i = 1; i < inpVector.size(); ++i) {
-            if (StringHelper::isString(inpVector[i]) != isElementString
-                || StringHelper::isNumber(inpVector[i]) != isElementNumber)
+            if (
+                StringHelper::isString(inpVector[i]) != isElementString ||
+                StringHelper::isNumber(inpVector[i]) != isElementNumber
+            ) {
                 return false;
+            }
         }
 
         return true;

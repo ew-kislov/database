@@ -8,7 +8,9 @@
 
 #include "../../engine/Varchar.cpp"
 
-LikeCondition::LikeCondition(BaseOperand* operand1, BaseOperand* operand2) : BinaryCondition(operand1, operand2) {}
+LikeCondition::LikeCondition(BaseOperand* operand1, BaseOperand* operand2, bool doNegate) : BinaryCondition(operand1, operand2), NegatableCondition(doNegate) {
+    
+}
 
 bool LikeCondition::calculate(vector<TableField> fields, vector<DataType*> row) {
     if (
@@ -35,5 +37,5 @@ bool LikeCondition::calculate(vector<TableField> fields, vector<DataType*> row) 
     StringHelper::replace(regex, "%", ".*");
     StringHelper::replace(regex, "_", ".");
 
-    return StringHelper::matches(varcharOperand->getValue(), regex);
+    return StringHelper::matches(varcharOperand->getValue(), regex)^isNegated;
 }

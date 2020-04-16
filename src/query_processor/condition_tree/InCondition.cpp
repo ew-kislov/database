@@ -10,8 +10,8 @@
 
 using namespace std;
 
-InCondition::InCondition(BaseOperand* operand1, BaseOperand* operand2) : BinaryCondition(operand1, operand2) {
-    
+InCondition::InCondition(BaseOperand* operand1, BaseOperand* operand2, bool doNegate) : BinaryCondition(operand1, operand2), NegatableCondition(doNegate) {
+
 }
 
 bool InCondition::calculate(vector<TableField> fields, vector<DataType*> row) {
@@ -41,7 +41,7 @@ bool InCondition::calculate(vector<TableField> fields, vector<DataType*> row) {
     if (operand2->getType() == OperandTypeEnum::NUMBER_SET) {
         NumberSetOperand* setOperand = dynamic_cast<NumberSetOperand*>(operand2);
         Number* numberOperand = dynamic_cast<Number*>(row[fieldIndex]);
-        return setOperand->contains(*numberOperand);
+        return setOperand->contains(*numberOperand)^isNegated;
     } else {
         // TODO
     }
