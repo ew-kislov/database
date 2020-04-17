@@ -2,6 +2,8 @@
 
 #include <string>
 
+#include "DataTypeEnum.h"
+
 #include "EngineException.h"
 
 #include "Varchar.h"
@@ -16,8 +18,12 @@ void Varchar::parse(string valueString) {
     this->value = valueString.substr(1, valueString.size() - 2);
 }
 
-Varchar::Varchar(string valueString) : DataType(valueString) {
-    parse(valueString);
+Varchar::Varchar(string valueString, bool shouldParse) : DataType(DataTypeEnum::VARCHAR) {
+    if (shouldParse) {
+        parse(valueString);
+    } else {
+        this->value = valueString;
+    }
 }
 
 string Varchar::toString() {

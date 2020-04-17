@@ -1,5 +1,7 @@
 #pragma once
 
+#include "DataTypeEnum.h"
+
 #include "EngineException.h"
 
 #include "Number.h"
@@ -14,8 +16,16 @@ void Number::parse(string valueString) {
     }
 }
 
-Number::Number(string valueString) : DataType(valueString) {
+Number::Number(string valueString) : DataType(DataTypeEnum::NUMBER) {
     parse(valueString);
+}
+
+Number::Number(int value) : DataType(DataTypeEnum::NUMBER) {
+    this->value = value;
+}
+
+long double Number::getValue() {
+    return value;
 }
 
 string Number::toString() {

@@ -6,7 +6,13 @@ void DataType::parse(string valueString) {
     throw "DataType: parse() not supported";
 }
 
-DataType::DataType(string valueString) { }
+DataType::DataType(DataTypeEnum type) {
+    this->type = type;
+}
+
+DataTypeEnum DataType::getType() {
+    return type;
+}
 
 string DataType::toString() {
     throw "DataType: toString() not supported";

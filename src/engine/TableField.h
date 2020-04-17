@@ -17,6 +17,8 @@ class TableField {
         string getName();
         DataTypeEnum getType();
 
+        virtual string toString();
+
         virtual bool operator ==(const TableField &tableField) const;
 };
 

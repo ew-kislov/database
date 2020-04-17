@@ -4,21 +4,36 @@
 
 Table::Table() {}
 
-Table::Table(string name, vector<TableField> fields) {
+Table::Table(string name, vector<TableField*> fields) {
     this->name = name;
     this->fields = fields;
 }
 
-Table::Table(string name, vector<TableField> fields, vector<vector<DataType*> > rows) {
+Table::Table(string name, vector<TableField*> fields, vector<vector<DataType*> > rows) {
     this->name = name;
     this->fields = fields;
     this->rows = rows;
 }
 
-vector<TableField> Table::getFields() {
+vector<TableField*> Table::getFields() {
     return this->fields;
 }
 
 vector<vector<DataType*> > Table::getRows() {
     return this->rows;
+}
+
+ostream& operator<< (ostream &out, const Table &table) {
+    out << "Table {" << endl;
+    out << "  name: " << table.name << "," << endl;
+    out << "  fields: [" << endl;
+
+    for (TableField* field : table.fields) {
+        out << "    " << field->toString() << endl;
+    }
+
+    out << "  ]" << endl;
+    out << "}";
+
+    return out;
 }

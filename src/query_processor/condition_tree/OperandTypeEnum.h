@@ -1,7 +1,7 @@
 #ifndef OPERAND_TYPE_ENUM_CONDITION_H
 #define OPERAND_TYPE_ENUM_CONDITION_H
 
-enum OperandTypeEnum {
+enum class OperandTypeEnum {
     TABLE_FIELD = 1,
     NUMBER = 2,
     STRING = 3,
