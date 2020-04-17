@@ -11,7 +11,6 @@ using namespace std;
 
 namespace Engine {
     Table loadTable(string tableName, bool withRows = false);
-    Table loadTable2(string tableName, bool withRows = false);
     
     void createTable(string tableName, vector<TableField*> fields);
     void insertIntoTable(string tableName, vector<vector<DataType*> > rows);

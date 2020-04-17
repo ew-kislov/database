@@ -2,7 +2,8 @@
 
 #include "DataTypeEnum.h"
 
-#include "EngineException.h"
+#include "EngineStatusEnum.h"
+#include "EngineException.cpp"
 
 #include "Number.h"
 
@@ -12,7 +13,7 @@ void Number::parse(string valueString) {
     try {
         this->value = stold(valueString);
     } catch(const exception& e) {
-        throw EngineException("Number.parse(): wrong number value");
+        throw EngineException(EngineStatusEnum::InvalidValue);
     }
 }
 

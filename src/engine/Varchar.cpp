@@ -4,7 +4,8 @@
 
 #include "DataTypeEnum.h"
 
-#include "EngineException.h"
+#include "EngineStatusEnum.h"
+#include "EngineException.cpp"
 
 #include "Varchar.h"
 
@@ -12,7 +13,7 @@ using namespace std;
 
 void Varchar::parse(string valueString) {
     if (valueString[0] != '\'' || valueString[valueString.size() - 1] != '\'') {
-        throw EngineException("Varchar.parse(): wrong string value");
+        throw EngineException(EngineStatusEnum::InvalidValue);
     }
 
     this->value = valueString.substr(1, valueString.size() - 2);

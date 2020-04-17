@@ -26,13 +26,23 @@ vector<vector<DataType*> > Table::getRows() {
 ostream& operator<< (ostream &out, const Table &table) {
     out << "Table {" << endl;
     out << "  name: " << table.name << "," << endl;
-    out << "  fields: [" << endl;
 
+    out << "  fields: [" << endl;
     for (TableField* field : table.fields) {
         out << "    " << field->toString() << endl;
     }
-
     out << "  ]" << endl;
+
+    out << "  rows: [" << endl;
+    for (vector<DataType*> row: table.rows) {
+        cout << "    ";
+        for (DataType* value: row) {
+            cout << value->toString() << "  ";
+        }
+        cout << endl;
+    }
+    out << "  ]" << endl;
+
     out << "}";
 
     return out;

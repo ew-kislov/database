@@ -18,73 +18,18 @@
 #include "Varchar.cpp"
 #include "Number.cpp"
 
+#include "EngineStatusEnum.h"
 #include "EngineException.cpp"
 
 #include "Config.h"
 
 using namespace std;
 
-/*
- * Loads table from storage directory
- * @param tableName - name of table
- * @throws std::ios_base::failure
- * @returns table fields and values in Table object
- */
-// Table Engine::loadTable(string tableName, bool withRows) {
-//     // Open file containing table
-
-//     ifstream tableFile;
-//     tableFile.open(Config::STORAGE_LOCATION + tableName + Config::TABLE_FILE_EXTENSION);
-
-//     // Read fields number
-
-//     int fieldsNumber;
-//     tableFile >> fieldsNumber;
-
-//     // Read table feilds
-
-//     string fieldName;
-//     int fieldTypeOrdinal;
-
-//     vector<TableField> fields;
-
-//     for (int i = 0; i < fieldsNumber; i++) {
-//         tableFile >> fieldName >> fieldTypeOrdinal;
-//         fields.push_back(TableField(fieldName, static_cast<DataTypeEnum>(fieldTypeOrdinal)));
-//     }
-
-//     // check if rows are demanded
-
-//     if (!withRows) {
-//         return Table(tableName, fields);
-//     }
-
-//     // Read table rows
-
-//     vector<vector<DataType*> > rows;
-//     vector<DataType*> row;
-
-//     string rowString;
-//     string valueString;
-        
-//     while (getline(tableFile, rowString)) {
-//         row.clear();
-//         for (int i = 0; i < fieldsNumber; i++) {
-//             tableFile >> valueString;
-//             row.push_back(DataTypeFactory::create(valueString, fields[i].getType()));
-//         }
-//         rows.push_back(row);
-//     }
-
-//     return Table(tableName, fields, rows);
-// }
-
 void Engine::createTable(string tableName, vector<TableField*> fields) {
     int tableFd = open((Config::STORAGE_LOCATION + tableName + Config::TABLE_FILE_EXTENSION).c_str(), O_WRONLY | O_CREAT, 0666);
     
     if (tableFd == -1) {
-        throw "Error while creating file";
-        // TODO: determine type and throw custom exception
+        throw EngineException(EngineStatusEnum::TableAlreadyExists);
     }
     
     int fieldNumber = fields.size();
@@ -103,12 +48,11 @@ void Engine::createTable(string tableName, vector<TableField*> fields) {
     close(tableFd);
 }
 
-Table Engine::loadTable2(string tableName, bool withRows) {
+Table Engine::loadTable(string tableName, bool withRows) {
     int tableFd = open((Config::STORAGE_LOCATION + tableName + Config::TABLE_FILE_EXTENSION).c_str(), O_RDONLY, 0666);
 
     if (tableFd == -1) {
-        throw "Error while reading file";
-        // TODO: determine type and throw custom exception
+        throw EngineException(EngineStatusEnum::TableDoesNotExist);
     }
     
     int fieldNumber;
@@ -149,8 +93,7 @@ Table Engine::loadTable2(string tableName, bool withRows) {
                         isFieldFound = 0;
                         break;
                     } else {
-                        throw "Table structure corrupted";
-                        // TODO: throw engine exception
+                        throw EngineException(EngineStatusEnum::TableStructureCorrupted);
                     }
                 }
 
@@ -167,8 +110,7 @@ Table Engine::loadTable2(string tableName, bool withRows) {
                         isFieldFound = 0;
                         break;
                     } else {
-                        throw "Table structure corrupted";
-                        // TODO: throw engine exception
+                        throw EngineException(EngineStatusEnum::TableStructureCorrupted);
                     }
                 }
 
@@ -194,18 +136,16 @@ void Engine::insertIntoTable(string tableName, vector<vector<DataType*> > rows) 
     int tableFd = open((Config::STORAGE_LOCATION + tableName + Config::TABLE_FILE_EXTENSION).c_str(), O_WRONLY | O_APPEND, 0666);
     int seekResult = lseek(tableFd, 0, SEEK_END);
 
-    Table table = Engine::loadTable2(tableName);
+    Table table = Engine::loadTable(tableName);
 
     for (vector<DataType*> row: rows) {
         if (table.getFields().size() != row.size()) {
-            // TODO: throw engine exception
-            throw "Wrong values number";
+            throw EngineException(EngineStatusEnum::WrongValuesNumber);
         }
 
         for (int i = 0; i < row.size(); i++) {
             if (table.getFields()[i]->getType() != row[i]->getType()) {
-                // TODO: throw engine exception
-                throw "Wrong value type";
+                throw EngineException(EngineStatusEnum::WrongValueType);
             }
 
             DataType* value = row[i];
@@ -230,31 +170,7 @@ void Engine::insertIntoTable(string tableName, vector<vector<DataType*> > rows) 
     close(tableFd);
 }
 
-int main() {
-    // vector<TableField*> fields;
-    // fields.push_back(new TableField("f1", DataTypeEnum::NUMBER));
-    // fields.push_back(new TableField("f2", DataTypeEnum::VARCHAR));
-    // fields.push_back(new TableField("f3", DataTypeEnum::NUMBER));
-
-    // Engine::createTable("table", fields);
-    Table table = Engine::loadTable2("table", true);
-    cout << table << endl;
-
-    // vector<vector<DataType*> > rows;
-
-    // vector<DataType*> row;
-    // row.push_back(new Number("1"));
-    // row.push_back(new Varchar("'v1'"));
-    // row.push_back(new Number("123"));
-
-    // rows.push_back(row);
-
-    // row.clear();
-    // row.push_back(new Number("2"));
-    // row.push_back(new Varchar("'v2'"));
-    // row.push_back(new Number("54656.45"));
-
-    // rows.push_back(row);
-
-    // Engine::insertIntoTable("table", rows);
-}
+// int main() {
+//     Table table = Engine::loadTable("table", true);
+//     cout << table << endl;
+// }
