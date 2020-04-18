@@ -5,15 +5,15 @@
 
 #include "Table.h"
 #include "TableField.h"
-#include "DataType.h"
+#include "TableRow.h"
 
 using namespace std;
 
 namespace Engine {
     Table loadTable(string tableName, bool withRows = false);
     
-    void createTable(string tableName, vector<TableField*> fields);
-    void insertIntoTable(string tableName, vector<vector<DataType*> > rows);
+    void createTable(Table table);
+    void insertIntoTable(string tableName, vector<TableRow> rows);
 }
 
 #endif

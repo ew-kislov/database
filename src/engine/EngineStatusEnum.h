@@ -8,7 +8,8 @@ enum EngineStatusEnum {
     TableStructureCorrupted = 4,
     WrongValuesNumber = 5,
     WrongValueType = 6,
-    InvalidValue = 7
+    InvalidValue = 7,
+    InternalError = 8
 };
 
 #endif

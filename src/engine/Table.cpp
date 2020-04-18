@@ -9,7 +9,7 @@ Table::Table(string name, vector<TableField*> fields) {
     this->fields = fields;
 }
 
-Table::Table(string name, vector<TableField*> fields, vector<vector<DataType*> > rows) {
+Table::Table(string name, vector<TableField*> fields, vector<TableRow> rows) {
     this->name = name;
     this->fields = fields;
     this->rows = rows;
@@ -19,8 +19,12 @@ vector<TableField*> Table::getFields() {
     return this->fields;
 }
 
-vector<vector<DataType*> > Table::getRows() {
+vector<TableRow> Table::getRows() {
     return this->rows;
+}
+
+string Table::getName() {
+    return name;
 }
 
 ostream& operator<< (ostream &out, const Table &table) {
@@ -34,12 +38,8 @@ ostream& operator<< (ostream &out, const Table &table) {
     out << "  ]" << endl;
 
     out << "  rows: [" << endl;
-    for (vector<DataType*> row: table.rows) {
-        cout << "    ";
-        for (DataType* value: row) {
-            cout << value->toString() << "  ";
-        }
-        cout << endl;
+    for (TableRow row: table.rows) {
+        cout << "    " <<row.toString() << endl;
     }
     out << "  ]" << endl;
 
