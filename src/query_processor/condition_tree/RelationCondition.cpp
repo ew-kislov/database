@@ -19,5 +19,5 @@ RelationCondition::RelationCondition(BaseOperand* operand1, BaseOperand* operand
 }
 
 bool RelationCondition::calculate(vector<TableField> fields, vector<DataType*> row) {
-    
+
 }

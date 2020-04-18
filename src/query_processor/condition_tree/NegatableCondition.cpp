@@ -2,8 +2,8 @@
 
 #include "NegatableCondition.h"
 
-NegatableCondition::NegatableCondition(bool doNegated) {
-    this->isNegated = doNegated;
+NegatableCondition::NegatableCondition(bool isNegated) {
+    this->isNegated = isNegated;
 }
 
 bool NegatableCondition::negate() {

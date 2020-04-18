@@ -7,7 +7,7 @@ class NegatableCondition {
     protected:
         bool isNegated;
     public:
-        NegatableCondition(bool doNegated = false);
+        NegatableCondition(bool isNegated = false);
     
         bool negate();
 };

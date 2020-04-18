@@ -4,7 +4,7 @@
 
 #include "TableFieldOperand.cpp"
 #include "NumberSetOperand.cpp"
-#include "../VectorHelper2.cpp"
+#include "../../shared/VectorHelper.cpp"
 
 #include <iostream>
 
@@ -32,7 +32,7 @@ bool InCondition::calculate(vector<TableField> fields, vector<DataType*> row) {
         field = new TableField(fieldOperand->getValue(), DataTypeEnum::VARCHAR);
     }
 
-    int fieldIndex = VectorHelper2::findInVector(fields, *field);
+    int fieldIndex = VectorHelper::findInVector(fields, *field);
     if (fieldIndex == -1) {
         cout << "Couldn't find field with this type";
         // TODO: throw exception

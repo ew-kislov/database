@@ -2,11 +2,10 @@
 
 #include "QueryParser.h"
 
-#include "StringHelper.cpp"
-#include "VectorHelper.cpp"
+#include "../shared/StringHelper.cpp"
+#include "../shared/LexicParser.cpp"
+#include "../shared/VectorHelper.cpp"
 #include "QueryHelper.cpp"
-
-#include "LexicParser.cpp"
 
 #include "../query_processor/QueryObject.cpp"
 #include "../query_processor/SelectObject.cpp"
@@ -225,27 +224,22 @@ RelationCondition* QueryParser::parseRelation(vector<string> queryTokens) {
     BaseOperand* operand1;
     BaseOperand* operand2;
     
-    if (StringHelper::isField(queryTokens[0])) {
+    if (LexicParser::isField(queryTokens[0])) {
         operand1 = new TableFieldOperand(queryTokens[0]);
-        if (StringHelper::isString(queryTokens[queryTokens.size() - 1])) {
-            operand2 = new StringOperand(queryTokens[queryTokens.size() - 1]);
-        } else if (StringHelper::isNumber(queryTokens[queryTokens.size() - 1])) {
-            operand2 = new NumberOperand(stold(queryTokens[queryTokens.size() - 1]));
-        }
-    } else if (StringHelper::isString(queryTokens[0])) {
+    } else if (LexicParser::isString(queryTokens[0])) {
         operand1 = new StringOperand(queryTokens[0]);
-        if (StringHelper::isString(queryTokens[queryTokens.size() - 1])) {
-            operand2 = new StringOperand(queryTokens[queryTokens.size() - 1]);
-        } else {
-            throw QueryException("Invalid syntax for WHERE clause: relation operation");
-        }
-    } else if (StringHelper::isNumber(queryTokens[0])) {
+    } else if (LexicParser::isNumber(queryTokens[0])) {
         operand1 = new NumberOperand(stold(queryTokens[0]));
-        if (StringHelper::isNumber(queryTokens[queryTokens.size() - 1])) {
-            operand2 = new NumberOperand(stold(queryTokens[queryTokens.size() - 1]));
-        } else {
-            throw QueryException("Invalid syntax for WHERE clause: relation operation");
-        }
+    } else {
+        throw QueryException("Invalid syntax for WHERE clause: relation operation");
+    }
+    
+    if (LexicParser::isField(queryTokens[queryTokens.size() - 1])) {
+        operand2 = new TableFieldOperand(queryTokens[queryTokens.size() - 1]);
+    } else if (LexicParser::isString(queryTokens[queryTokens.size() - 1])) {
+        operand2 = new StringOperand(queryTokens[queryTokens.size() - 1]);
+    } else if (LexicParser::isNumber(queryTokens[queryTokens.size() - 1])) {
+        operand2 = new NumberOperand(stold(queryTokens[queryTokens.size() - 1]));
     } else {
         throw QueryException("Invalid syntax for WHERE clause: relation operation");
     }
@@ -270,8 +264,8 @@ LikeCondition* QueryParser::parseLikeOperation(vector<string> queryTokens) {
     if (
         queryTokens.size() != 3 ||
         QueryHelper::searchKeyWordInVector(queryTokens, "LIKE") != 1 ||
-        !StringHelper::isField(queryTokens[0]) ||
-        !StringHelper::isString(queryTokens[2])
+        !LexicParser::isField(queryTokens[0]) ||
+        !LexicParser::isString(queryTokens[2])
     ) {
         throw QueryException("QueryParser::parseLikeOperation(): invalid syntax for LIKE condition");
     }
@@ -296,8 +290,8 @@ InCondition* QueryParser::parseSetOperation(vector<string> queryTokens) {
     if (
         queryTokens.size() < 5 ||
         QueryHelper::searchKeyWordInVector(queryTokens, "IN") != 1 ||
-        !StringHelper::isField(queryTokens[0]) ||
-        !StringHelper::isSet(queryTokens[3])
+        !LexicParser::isField(queryTokens[0]) ||
+        !LexicParser::isSet(queryTokens[3])
     ) {
         throw QueryException("QueryParser::parseSetOperation(): invalid syntax for IN condition");
     }

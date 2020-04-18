@@ -6,8 +6,7 @@ enum OperandTypeEnum {
     NUMBER = 2,
     STRING = 3,
     NUMBER_SET = 4,
-    STRING_SET = 5,
-    REG_EXP = 6
+    STRING_SET = 5
 };
 
 #endif

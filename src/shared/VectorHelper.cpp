@@ -44,4 +44,15 @@ namespace VectorHelper {
     template<class T> void removeByIndex(vector<T> &inpVector, int index) {
         inpVector.erase(inpVector.begin() + index);
     }
+
+    template < typename T> int findInVector(const vector<T>  &inpVector, const T &element) {
+        auto it = std::find(inpVector.begin(), inpVector.end(), element);
+    
+        if (it != inpVector.end()) {
+            return distance(inpVector.begin(), it);
+        }
+        else {
+            return -1;
+        }
+    }
 }

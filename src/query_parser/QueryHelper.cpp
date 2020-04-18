@@ -4,7 +4,7 @@
 #include <vector>
 #include <stack>
 
-#include "StringHelper.cpp"
+#include "../shared/StringHelper.cpp"
 #include "QueryException.h"
 
 using namespace std;

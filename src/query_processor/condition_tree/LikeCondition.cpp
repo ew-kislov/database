@@ -3,8 +3,8 @@
 #include "TableFieldOperand.cpp"
 #include "StringOperand.cpp"
 
-#include "../VectorHelper2.cpp"
-#include "../../query_parser/StringHelper.cpp"
+#include "../../shared/VectorHelper.cpp"
+#include "../../shared/StringHelper.cpp"
 
 #include "../../engine/Varchar.cpp"
 
@@ -24,7 +24,7 @@ bool LikeCondition::calculate(vector<TableField> fields, vector<DataType*> row) 
     TableFieldOperand* fieldOperand = dynamic_cast<TableFieldOperand*>(operand1);
     TableField* field = new TableField(fieldOperand->getValue(), DataTypeEnum::VARCHAR);
 
-    int fieldIndex = VectorHelper2::findInVector(fields, *field);
+    int fieldIndex = VectorHelper::findInVector(fields, *field);
     if (fieldIndex == -1) {
         cout << "Couldn't find field with this type";
         // TODO: throw exception
