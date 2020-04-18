@@ -15,7 +15,7 @@ class Number: public DataType {
         void parse(string valueString);
     public:
         Number(string valueString);
-        Number(int value);
+        Number(long double value);
 
         long double getValue();
         string toString();

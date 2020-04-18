@@ -21,7 +21,7 @@ Number::Number(string valueString) : DataType(DataTypeEnum::NUMBER) {
     parse(valueString);
 }
 
-Number::Number(int value) : DataType(DataTypeEnum::NUMBER) {
+Number::Number(long double value) : DataType(DataTypeEnum::NUMBER) {
     this->value = value;
 }
 
