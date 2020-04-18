@@ -1,6 +1,9 @@
 #pragma once
 
-#include "EngineException.h"
+#include "DataTypeEnum.h"
+
+#include "EngineStatusEnum.h"
+#include "EngineException.cpp"
 
 #include "Number.h"
 
@@ -10,12 +13,20 @@ void Number::parse(string valueString) {
     try {
         this->value = stold(valueString);
     } catch(const exception& e) {
-        throw EngineException("Number.parse(): wrong number value");
+        throw EngineException(EngineStatusEnum::InvalidValue);
     }
 }
 
-Number::Number(string valueString) : DataType(valueString) {
+Number::Number(string valueString) : DataType(DataTypeEnum::NUMBER) {
     parse(valueString);
+}
+
+Number::Number(int value) : DataType(DataTypeEnum::NUMBER) {
+    this->value = value;
+}
+
+long double Number::getValue() {
+    return value;
 }
 
 string Number::toString() {

@@ -10,11 +10,11 @@ using namespace std;
 class Varchar: public DataType {
     protected:
         string value;
-        int maxLength;
+        int length;
 
         void parse(string valueString);
     public:
-        Varchar(string valueString);
+        Varchar(string valueString, bool shouldParse = true);
 
         string getValue();
         string toString();

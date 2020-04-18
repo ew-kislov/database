@@ -2,7 +2,10 @@
 
 #include <string>
 
-#include "EngineException.h"
+#include "DataTypeEnum.h"
+
+#include "EngineStatusEnum.h"
+#include "EngineException.cpp"
 
 #include "Varchar.h"
 
@@ -10,14 +13,18 @@ using namespace std;
 
 void Varchar::parse(string valueString) {
     if (valueString[0] != '\'' || valueString[valueString.size() - 1] != '\'') {
-        throw EngineException("Varchar.parse(): wrong string value");
+        throw EngineException(EngineStatusEnum::InvalidValue);
     }
 
     this->value = valueString.substr(1, valueString.size() - 2);
 }
 
-Varchar::Varchar(string valueString) : DataType(valueString) {
-    parse(valueString);
+Varchar::Varchar(string valueString, bool shouldParse) : DataType(DataTypeEnum::VARCHAR) {
+    if (shouldParse) {
+        parse(valueString);
+    } else {
+        this->value = valueString;
+    }
 }
 
 string Varchar::toString() {

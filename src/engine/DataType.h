@@ -4,13 +4,19 @@
 #include <string>
 #include <iostream>
 
+#include "DataTypeEnum.h"
+
 using namespace std;
 
 class DataType {
     protected:
+        DataTypeEnum type;
+
         virtual void parse(string valueString);
     public:
-        DataType(string valueString);
+        DataType(DataTypeEnum type);
+
+        DataTypeEnum getType();
 
         virtual string toString();
 
