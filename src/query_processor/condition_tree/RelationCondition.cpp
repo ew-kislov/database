@@ -5,10 +5,22 @@
 #include "TableFieldOperand.cpp"
 #include "../../engine/Varchar.cpp"
 #include "../../engine/Number.cpp"
-#include "../../engine/DataTypeFactory.cpp"
 
 #include <string>
 
+
+// TODO: put in another file
+DataType* getDataTypeOperand(int fieldIndex, vector<DataType*> row, BaseOperand* operand) {
+    if (fieldIndex != -1) {
+        return row[fieldIndex];
+    } else {
+        if (operand->getType() == OperandTypeEnum::NUMBER) {
+            return new Number(dynamic_cast<NumberOperand*>(operand)->getValue());
+        } else {
+            return new Varchar(dynamic_cast<StringOperand*>(operand)->getValue());
+        }
+    }
+}
 
 RelationCondition::RelationCondition(BaseOperand* operand1, BaseOperand* operand2, string relationType) : BinaryCondition(operand1, operand2) {
     if (!relationType.compare("=")) {
@@ -85,8 +97,8 @@ bool RelationCondition::calculate(vector<TableField> fields, vector<DataType*> r
         }
     }
     
-    DataType* dataTypeOperand1 = DataTypeFactory::getDataTypeOperand(fieldIndex1, row, operand1);
-    DataType* dataTypeOperand2 = DataTypeFactory::getDataTypeOperand(fieldIndex2, row, operand2);
+    DataType* dataTypeOperand1 = getDataTypeOperand(fieldIndex1, row, operand1);
+    DataType* dataTypeOperand2 = getDataTypeOperand(fieldIndex2, row, operand2);
     
     if (dataTypeOperand1->getType() != dataTypeOperand2->getType()) {
         cout << "Relation operand types don't match" << endl;
@@ -94,12 +106,12 @@ bool RelationCondition::calculate(vector<TableField> fields, vector<DataType*> r
     }
     
     switch (relationType) {
-        case EQ: return operand1 == operand2;
-        case NEQ: return operand1 != operand2;
-        case GREATER: return operand1 > operand2;
-        case EGREATER: return operand1 >= operand2;
-        case LESS:  return operand1 < operand2;
-        case ELESS:  return operand1 <= operand2;
+        case EQ: return *dataTypeOperand1 == *dataTypeOperand2;
+        case NEQ: return *dataTypeOperand1 != *dataTypeOperand2;
+        case GREATER: return *dataTypeOperand1 > *dataTypeOperand2;
+        case EGREATER: return *dataTypeOperand1 >= *dataTypeOperand2;
+        case LESS:  return *dataTypeOperand1 < *dataTypeOperand2;
+        case ELESS:  return *dataTypeOperand1 <= *dataTypeOperand2;
     }
 }
 
