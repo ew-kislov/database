@@ -10,6 +10,7 @@ class InCondition : public BinaryCondition, public NegatableCondition {
         InCondition(BaseOperand* operand1, BaseOperand* operand2, bool doNegate = false);
 
         bool calculate(vector<TableField> fields, vector<DataType*> row);
+        string toString();
 };
 
 #endif

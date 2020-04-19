@@ -4,13 +4,15 @@
 
 #include "TableFieldOperand.cpp"
 #include "NumberSetOperand.cpp"
+#include "StringSetOperand.cpp"
 #include "../../shared/VectorHelper.cpp"
 
 #include <iostream>
+#include <string>
 
 using namespace std;
 
-InCondition::InCondition(BaseOperand* operand1, BaseOperand* operand2, bool doNegate) : BinaryCondition(operand1, operand2), NegatableCondition(doNegate) {
+InCondition::InCondition(BaseOperand* operand1, BaseOperand* operand2, bool isNegate) : BinaryCondition(operand1, operand2), NegatableCondition(isNegate) {
 
 }
 
@@ -45,4 +47,14 @@ bool InCondition::calculate(vector<TableField> fields, vector<DataType*> row) {
     } else {
         // TODO
     }
+}
+
+string InCondition::toString() {
+    string message;
+    
+    if (this->NegatableCondition::isNegated)
+        message += "NOT ";
+        
+    message += "InCondition ";
+    return message;
 }

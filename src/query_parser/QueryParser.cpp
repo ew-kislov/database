@@ -45,6 +45,8 @@ QueryObject* QueryParser::parseQuery(string query) {
 
     if (command == "SELECT") {
         SelectObject selectObject = QueryParser::parseSelectQuery(queryTokens);
+        cout << endl;
+        cout << selectObject.treeRoot->toString();
         queryObject = &selectObject;
     } else if (command == "INSERT") {
         // TODO: InsertParser::parse(query);

@@ -45,7 +45,7 @@ namespace VectorHelper {
         inpVector.erase(inpVector.begin() + index);
     }
 
-    template < typename T> int findInVector(const vector<T>  &inpVector, const T &element) {
+    template<typename T> int findInVector(const vector<T>  &inpVector, const T &element) {
         auto it = std::find(inpVector.begin(), inpVector.end(), element);
     
         if (it != inpVector.end()) {
