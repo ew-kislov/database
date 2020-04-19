@@ -13,7 +13,7 @@ class RelationCondition : public BinaryCondition {
         RelationCondition(BaseOperand* operand1, BaseOperand* operand2, string relationType);
 
         bool calculate(vector<TableField> fields, vector<DataType*> row);
-        string toString();
+        string toString(int nestLevel = 1);
 };
 
 #endif

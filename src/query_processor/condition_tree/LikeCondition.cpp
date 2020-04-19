@@ -42,12 +42,13 @@ bool LikeCondition::calculate(vector<TableField> fields, vector<DataType*> row) 
     return StringHelper::matches(varcharOperand->getValue(), regex)^isNegated;
 }
 
-string LikeCondition::toString() {
+string LikeCondition::toString(int nestLevel) {
     string message;
     
     if (this->NegatableCondition::isNegated)
         message += "NOT ";
         
-    message += "LikeCondition ";
+    message += "Like Condition\n";
+    
     return message;
 }

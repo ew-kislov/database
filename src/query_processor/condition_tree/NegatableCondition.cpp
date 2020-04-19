@@ -9,8 +9,3 @@ NegatableCondition::NegatableCondition(bool isNegated) {
 bool NegatableCondition::negate() {
     isNegated = !isNegated;
 }
-
-string NegatableCondition::toString() {
-    string message = "NOT";
-    return message;
-}

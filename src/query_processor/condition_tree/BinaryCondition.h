@@ -15,7 +15,7 @@ class BinaryCondition : public BaseCondition {
         BinaryCondition(BaseOperand* operand1, BaseOperand* operand2);
 
         virtual bool calculate(vector<TableField> fields, vector<DataType*> row) = 0;
-        virtual string toString() = 0;
+        virtual string toString(int nestLevel = 1) = 0;
 };
 
 #endif

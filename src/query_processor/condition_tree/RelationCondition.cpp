@@ -17,7 +17,7 @@ DataType* getDataTypeOperand(int fieldIndex, vector<DataType*> row, BaseOperand*
         if (operand->getType() == OperandTypeEnum::NUMBER) {
             return new Number(dynamic_cast<NumberOperand*>(operand)->getValue());
         } else {
-            return new Varchar(dynamic_cast<StringOperand*>(operand)->getValue());
+            return new Varchar(dynamic_cast<StringOperand*>(operand)->getValue(), false);
         }
     }
 }
@@ -115,8 +115,9 @@ bool RelationCondition::calculate(vector<TableField> fields, vector<DataType*> r
     }
 }
 
-string RelationCondition::toString() {
-    string message;     
-    message += "RelationCondition ";
+string RelationCondition::toString(int nestLevel) {
+    string message;
+    message += "Relation\n";
+    
     return message;
 }

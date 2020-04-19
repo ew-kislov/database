@@ -14,19 +14,27 @@ bool AndCondition::calculate(vector<TableField> fields, vector<DataType*> row) {
     return true^isNegated;
 }
 
-string AndCondition::toString() {
-    string message = "\t";
+string AndCondition::toString(int nestLevel) {
+    string message;
     
     if (this->NegatableCondition::isNegated)
         message += "NOT ";
     
-    message += "AndCondition:\n";
-    
-    for (BaseCondition* it: operands) {
-        message += it->toString();
+    if (operands.size() > 1) {
+        message += "AND Condition (\n";
+           
+        for (BaseCondition* it: operands) {
+            message += string(nestLevel,'\t');
+            message += it->toString(nestLevel + 1);
+        }
+        
+        message += string(nestLevel - 1,'\t');
+        message += ")";
+        message += "\n";
+        
+    } else {
+        message += operands[0]->toString();
     }
-    
-    message += "/and/\n";
     
     return message;
 }

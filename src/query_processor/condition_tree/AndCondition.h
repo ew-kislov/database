@@ -14,7 +14,7 @@ using namespace std;
 class AndCondition: public MultipleCondition, public NegatableCondition {
     public:
         bool calculate(vector<TableField> fields, vector<DataType*> row);
-        string toString();
+        string toString(int nestLevel = 1);
 };
 
 #endif

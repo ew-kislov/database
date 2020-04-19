@@ -10,7 +10,7 @@ class NegatableCondition {
         NegatableCondition(bool isNegated = false);
     
         bool negate();
-        string toString();
+        virtual string toString(int nestLevel = 1) = 0;
 };
 
 #endif

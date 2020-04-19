@@ -120,6 +120,7 @@ OrCondition* QueryParser::parseLogicExpression(vector<string> queryTokens) {
         if (StringHelper::getUpperString(queryTokens[i]) == "OR" && !QueryHelper::isTokenNested(queryTokens, i)) {
             node->MultipleCondition::addOperand(QueryParser::parseLogicTerm(VectorHelper::slice(queryTokens, 0, i - 1)));
             queryTokens = VectorHelper::slice(queryTokens, i + 1);
+            i = 0;
         }
     }
 
@@ -146,6 +147,7 @@ AndCondition* QueryParser::parseLogicTerm(vector<string> queryTokens) {
         if (StringHelper::getUpperString(queryTokens[i]) == "AND" && !QueryHelper::isTokenNested(queryTokens, i)) {
             node->MultipleCondition::addOperand(QueryParser::parseLogicFactor(VectorHelper::slice(queryTokens, 0, i - 1)));
             queryTokens = VectorHelper::slice(queryTokens, i + 1);
+            i = 0;
         }
     }
     
