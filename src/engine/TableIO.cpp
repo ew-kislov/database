@@ -26,6 +26,19 @@ namespace TableIO {
         READ_WRITE_MODE = O_RDWR
     };
 
+    enum SeekWhence {
+            START_WHENCE = SEEK_SET,
+            CURRENT_WHENCE = SEEK_CUR,
+            END_WHENCE = SEEK_END
+    };
+
+    void seek(int tableFD, SeekWhence whence, int offset) {
+        int result = lseek(tableFD, -1, SEEK_CUR);
+        if (result == -1) {
+            throw EngineException(EngineStatusEnum::TableStructureCorrupted);
+        }
+    }
+
     /*
      * Opens table file with given given mode and returns its file decriptor
      * @param tableName - name of file
@@ -91,7 +104,9 @@ namespace TableIO {
      * @throws EngineException if couldn't read from file
      * @returns pointer to table field
      */
-    TableField* readTableField(int tableFD) {
+    TableField* readTableField(int tableFD, int& bytesRead) {
+        bytesRead = 0;
+
         int fieldNameSize;
         char fieldName[Config::MAX_FIELD_NAME_SIZE];
         int fieldType;
@@ -102,17 +117,20 @@ namespace TableIO {
         if (result <= 0) {
             throw EngineException(EngineStatusEnum::TableStructureCorrupted);
         }
+        bytesRead += result;
 
         result = read(tableFD, &fieldName, fieldNameSize * sizeof(char));
         if (result <= 0) {
             throw EngineException(EngineStatusEnum::TableStructureCorrupted);
         }
+        bytesRead += result;
         fieldName[fieldNameSize] = '\0';
 
         result = read(tableFD, &fieldType, sizeof(int));
         if (result <= 0) {
             throw EngineException(EngineStatusEnum::TableStructureCorrupted);
         }
+        bytesRead += result;
 
         return new TableField(string(fieldName), static_cast<DataTypeEnum>(fieldType));
     }
@@ -141,8 +159,11 @@ namespace TableIO {
             int length;
 
             result = read(tableFD, &length, sizeof(int));
-            result = read(tableFD, varcharValue, length * sizeof(char));
+            if (result <= 0) {
+                throw EngineException(EngineStatusEnum::TableStructureCorrupted);
+            }
 
+            result = read(tableFD, varcharValue, length * sizeof(char));
             if (result <= 0) {
                 throw EngineException(EngineStatusEnum::TableStructureCorrupted);
             }
@@ -152,14 +173,24 @@ namespace TableIO {
         }
     }
 
+    bool readRowDeletedFlag(int tableFD) {
+        bool deleted;
+        read(tableFD, &deleted, sizeof(bool));
+        return deleted;
+    }
+
     /*
      * Writes table fields number
      * @param tableFD - file descriptor of table
      * @param fieldsNumber - fields number
      * @throws EngineException if couldn't write to file
      */
-    void writeFieldsNumber(int tableFD, int fieldsNumber) {
-        write(tableFD, &fieldsNumber, sizeof(int));
+    int writeFieldsNumber(int tableFD, int fieldsNumber) {
+        int result = write(tableFD, &fieldsNumber, sizeof(int));
+        if (result <= 0) {
+            throw EngineException(EngineStatusEnum::TableStructureCorrupted);
+        }
+        return result;
     }
 
     /*
@@ -224,5 +255,9 @@ namespace TableIO {
                 throw EngineException(EngineStatusEnum::TableStructureCorrupted);
             }
         }
+    }
+
+    void writeRowDeletedFlag(int tableFD, bool deleted) {
+        write(tableFD, &deleted, sizeof(bool));
     }
 }

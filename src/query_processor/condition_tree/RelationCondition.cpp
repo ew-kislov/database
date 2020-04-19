@@ -5,10 +5,21 @@
 #include "TableFieldOperand.cpp"
 #include "../../engine/Varchar.cpp"
 #include "../../engine/Number.cpp"
-#include "../../engine/DataTypeFactory.cpp"
 
 #include <string>
 
+
+    DataType* getDataTypeOperand(int fieldIndex, vector<DataType*> row, BaseOperand* operand) {
+        if (fieldIndex != -1) {
+            return row[fieldIndex];
+        } else {
+            if (operand->getType() == OperandTypeEnum::NUMBER) {
+                return new Number(dynamic_cast<NumberOperand*>(operand)->getValue());
+            } else {
+                return new Varchar(dynamic_cast<StringOperand*>(operand)->getValue(), false);
+            }
+        }
+    }
 
 RelationCondition::RelationCondition(BaseOperand* operand1, BaseOperand* operand2, string relationType) : BinaryCondition(operand1, operand2) {
     if (!relationType.compare("=")) {
@@ -85,8 +96,8 @@ bool RelationCondition::calculate(vector<TableField> fields, vector<DataType*> r
         }
     }
     
-    DataType* dataTypeOperand1 = DataTypeFactory::getDataTypeOperand(fieldIndex1, row, operand1);
-    DataType* dataTypeOperand2 = DataTypeFactory::getDataTypeOperand(fieldIndex2, row, operand2);
+    DataType* dataTypeOperand1 = getDataTypeOperand(fieldIndex1, row, operand1);
+    DataType* dataTypeOperand2 = getDataTypeOperand(fieldIndex2, row, operand2);
     
     if (dataTypeOperand1->getType() != dataTypeOperand2->getType()) {
         cout << "Relation operand types don't match" << endl;

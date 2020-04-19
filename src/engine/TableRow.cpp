@@ -2,6 +2,8 @@
 
 #include "TableRow.h"
 
+#include "DataTypeHelper.cpp"
+
 TableRow::TableRow() {
     deleted = false;
 }
@@ -37,4 +39,18 @@ string TableRow::toString() {
     rowString += " }";
 
     return rowString;
+}
+
+bool TableRow::operator == (const TableRow &tableRow) const {
+    if (this->values.size() != tableRow.values.size()) {
+        return false;
+    }
+
+    for (int i = 0; i < this->values.size(); i++) {
+        if (!DataTypeHelper::compare(this->values[i], tableRow.values[i])) {
+            return false;
+        }
+    }
+
+    return true;
 }

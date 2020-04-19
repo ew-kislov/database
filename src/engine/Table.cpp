@@ -9,10 +9,17 @@ Table::Table(string name, vector<TableField*> fields) {
     this->fields = fields;
 }
 
-Table::Table(string name, vector<TableField*> fields, vector<TableRow> rows) {
+Table::Table(string name, vector<TableField*> fields, int headerOffset) {
+    this->name = name;
+    this->fields = fields;
+    this->headerOffset = headerOffset;
+}
+
+Table::Table(string name, vector<TableField*> fields, vector<TableRow> rows, int headerOffset) {
     this->name = name;
     this->fields = fields;
     this->rows = rows;
+    this->headerOffset = headerOffset;
 }
 
 vector<TableField*> Table::getFields() {
@@ -25,6 +32,10 @@ vector<TableRow> Table::getRows() {
 
 string Table::getName() {
     return name;
+}
+
+int Table::getHeaderOffset() {
+    return headerOffset;
 }
 
 ostream& operator<< (ostream &out, const Table &table) {
