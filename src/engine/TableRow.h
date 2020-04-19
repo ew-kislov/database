@@ -25,6 +25,8 @@ class TableRow {
         vector<DataType*> getValues();
 
         string toString();
+
+        bool operator == (const TableRow &tableRow) const;
 };
 
 #endif

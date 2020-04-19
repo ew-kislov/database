@@ -7,9 +7,11 @@
 
 #include "Engine.h"
 
+#include "../shared/VectorHelper.cpp"
+
 #include "Table.cpp"
 #include "TableField.cpp"
-#include "DataTypeFactory.cpp"
+#include "DataTypeHelper.cpp"
 #include "DataTypeEnum.h"
 #include "DataType.cpp"
 #include "Varchar.cpp"
@@ -42,19 +44,23 @@ Table Engine::loadTable(string tableName, bool withRows) {
     
     int fieldsNumber = TableIO::readFieldsNumber(tableFD);
 
+    int headerOffset = 0;
+    int bytesRead = 0;
+
     vector<TableField*> fields;
     for (int i = 0; i < fieldsNumber; i++) {
-        fields.push_back(TableIO::readTableField(tableFD));
+        fields.push_back(TableIO::readTableField(tableFD, bytesRead));
+        headerOffset += bytesRead;
     }
 
     if (!withRows) {
-        return Table(tableName, fields);
+        return Table(tableName, fields, headerOffset);
     }
 
     vector<TableRow> rows;
 
-    bool isFieldFound = true;
-    while (isFieldFound) {
+    bool isRowFound = true;
+    while (isRowFound) {
         TableRow row;
         for (int i = 0; i < fieldsNumber; i++) {
             DataType* value;
@@ -63,7 +69,7 @@ Table Engine::loadTable(string tableName, bool withRows) {
                 value = TableIO::readTableValue(tableFD, fields[i]->getType());
             } catch(EngineException& e) {
                 if (i == 0) {
-                    isFieldFound = false;
+                    isRowFound = false;
                     break;
                 } else {
                     throw;
@@ -72,14 +78,17 @@ Table Engine::loadTable(string tableName, bool withRows) {
             
             row.addValue(value);
         }
-        if (isFieldFound) {
-            rows.push_back(row);
+        if (isRowFound) {
+            bool deleted = TableIO::readRowDeletedFlag(tableFD);
+            if (!deleted) {
+                rows.push_back(row);
+            }
         }
     }
 
     TableIO::closeFD(tableFD);
 
-    return Table(tableName, fields, rows);
+    return Table(tableName, fields, rows, headerOffset);
 }
 
 void Engine::insertIntoTable(string tableName, vector<TableRow> rows) {
@@ -100,8 +109,54 @@ void Engine::insertIntoTable(string tableName, vector<TableRow> rows) {
                 throw EngineException(EngineStatusEnum::WrongValueType);
             }
 
-            DataType* value = values[i];
-            TableIO::writeTableValue(tableFD, value);
+            TableIO::writeTableValue(tableFD, values[i]);
+        }
+
+        TableIO::writeRowDeletedFlag(tableFD, row.isDeleted());
+    }
+
+    TableIO::closeFD(tableFD);
+}
+
+void Engine::deleteFromTable(string tableName, vector<TableRow> rows) {
+    int tableFD =  TableIO::getFD(tableName, TableIO::READ_WRITE_MODE);
+    
+    int fieldsNumber = TableIO::readFieldsNumber(tableFD);
+
+    int headerOffset = 0;
+    int bytesRead = 0;
+
+    vector<TableField*> fields;
+    for (int i = 0; i < fieldsNumber; i++) {
+        fields.push_back(TableIO::readTableField(tableFD, bytesRead));
+        headerOffset += bytesRead;
+    }
+
+    bool isRowFound = true;
+    while (isRowFound) {
+        TableRow row;
+        for (int i = 0; i < fieldsNumber; i++) {
+            DataType* value;
+
+            try {
+                value = TableIO::readTableValue(tableFD, fields[i]->getType());
+            } catch(EngineException& e) {
+                if (i == 0) {
+                    isRowFound = false;
+                    break;
+                } else {
+                    throw;
+                }
+            }
+            
+            row.addValue(value);
+        }
+        if (isRowFound) {
+            bool deleted = TableIO::readRowDeletedFlag(tableFD);
+            if (!deleted && VectorHelper::findInVector(rows, row) != -1) {
+                TableIO::seek(tableFD, TableIO::CURRENT_WHENCE, -sizeof(bool));
+                TableIO::writeRowDeletedFlag(tableFD, true);
+            }
         }
     }
 
@@ -109,24 +164,33 @@ void Engine::insertIntoTable(string tableName, vector<TableRow> rows) {
 }
 
 int main() {
+    // vector<TableField*> fields;
+    // fields.push_back(new TableField("f1", DataTypeEnum::NUMBER));
+    // fields.push_back(new TableField("f2", DataTypeEnum::VARCHAR));
+    // fields.push_back(new TableField("f3", DataTypeEnum::VARCHAR));
+
+    // Table table("some_table", fields);
+
     // Engine::createTable(table);
 
     TableRow row;
-    row.addValue(new Number(1));
-    row.addValue(new Varchar("'wdwwww'"));
-    row.addValue(new Varchar("'qaaaa'"));
+    row.addValue(new Number(2));
+    row.addValue(new Varchar("'qweffgfgrt'"));
+    row.addValue(new Varchar("'ddffergwrgwrff'"));
 
     vector<TableRow> rows;
     rows.push_back(row);
 
-    TableRow row2;
-    row2.addValue(new Number(2));
-    row2.addValue(new Varchar("'wdwwww'"));
-    row2.addValue(new Varchar("'qaaaa'"));
+    // TableRow row2;
+    // row2.addValue(new Number(4));
+    // row2.addValue(new Varchar("'aaaaaa'"));
+    // row2.addValue(new Varchar("'bbbbb'"));
 
-    rows.push_back(row2);
+    // rows.push_back(row2);
 
     // Engine::insertIntoTable("some_table", rows);
+
+    // Engine::deleteFromTable("some_table", rows);
 
     Table table2 = Engine::loadTable("some_table", true);
     cout << table2 << endl;

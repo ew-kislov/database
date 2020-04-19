@@ -15,14 +15,17 @@ class Table {
         string name;
         vector<TableField*> fields;
         vector<TableRow> rows;
+        int headerOffset;
     public:
         Table();
         Table(string name, vector<TableField*> fields);
-        Table(string name, vector<TableField*> fields, vector<TableRow> rows);
+        Table(string name, vector<TableField*> fields, int headerOffset);
+        Table(string name, vector<TableField*> fields, vector<TableRow> rows, int headerOffset);
 
         string getName();
         vector<TableField*> getFields();
         vector<TableRow> getRows();
+        int getHeaderOffset();
 
         friend ostream& operator<< (ostream &out, const Table &table);
 };

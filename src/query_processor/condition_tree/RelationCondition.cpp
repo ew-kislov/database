@@ -5,6 +5,7 @@
 #include "TableFieldOperand.cpp"
 #include "../../engine/Varchar.cpp"
 #include "../../engine/Number.cpp"
+#include "../../engine/DataTypeHelper.cpp"
 
 #include <string>
 
@@ -106,12 +107,14 @@ bool RelationCondition::calculate(vector<TableField> fields, vector<DataType*> r
     }
     
     switch (relationType) {
-        case EQ: return *dataTypeOperand1 == *dataTypeOperand2;
-        case NEQ: return *dataTypeOperand1 != *dataTypeOperand2;
-        case GREATER: return *dataTypeOperand1 > *dataTypeOperand2;
-        case EGREATER: return *dataTypeOperand1 >= *dataTypeOperand2;
-        case LESS:  return *dataTypeOperand1 < *dataTypeOperand2;
-        case ELESS:  return *dataTypeOperand1 <= *dataTypeOperand2;
+        case EQ: return DataTypeHelper::compareEqual(dataTypeOperand1, dataTypeOperand2);
+        case NEQ: return !DataTypeHelper::compareEqual(dataTypeOperand1, dataTypeOperand2);
+        case GREATER: return DataTypeHelper::compareGreater(dataTypeOperand1, dataTypeOperand2);
+        case EGREATER: return DataTypeHelper::compareGreater(dataTypeOperand1, dataTypeOperand2) ||
+                              DataTypeHelper::compareEqual(dataTypeOperand1, dataTypeOperand2);
+        case LESS:  return DataTypeHelper::compareLess(dataTypeOperand1, dataTypeOperand2);
+        case ELESS:  return DataTypeHelper::compareLess(dataTypeOperand1, dataTypeOperand2) ||
+                            DataTypeHelper::compareEqual(dataTypeOperand1, dataTypeOperand2);
     }
 }
 

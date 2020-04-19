@@ -94,6 +94,7 @@ OrCondition* QueryParser::parseWhereClause(vector<string> queryTokens) {
     int andKeyWordIndex = QueryHelper::searchKeyWordInVector(queryTokens, "ALL");
     
     if (andKeyWordIndex == -1) {
+        cout << QueryParser::parseLogicExpression(VectorHelper::slice(queryTokens, 1))->toString() << endl;
         return QueryParser::parseLogicExpression(VectorHelper::slice(queryTokens, 1));
     } else if (andKeyWordIndex == 1) {
         return NULL;
