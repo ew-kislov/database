@@ -25,7 +25,7 @@ namespace DataTypeFactory {
             if (operand->getType() == OperandTypeEnum::NUMBER) {
                 return new Number(dynamic_cast<NumberOperand*>(operand)->getValue());
             } else {
-                return new Varchar(dynamic_cast<StringOperand*>(operand)->getValue());
+                return new Varchar(dynamic_cast<StringOperand*>(operand)->getValue(), false);
             }
         }
     }
