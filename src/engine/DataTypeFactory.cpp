@@ -17,4 +17,16 @@ namespace DataTypeFactory {
             return new Varchar(valueString);
         }
     }
+
+    DataType* getDataTypeOperand(int fieldIndex, vector<DataType*> row, BaseOperand* operand) {
+        if (fieldIndex != -1) {
+            return row[fieldIndex];
+        } else {
+            if (operand->getType() == OperandTypeEnum::NUMBER) {
+                return new Number(dynamic_cast<NumberOperand*>(operand)->getValue());
+            } else {
+                return new Varchar(dynamic_cast<StringOperand*>(operand)->getValue());
+            }
+        }
+    }
 }

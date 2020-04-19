@@ -10,6 +10,7 @@ class NegatableCondition {
         NegatableCondition(bool isNegated = false);
     
         bool negate();
+        string toString();
 };
 
 #endif
