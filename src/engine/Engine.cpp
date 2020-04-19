@@ -5,9 +5,6 @@
 #include <iostream>
 #include <fstream>
 
-#include "fcntl.h"
-#include "unistd.h"
-
 #include "Engine.h"
 
 #include "Table.cpp"
@@ -17,6 +14,9 @@
 #include "DataType.cpp"
 #include "Varchar.cpp"
 #include "Number.cpp"
+#include "TableRow.cpp"
+
+#include "TableIO.cpp"
 
 #include "EngineStatusEnum.h"
 #include "EngineException.cpp"
@@ -25,152 +25,109 @@
 
 using namespace std;
 
-void Engine::createTable(string tableName, vector<TableField*> fields) {
-    int tableFd = open((Config::STORAGE_LOCATION + tableName + Config::TABLE_FILE_EXTENSION).c_str(), O_WRONLY | O_CREAT, 0666);
+void Engine::createTable(Table table) {
+    int tableFD =  TableIO::getFD(table.getName(), TableIO::CREATE_WRITE_MODE);
     
-    if (tableFd == -1) {
-        throw EngineException(EngineStatusEnum::TableAlreadyExists);
-    }
-    
-    int fieldNumber = fields.size();
-    write(tableFd, &fieldNumber, sizeof(fieldNumber));
+    TableIO::writeFieldsNumber(tableFD, table.getFields().size());
 
-    for (TableField* field : fields) {
-        int fieldNameSize = field->getName().length();
-        const char* fieldName = field->getName().c_str();
-        int fieldType = field->getType();
-
-        write(tableFd, &fieldNameSize, sizeof(int));
-        write(tableFd, fieldName, fieldNameSize * sizeof(char));
-        write(tableFd, &fieldType, sizeof(int));
+    for (TableField* field : table.getFields()) {
+        TableIO::writeTableField(tableFD, field);
     }
 
-    close(tableFd);
+    TableIO::closeFD(tableFD);
 }
 
 Table Engine::loadTable(string tableName, bool withRows) {
-    int tableFd = open((Config::STORAGE_LOCATION + tableName + Config::TABLE_FILE_EXTENSION).c_str(), O_RDONLY, 0666);
-
-    if (tableFd == -1) {
-        throw EngineException(EngineStatusEnum::TableDoesNotExist);
-    }
+    int tableFD =  TableIO::getFD(tableName, TableIO::READ_MODE);
     
-    int fieldNumber;
-    read(tableFd, &fieldNumber, sizeof(fieldNumber));
-
-    int fieldNameSize;
-    char fieldName[Config::MAX_FIELD_NAME_SIZE];
-    int fieldType;
+    int fieldsNumber = TableIO::readFieldsNumber(tableFD);
 
     vector<TableField*> fields;
-
-    for (int i = 0; i < fieldNumber; i++) {
-        read(tableFd, &fieldNameSize, sizeof(int));
-
-        read(tableFd, &fieldName, fieldNameSize * sizeof(char));
-        fieldName[fieldNameSize] = '\0';
-
-        read(tableFd, &fieldType, sizeof(int));
-
-        fields.push_back(new TableField(string(fieldName), static_cast<DataTypeEnum>(fieldType)));
+    for (int i = 0; i < fieldsNumber; i++) {
+        fields.push_back(TableIO::readTableField(tableFD));
     }
 
-    vector<vector<DataType*> > rows;
+    if (!withRows) {
+        return Table(tableName, fields);
+    }
+
+    vector<TableRow> rows;
 
     bool isFieldFound = true;
     while (isFieldFound) {
-        vector<DataType*> row;
-        for (int i = 0; i < fieldNumber; i++) {
+        TableRow row;
+        for (int i = 0; i < fieldsNumber; i++) {
             DataType* value;
-            int bytesRead;
 
-            if (fields[i]->getType() == DataTypeEnum::NUMBER) {
-                long double numberValue;
-                bytesRead = read(tableFd, &numberValue, sizeof(long double));
-
-                if (bytesRead <= 0) {
-                    if (i == 0) {
-                        isFieldFound = 0;
-                        break;
-                    } else {
-                        throw EngineException(EngineStatusEnum::TableStructureCorrupted);
-                    }
+            try {
+                value = TableIO::readTableValue(tableFD, fields[i]->getType());
+            } catch(EngineException& e) {
+                if (i == 0) {
+                    isFieldFound = false;
+                    break;
+                } else {
+                    throw;
                 }
-
-                value = new Number(numberValue);
-            } else if (fields[i]->getType() == DataTypeEnum::VARCHAR) {
-                char varcharValue[50];
-                int length;
-
-                bytesRead = read(tableFd, &length, sizeof(int));
-                bytesRead = read(tableFd, varcharValue, length * sizeof(char));
-
-                if (bytesRead <= 0) {
-                    if (i == 0) {
-                        isFieldFound = 0;
-                        break;
-                    } else {
-                        throw EngineException(EngineStatusEnum::TableStructureCorrupted);
-                    }
-                }
-
-                varcharValue[length] = '\0';
-                value = new Varchar(varcharValue, false);
             }
-
-            row.push_back(value);
+            
+            row.addValue(value);
         }
         if (isFieldFound) {
             rows.push_back(row);
         }
     }
 
-    close(tableFd);
-
-    cout << rows.size() << endl;
+    TableIO::closeFD(tableFD);
 
     return Table(tableName, fields, rows);
 }
 
-void Engine::insertIntoTable(string tableName, vector<vector<DataType*> > rows) {
-    int tableFd = open((Config::STORAGE_LOCATION + tableName + Config::TABLE_FILE_EXTENSION).c_str(), O_WRONLY | O_APPEND, 0666);
-    int seekResult = lseek(tableFd, 0, SEEK_END);
+void Engine::insertIntoTable(string tableName, vector<TableRow> rows) {
+    int tableFD = TableIO::getFD(tableName, TableIO::WRITE_MODE);
+    int seekResult = lseek(tableFD, 0, SEEK_END);
 
     Table table = Engine::loadTable(tableName);
 
-    for (vector<DataType*> row: rows) {
-        if (table.getFields().size() != row.size()) {
+    for (TableRow row: rows) {
+        vector<DataType*> values = row.getValues();
+
+        if (table.getFields().size() != values.size()) {
             throw EngineException(EngineStatusEnum::WrongValuesNumber);
         }
 
-        for (int i = 0; i < row.size(); i++) {
-            if (table.getFields()[i]->getType() != row[i]->getType()) {
+        for (int i = 0; i < values.size(); i++) {
+            if (table.getFields()[i]->getType() != values[i]->getType()) {
                 throw EngineException(EngineStatusEnum::WrongValueType);
             }
 
-            DataType* value = row[i];
-            int bytesWritten;
-
-            if (value->getType() == DataTypeEnum::NUMBER) {
-                Number* number = dynamic_cast<Number*>(value);
-                long double numberValue = number->getValue();
-
-                bytesWritten = write(tableFd, &numberValue, sizeof(long double));
-            } else if (value->getType() == DataTypeEnum::VARCHAR) {
-                Varchar* varchar = dynamic_cast<Varchar*>(value);
-                string varcharValue = varchar->getValue();
-                int length = varcharValue.size();
-
-                bytesWritten = write(tableFd, &length, sizeof(int));
-                bytesWritten = write(tableFd, varcharValue.c_str(), length * sizeof(char));
-            }
+            DataType* value = values[i];
+            TableIO::writeTableValue(tableFD, value);
         }
     }
 
-    close(tableFd);
+    TableIO::closeFD(tableFD);
 }
 
-// int main() {
-//     Table table = Engine::loadTable("table", true);
-//     cout << table << endl;
-// }
+int main() {
+    // Engine::createTable(table);
+
+    TableRow row;
+    row.addValue(new Number(1));
+    row.addValue(new Varchar("'wdwwww'"));
+    row.addValue(new Varchar("'qaaaa'"));
+
+    vector<TableRow> rows;
+    rows.push_back(row);
+
+    TableRow row2;
+    row2.addValue(new Number(2));
+    row2.addValue(new Varchar("'wdwwww'"));
+    row2.addValue(new Varchar("'qaaaa'"));
+
+    rows.push_back(row2);
+
+    // Engine::insertIntoTable("some_table", rows);
+
+    Table table2 = Engine::loadTable("some_table", true);
+    cout << table2 << endl;
+}
