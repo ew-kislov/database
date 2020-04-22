@@ -9,6 +9,8 @@
 
 #include "../query_processor/QueryObject.cpp"
 #include "../query_processor/SelectObject.cpp"
+#include "../query_processor/InsertObject.cpp"
+#include "../query_processor/DropObject.cpp"
 
 #include "../query_processor/condition_tree/NegatableCondition.cpp"
 #include "../query_processor/condition_tree/OrCondition.cpp"
@@ -49,7 +51,8 @@ QueryObject* QueryParser::parseQuery(string query) {
         cout << selectObject.treeRoot->toString();
         queryObject = &selectObject;
     } else if (command == "INSERT") {
-        // TODO: InsertParser::parse(query);
+        InsertObject insertObject = QueryParser::parseInsertQuery(queryTokens);
+        queryObject = &insertObject;
     } else if (command == "UPDATE") {
         // TODO: UpdateParser::parse(query);
     } else if (command == "DELETE") {
@@ -57,7 +60,8 @@ QueryObject* QueryParser::parseQuery(string query) {
     } else if (command == "CREATE") {
         // TODO: CreateParser::parse(query);
     } else if (command == "DROP") {
-        // TODO: DropParser::parse(query);
+        DropObject dropObject = QueryParser::parseDropQuery(queryTokens);
+        queryObject = &dropObject;
     } else {
         throw QueryException("Unknown command: " + command);
     }
@@ -67,7 +71,11 @@ QueryObject* QueryParser::parseQuery(string query) {
 
 // <SELECT-statement> ::= SELECT <field list> FROM <table name> [ <WHERE-clause> ]
 SelectObject QueryParser::parseSelectQuery(vector<string> queryTokens) {
-    if (QueryHelper::searchKeyWordInVector(queryTokens, "FROM") != 2 || queryTokens.size() < 4) {
+    if (
+        QueryHelper::searchKeyWordInVector(queryTokens, "FROM") != 2 ||
+        queryTokens.size() < 4 ||
+        !LexicParser::isField(queryTokens[3])
+    ) {
         throw QueryException("Wrong SELECT query syntax");
     }
     
@@ -82,6 +90,59 @@ SelectObject QueryParser::parseSelectQuery(vector<string> queryTokens) {
     return queryObject;
 }
 
+// <INSERT-statement> ::= INSERT INTO <table name> (<field value> { , <field value> })
+InsertObject QueryParser::parseInsertQuery(vector<string> queryTokens) {
+    if (
+        QueryHelper::searchKeyWordInVector(queryTokens, "INTO") != 1 ||
+        queryTokens.size() < 6 ||
+        !LexicParser::isField(queryTokens[2])
+    ) {
+        throw QueryException("Wrong INSERT query syntax");
+    }
+
+    InsertObject queryObject(queryTokens[2]);
+    queryObject.setFieldValues(parseFieldValues(VectorHelper::slice(queryTokens, 3)));
+
+    return queryObject;
+}
+
+// <DROP-statement> ::= DROP TABLE <table name>
+DropObject QueryParser::parseDropQuery(vector<string> queryTokens) {
+    if (QueryHelper::searchKeyWordInVector(queryTokens, "TABLE") != 1 ||
+        queryTokens.size() != 3 ||
+        !LexicParser::isField(queryTokens[2])
+    ) {
+        throw QueryException("Wrong DROP query syntax");
+    }
+    
+    return DropObject(queryTokens[2]);
+}
+
+vector<DataType*> QueryParser::parseFieldValues(vector<string> queryTokens) {
+    if (
+        QueryHelper::searchKeyWordInVector(queryTokens, "(") != 0 ||
+        QueryHelper::searchKeyWordInVector(queryTokens, ")") != queryTokens.size() - 1
+    ) {
+        throw QueryException("Wrong INSERT query syntax for field values");
+    }
+    
+    queryTokens = VectorHelper::slice(queryTokens, 1, queryTokens.size() - 2);
+    vector<string> fieldValues = StringHelper::splitToVector(queryTokens[0], ',');
+    vector<DataType*> dataTypeVector;
+    
+    for (int i = 0; i < fieldValues.size(); ++i) {
+        if (LexicParser::isString(fieldValues[i])) {
+            dataTypeVector.push_back(new Varchar(fieldValues[i]));
+        } else if (LexicParser::isNumber(fieldValues[i])) {
+            dataTypeVector.push_back(new Number(fieldValues[i]));
+        } else {
+            throw QueryException("Wrong INSERT query syntax for field values");
+        }
+    }
+    
+    return dataTypeVector;
+}
+
 // <WHERE-cluase> ::= WHERE <logic expression> | WHERE ALL
 OrCondition* QueryParser::parseWhereClause(vector<string> queryTokens) {
     string command = queryTokens[0];
@@ -94,7 +155,6 @@ OrCondition* QueryParser::parseWhereClause(vector<string> queryTokens) {
     int andKeyWordIndex = QueryHelper::searchKeyWordInVector(queryTokens, "ALL");
     
     if (andKeyWordIndex == -1) {
-        cout << QueryParser::parseLogicExpression(VectorHelper::slice(queryTokens, 1))->toString() << endl;
         return QueryParser::parseLogicExpression(VectorHelper::slice(queryTokens, 1));
     } else if (andKeyWordIndex == 1) {
         return NULL;

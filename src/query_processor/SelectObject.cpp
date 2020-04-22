@@ -4,7 +4,6 @@ SelectObject::SelectObject(string table, vector<string> fields): QueryObject(Que
     this->fields = fields;
 }
 
-
 vector<string> SelectObject::getFields() {
     return this->fields;
 }

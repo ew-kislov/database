@@ -62,6 +62,7 @@ bool RelationCondition::calculate(vector<TableField> fields, vector<DataType*> r
         if (fieldIndex1 == -1 || fieldIndex2 == -1) {
             cout << "Couldn't find field";
             // TODO: throw exception
+            return false;
         }
             
     } else if (operand1->getType() == OperandTypeEnum::TABLE_FIELD ||
@@ -95,6 +96,7 @@ bool RelationCondition::calculate(vector<TableField> fields, vector<DataType*> r
         if (*fieldIndex == -1) {
             cout << "Couldn't find field with this type" << endl;
             // TODO: throw exception
+            return false;
         }
     }
     
@@ -104,6 +106,7 @@ bool RelationCondition::calculate(vector<TableField> fields, vector<DataType*> r
     if (dataTypeOperand1->getType() != dataTypeOperand2->getType()) {
         cout << "Relation operand types don't match" << endl;
         // TODO: throw exception
+        return false;
     }
     
     switch (relationType) {

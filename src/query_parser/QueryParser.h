@@ -6,6 +6,8 @@
 
 #include "../query_processor/QueryObject.h"
 #include "../query_processor/SelectObject.h"
+#include "../query_processor/InsertObject.h"
+#include "../query_processor/DropObject.h"
 
 #include "../query_processor/condition_tree/OrCondition.h"
 #include "../query_processor/condition_tree/AndCondition.h"
@@ -25,11 +27,13 @@ namespace QueryParser {
     QueryObject* parseQuery(string query);
 
     SelectObject parseSelectQuery(vector<string> queryTokens);
-    QueryObject parseInsertQuery(vector<string> queryTokens);
+    InsertObject parseInsertQuery(vector<string> queryTokens);
     QueryObject parseUpdateQuery(vector<string> queryTokens);
     QueryObject parseDeleteQuery(vector<string> queryTokens);
     QueryObject parseCreateQuery(vector<string> queryTokens);
-    QueryObject parseDropQuery(vector<string> queryTokens);
+    DropObject parseDropQuery(vector<string> queryTokens);
+
+    vector<DataType*> parseFieldValues(vector<string> queryTokens);
 
     OrCondition* parseWhereClause(vector<string> queryTokens);
     OrCondition* parseLogicExpression(vector<string> queryTokens);
