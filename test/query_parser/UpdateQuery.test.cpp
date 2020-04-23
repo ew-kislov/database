@@ -9,6 +9,8 @@
 
 #include "../../src/query_parser/QueryParser.cpp"
 
+#include "../../src/query_parser/QueryParserException.cpp"
+
 #include <string>
 
 using namespace std;

@@ -30,8 +30,6 @@
 #include "../query_processor/condition_tree/StringOperand.cpp"
 #include "../query_processor/condition_tree/TableFieldOperand.cpp"
 
-#include "QueryParserException.cpp"
-
 #include <set>
 #include <string>
 

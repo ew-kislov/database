@@ -22,8 +22,6 @@
 #include "../query_processor/condition_tree/StringOperand.h"
 #include "../query_processor/condition_tree/TableFieldOperand.h"
 
-
-
 namespace QueryParser {
     QueryObject* parseQuery(string query);
 
