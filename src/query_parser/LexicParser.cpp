@@ -4,7 +4,7 @@
 #include <sstream>
 #include <ctype.h>
 
-#include "../query_parser/QueryException.h"
+#include "./QueryException.h"
 
 using namespace std;
 
@@ -21,23 +21,6 @@ namespace LexicParser {
     }
 
     /*
-     * Checks if input string is a table field
-     * @param inpString - input string
-     * @returns true if string is a field, false if not
-     */
-    bool isField(string &inpString) {
-        if (!inpString.size() || !isalpha(inpString[0]))
-            return false;
-        
-        for (int i = 1; i < inpString.size(); ++i) {
-            if (!isalpha(inpString[i]) && !isdigit(inpString[i]))
-                return false;
-        }
-        
-        return true;
-    }
-
-    /*
      * Checks if input string is a number
      * @param inpString - input string
      * @returns true if string is a number, false if not
@@ -47,6 +30,32 @@ namespace LexicParser {
         while (iter != inpString.end() && (isdigit(*iter) || *iter == '.'))
             ++iter;
         return !inpString.empty() && iter == inpString.end();
+    }
+
+    /*
+     * Checks if input string is a data type
+     * @param inpString - input string
+     * @returns true if string is a data type, false if not
+     */
+    bool isDataType(string &inpString) {
+        return isString(inpString) || isNumber(inpString);
+    }
+
+    /*
+     * Checks if input string is a table field
+     * @param inpString - input string
+     * @returns true if string is a field, false if not
+     */
+    bool isIdentifier(string &inpString) {
+        if (!inpString.size() || !isalpha(inpString[0]))
+            return false;
+        
+        for (int i = 1; i < inpString.size(); ++i) {
+            if (!isalpha(inpString[i]) && !isdigit(inpString[i]))
+                return false;
+        }
+        
+        return true;
     }
 
     /*

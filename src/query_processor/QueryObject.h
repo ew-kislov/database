@@ -17,6 +17,8 @@ class QueryObject {
         QueryObject(QueryTypeEnum type, string table);
         QueryTypeEnum getType();
         string getTable();
+
+        virtual string toString() = 0;
 };
 
 #endif

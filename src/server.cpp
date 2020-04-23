@@ -54,9 +54,5 @@ int main() {
         cout << "Query exception:\n\t" << ex.what() << endl;
     }
     
-     
-     
-
-
     return 0;
 }

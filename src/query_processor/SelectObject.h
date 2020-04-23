@@ -15,6 +15,8 @@ class SelectObject: public QueryObject {
         SelectObject(string table, vector<string> fields);
     
         vector<string> getFields();
+
+        string toString();
 };
 
 #endif

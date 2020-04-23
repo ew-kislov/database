@@ -3,13 +3,15 @@
 #include "QueryParser.h"
 
 #include "../shared/StringHelper.cpp"
-#include "../shared/LexicParser.cpp"
 #include "../shared/VectorHelper.cpp"
+
 #include "QueryHelper.cpp"
+#include "LexicParser.cpp"
 
 #include "../query_processor/QueryObject.cpp"
 #include "../query_processor/SelectObject.cpp"
 #include "../query_processor/InsertObject.cpp"
+#include "../query_processor/UpdateObject.cpp"
 #include "../query_processor/DropObject.cpp"
 
 #include "../query_processor/condition_tree/NegatableCondition.cpp"
@@ -28,6 +30,8 @@
 #include "../query_processor/condition_tree/StringOperand.cpp"
 #include "../query_processor/condition_tree/TableFieldOperand.cpp"
 
+#include "QueryParserException.cpp"
+
 #include <set>
 #include <string>
 
@@ -42,26 +46,21 @@ QueryObject* QueryParser::parseQuery(string query) {
     queryTokens.pop_back();
     
     string command = StringHelper::getUpperString(queryTokens[0]);
-    
-    QueryObject * queryObject;
+
+    QueryObject* queryObject;
 
     if (command == "SELECT") {
-        SelectObject selectObject = QueryParser::parseSelectQuery(queryTokens);
-        cout << endl;
-        cout << selectObject.treeRoot->toString();
-        queryObject = &selectObject;
+        queryObject = QueryParser::parseSelectQuery(queryTokens);
     } else if (command == "INSERT") {
-        InsertObject insertObject = QueryParser::parseInsertQuery(queryTokens);
-        queryObject = &insertObject;
+        queryObject = QueryParser::parseInsertQuery(queryTokens);
     } else if (command == "UPDATE") {
-        // TODO: UpdateParser::parse(query);
+        queryObject = QueryParser::parseUpdateQuery(queryTokens);
     } else if (command == "DELETE") {
         // TODO: DeleteParser::parse(query);
     } else if (command == "CREATE") {
         // TODO: CreateParser::parse(query);
     } else if (command == "DROP") {
-        DropObject dropObject = QueryParser::parseDropQuery(queryTokens);
-        queryObject = &dropObject;
+        queryObject = QueryParser::parseDropQuery(queryTokens);
     } else {
         throw QueryException("Unknown command: " + command);
     }
@@ -70,54 +69,90 @@ QueryObject* QueryParser::parseQuery(string query) {
 }
 
 // <SELECT-statement> ::= SELECT <field list> FROM <table name> [ <WHERE-clause> ]
-SelectObject QueryParser::parseSelectQuery(vector<string> queryTokens) {
+SelectObject* QueryParser::parseSelectQuery(vector<string> queryTokens) {
     if (
         QueryHelper::searchKeyWordInVector(queryTokens, "FROM") != 2 ||
         queryTokens.size() < 4 ||
-        !LexicParser::isField(queryTokens[3])
+        !LexicParser::isIdentifier(queryTokens[3])
     ) {
         throw QueryException("Wrong SELECT query syntax");
     }
     
     vector<string> fields = StringHelper::splitToVector(queryTokens[1], ',');
 
-    SelectObject queryObject(queryTokens[3], fields);
+    SelectObject* selectObject = new SelectObject(queryTokens[3], fields);
 
     if (queryTokens.size() > 4) {
-        queryObject.treeRoot = QueryParser::parseWhereClause(VectorHelper::slice(queryTokens, 4));
+        selectObject->treeRoot = QueryParser::parseWhereClause(VectorHelper::slice(queryTokens, 4));
     }
 
-    return queryObject;
+    return selectObject;
 }
 
-// <INSERT-statement> ::= INSERT INTO <table name> (<field value> { , <field value> })
-InsertObject QueryParser::parseInsertQuery(vector<string> queryTokens) {
+// <INSERT-statement> ::= INSERT INTO <table name> <table row>
+InsertObject* QueryParser::parseInsertQuery(vector<string> queryTokens) {
     if (
         QueryHelper::searchKeyWordInVector(queryTokens, "INTO") != 1 ||
         queryTokens.size() < 6 ||
-        !LexicParser::isField(queryTokens[2])
+        !LexicParser::isIdentifier(queryTokens[2])
     ) {
         throw QueryException("Wrong INSERT query syntax");
     }
 
-    InsertObject queryObject(queryTokens[2]);
-    queryObject.setFieldValues(parseFieldValues(VectorHelper::slice(queryTokens, 3)));
+    InsertObject* insertObject = new InsertObject(queryTokens[2]);
+    insertObject->setFieldValues(parseFieldValues(VectorHelper::slice(queryTokens, 3)));
 
-    return queryObject;
+    return insertObject;
+}
+
+// <UPDATE-statement> ::= UPDATE <table name> SET <field name> = <field value> <WHERE-clause>
+UpdateObject* QueryParser::parseUpdateQuery(vector<string> queryTokens) {
+    if (
+        QueryHelper::searchKeyWordInVector(queryTokens, "UPDATE") != 0 ||
+        !LexicParser::isIdentifier(queryTokens[1]) ||
+        QueryHelper::searchKeyWordInVector(queryTokens, "SET") != 2 ||
+        !LexicParser::isIdentifier(queryTokens[3]) ||
+        queryTokens[4] != "=" ||
+        !LexicParser::isDataType(queryTokens[5])
+    ) {
+        throw QueryException("Wrong UPDATE query syntax");
+    }
+
+    TableField* field;
+    DataType* value;
+
+    if (LexicParser::isNumber(queryTokens[5])) {
+        field = new TableField(queryTokens[3], DataTypeEnum::NUMBER);
+        value = new Number(queryTokens[5]);
+    } else {
+        field = new TableField(queryTokens[3], DataTypeEnum::VARCHAR);
+        value = new Varchar(queryTokens[5]);
+    }
+
+    int wherePosition = QueryHelper::searchKeyWordInVector(queryTokens, "WHERE");
+    if (wherePosition == -1) {
+        return new UpdateObject(queryTokens[1], field, value);
+    } else if (wherePosition != 6) {
+        throw QueryException("Wrong UPDATE query syntax");
+    } else {
+        BaseCondition* conditionTree = QueryParser::parseWhereClause(VectorHelper::slice(queryTokens, wherePosition));
+        return new UpdateObject(queryTokens[1], field, value, conditionTree);
+    }
 }
 
 // <DROP-statement> ::= DROP TABLE <table name>
-DropObject QueryParser::parseDropQuery(vector<string> queryTokens) {
+DropObject* QueryParser::parseDropQuery(vector<string> queryTokens) {
     if (QueryHelper::searchKeyWordInVector(queryTokens, "TABLE") != 1 ||
         queryTokens.size() != 3 ||
-        !LexicParser::isField(queryTokens[2])
+        !LexicParser::isIdentifier(queryTokens[2])
     ) {
         throw QueryException("Wrong DROP query syntax");
     }
     
-    return DropObject(queryTokens[2]);
+    return new DropObject(queryTokens[2]);
 }
 
+// <table row> ::= (<field value> { , <field value> })
 vector<DataType*> QueryParser::parseFieldValues(vector<string> queryTokens) {
     if (
         QueryHelper::searchKeyWordInVector(queryTokens, "(") != 0 ||
@@ -289,7 +324,7 @@ RelationCondition* QueryParser::parseRelation(vector<string> queryTokens) {
     BaseOperand* operand1;
     BaseOperand* operand2;
     
-    if (LexicParser::isField(queryTokens[0])) {
+    if (LexicParser::isIdentifier(queryTokens[0])) {
         operand1 = new TableFieldOperand(queryTokens[0]);
     } else if (LexicParser::isString(queryTokens[0])) {
         operand1 = new StringOperand(queryTokens[0]);
@@ -299,7 +334,7 @@ RelationCondition* QueryParser::parseRelation(vector<string> queryTokens) {
         throw QueryException("Invalid syntax for WHERE clause: relation operation");
     }
     
-    if (LexicParser::isField(queryTokens[queryTokens.size() - 1])) {
+    if (LexicParser::isIdentifier(queryTokens[queryTokens.size() - 1])) {
         operand2 = new TableFieldOperand(queryTokens[queryTokens.size() - 1]);
     } else if (LexicParser::isString(queryTokens[queryTokens.size() - 1])) {
         operand2 = new StringOperand(queryTokens[queryTokens.size() - 1]);
@@ -329,7 +364,7 @@ LikeCondition* QueryParser::parseLikeOperation(vector<string> queryTokens) {
     if (
         queryTokens.size() != 3 ||
         QueryHelper::searchKeyWordInVector(queryTokens, "LIKE") != 1 ||
-        !LexicParser::isField(queryTokens[0]) ||
+        !LexicParser::isIdentifier(queryTokens[0]) ||
         !LexicParser::isString(queryTokens[2])
     ) {
         throw QueryException("QueryParser::parseLikeOperation(): invalid syntax for LIKE condition");
@@ -355,7 +390,7 @@ InCondition* QueryParser::parseSetOperation(vector<string> queryTokens) {
     if (
         queryTokens.size() < 5 ||
         QueryHelper::searchKeyWordInVector(queryTokens, "IN") != 1 ||
-        !LexicParser::isField(queryTokens[0]) ||
+        !LexicParser::isIdentifier(queryTokens[0]) ||
         !LexicParser::isSet(queryTokens[3])
     ) {
         throw QueryException("QueryParser::parseSetOperation(): invalid syntax for IN condition");

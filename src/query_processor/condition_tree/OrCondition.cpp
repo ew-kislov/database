@@ -36,7 +36,5 @@ string OrCondition::toString(int nestLevel) {
         message += operands[0]->toString();
     }
     
-    message += "\n";
-    
     return message;
 }

@@ -6,6 +6,8 @@
 class DropObject: public QueryObject {
     public:
         DropObject(string table);
+
+        string toString();
 };
 
 #endif

@@ -30,8 +30,6 @@ string AndCondition::toString(int nestLevel) {
         
         message += string(nestLevel - 1,'\t');
         message += ")";
-        message += "\n";
-        
     } else {
         message += operands[0]->toString();
     }

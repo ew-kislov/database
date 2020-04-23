@@ -7,3 +7,7 @@ SelectObject::SelectObject(string table, vector<string> fields): QueryObject(Que
 vector<string> SelectObject::getFields() {
     return this->fields;
 }
+
+string SelectObject::toString() {
+    return "";
+}

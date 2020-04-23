@@ -11,3 +11,7 @@ void InsertObject::setFieldValues(vector<DataType*> fieldValues) {
 vector<DataType*> InsertObject::getFieldValues() {
     return this->fieldValues;
 }
+
+string InsertObject::toString() {
+    return "";
+}

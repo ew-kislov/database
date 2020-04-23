@@ -12,6 +12,8 @@ class InsertObject: public QueryObject {
     
         void setFieldValues(vector<DataType*> fieldValues);
         vector<DataType*> getFieldValues();
+
+        string toString();
 };
 
 #endif
