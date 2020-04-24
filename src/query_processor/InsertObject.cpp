@@ -1,3 +1,5 @@
+#pragma once
+
 #include "InsertObject.h"
 
 InsertObject::InsertObject(string table): QueryObject(QueryTypeEnum::Insert, table) {

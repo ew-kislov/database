@@ -28,7 +28,7 @@ string UpdateObject::toString() {
     updateString += "UpdateObject {\n";
     updateString += "\tfield: " + field->toString() + "\n";
     updateString += "\tvalue: " + value->toString() + "\n";
-    updateString += "\tconditionTree: " + conditionTree->toString(5) + "\n";
+    updateString += "\tconditionTree:\n" + conditionTree->toString(5) + "\n";
     updateString += "}";
 
     return updateString;

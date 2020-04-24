@@ -9,6 +9,8 @@
 #include "../query_processor/InsertObject.h"
 #include "../query_processor/UpdateObject.h"
 #include "../query_processor/DropObject.h"
+#include "../query_processor/DeleteObject.h"
+#include "../query_processor/CreateObject.h"
 
 #include "../query_processor/condition_tree/OrCondition.h"
 #include "../query_processor/condition_tree/AndCondition.h"
@@ -22,17 +24,21 @@
 #include "../query_processor/condition_tree/StringOperand.h"
 #include "../query_processor/condition_tree/TableFieldOperand.h"
 
+#include "../engine/TableField.h"
+
 namespace QueryParser {
     QueryObject* parseQuery(string query);
 
     SelectObject* parseSelectQuery(vector<string> queryTokens);
     InsertObject* parseInsertQuery(vector<string> queryTokens);
     UpdateObject* parseUpdateQuery(vector<string> queryTokens);
-    QueryObject* parseDeleteQuery(vector<string> queryTokens);
-    QueryObject* parseCreateQuery(vector<string> queryTokens);
+    DeleteObject* parseDeleteQuery(vector<string> queryTokens);
+    CreateObject* parseCreateQuery(vector<string> queryTokens);
     DropObject* parseDropQuery(vector<string> queryTokens);
 
     vector<DataType*> parseFieldValues(vector<string> queryTokens);
+    vector<TableField> parseFieldDescriptions(vector<string> queryTokens);
+    TableField parseTableField(vector<string> tableInfo);
 
     OrCondition* parseWhereClause(vector<string> queryTokens);
     OrCondition* parseLogicExpression(vector<string> queryTokens);

@@ -13,6 +13,8 @@
 #include "../query_processor/InsertObject.cpp"
 #include "../query_processor/UpdateObject.cpp"
 #include "../query_processor/DropObject.cpp"
+#include "../query_processor/DeleteObject.cpp"
+#include "../query_processor/CreateObject.cpp"
 
 #include "../query_processor/condition_tree/NegatableCondition.cpp"
 #include "../query_processor/condition_tree/OrCondition.cpp"
@@ -29,6 +31,8 @@
 #include "../query_processor/condition_tree/NumberOperand.cpp"
 #include "../query_processor/condition_tree/StringOperand.cpp"
 #include "../query_processor/condition_tree/TableFieldOperand.cpp"
+
+#include "../engine/TableField.cpp"
 
 #include <set>
 #include <string>
@@ -54,9 +58,9 @@ QueryObject* QueryParser::parseQuery(string query) {
     } else if (command == "UPDATE") {
         queryObject = QueryParser::parseUpdateQuery(queryTokens);
     } else if (command == "DELETE") {
-        // TODO: DeleteParser::parse(query);
+        queryObject = QueryParser::parseDeleteQuery(queryTokens);
     } else if (command == "CREATE") {
-        // TODO: CreateParser::parse(query);
+        queryObject = QueryParser::parseCreateQuery(queryTokens);
     } else if (command == "DROP") {
         queryObject = QueryParser::parseDropQuery(queryTokens);
     } else {
@@ -69,8 +73,8 @@ QueryObject* QueryParser::parseQuery(string query) {
 // <SELECT-statement> ::= SELECT <field list> FROM <table name> [ <WHERE-clause> ]
 SelectObject* QueryParser::parseSelectQuery(vector<string> queryTokens) {
     if (
-        QueryHelper::searchKeyWordInVector(queryTokens, "FROM") != 2 ||
         queryTokens.size() < 4 ||
+        QueryHelper::searchKeyWordInVector(queryTokens, "FROM") != 2 ||
         !LexicParser::isIdentifier(queryTokens[3])
     ) {
         throw QueryException("Wrong SELECT query syntax");
@@ -90,8 +94,8 @@ SelectObject* QueryParser::parseSelectQuery(vector<string> queryTokens) {
 // <INSERT-statement> ::= INSERT INTO <table name> <table row>
 InsertObject* QueryParser::parseInsertQuery(vector<string> queryTokens) {
     if (
-        QueryHelper::searchKeyWordInVector(queryTokens, "INTO") != 1 ||
         queryTokens.size() < 6 ||
+        QueryHelper::searchKeyWordInVector(queryTokens, "INTO") != 1 ||
         !LexicParser::isIdentifier(queryTokens[2])
     ) {
         throw QueryException("Wrong INSERT query syntax");
@@ -106,6 +110,7 @@ InsertObject* QueryParser::parseInsertQuery(vector<string> queryTokens) {
 // <UPDATE-statement> ::= UPDATE <table name> SET <field name> = <field value> <WHERE-clause>
 UpdateObject* QueryParser::parseUpdateQuery(vector<string> queryTokens) {
     if (
+        queryTokens.size() < 7 ||
         QueryHelper::searchKeyWordInVector(queryTokens, "UPDATE") != 0 ||
         !LexicParser::isIdentifier(queryTokens[1]) ||
         QueryHelper::searchKeyWordInVector(queryTokens, "SET") != 2 ||
@@ -138,10 +143,39 @@ UpdateObject* QueryParser::parseUpdateQuery(vector<string> queryTokens) {
     }
 }
 
+// <DELETE-statement> ::= DELETE FROM <table name> <WHERE-clause>
+DeleteObject* QueryParser::parseDeleteQuery(vector<string> queryTokens) {
+    if (
+        queryTokens.size() < 4 ||
+        QueryHelper::searchKeyWordInVector(queryTokens, "FROM") != 1 ||
+        !LexicParser::isIdentifier(queryTokens[2])
+    ) {
+        throw QueryException("Wrong DELETE query syntax");
+    }
+    
+    return new DeleteObject(queryTokens[2], QueryParser::parseWhereClause(VectorHelper::slice(queryTokens, 3)));
+}
+
+// <CREATE-statement> ::= CREATE TABLE <table name> ( <fields description> )
+CreateObject* QueryParser::parseCreateQuery(vector<string> queryTokens) {
+    if (
+        queryTokens.size() < 6 ||
+        QueryHelper::searchKeyWordInVector(queryTokens, "TABLE") != 1 ||
+        !LexicParser::isIdentifier(queryTokens[2]) ||
+        queryTokens[3] != "("||
+        queryTokens[queryTokens.size() - 1] != ")"
+    ) {
+        throw QueryException("Wrong CREATE query syntax");
+    }
+    
+    return new CreateObject(queryTokens[2], QueryParser::parseFieldDescriptions(VectorHelper::slice(queryTokens, 4, queryTokens.size() - 2)));
+}
+
 // <DROP-statement> ::= DROP TABLE <table name>
 DropObject* QueryParser::parseDropQuery(vector<string> queryTokens) {
-    if (QueryHelper::searchKeyWordInVector(queryTokens, "TABLE") != 1 ||
+    if (
         queryTokens.size() != 3 ||
+        QueryHelper::searchKeyWordInVector(queryTokens, "TABLE") != 1 ||
         !LexicParser::isIdentifier(queryTokens[2])
     ) {
         throw QueryException("Wrong DROP query syntax");
@@ -174,6 +208,60 @@ vector<DataType*> QueryParser::parseFieldValues(vector<string> queryTokens) {
     }
     
     return dataTypeVector;
+}
+
+// <fields description> ::= <field description> { , <field description> }
+vector<TableField> QueryParser::parseFieldDescriptions(vector<string> queryTokens) {
+    vector<string> currentTableInfo;
+    vector<TableField> tableFieldVector;
+    
+    for (int i = 0; i < queryTokens.size(); ++i) {
+        int commaPosition;
+        
+        if (queryTokens[i].find(',') == 0) {
+            tableFieldVector.push_back(QueryParser::parseTableField(currentTableInfo));
+            currentTableInfo.clear();
+            currentTableInfo.push_back(queryTokens[i].erase(0, 1));
+        } else if ((commaPosition = queryTokens[i].find(',')) != -1) {
+            vector<string> tokenAsVector = StringHelper::splitToVector(queryTokens[i], ',');
+            currentTableInfo.push_back(tokenAsVector[0]);
+            tableFieldVector.push_back(QueryParser::parseTableField(currentTableInfo));
+            currentTableInfo.clear();
+            currentTableInfo.push_back(tokenAsVector[1]);
+        } else {
+            currentTableInfo.push_back(queryTokens[i]);
+        }
+    }
+    
+    tableFieldVector.push_back(QueryParser::parseTableField(currentTableInfo));
+    
+    return tableFieldVector;
+}
+
+// <field description> ::= <field name> <field type>
+// <field type> ::= TEXT (<unsigned>) | NUMBER
+TableField QueryParser::parseTableField(vector<string> queryTokens) {
+    if (
+        queryTokens.size() < 2 ||
+        !LexicParser::isIdentifier(queryTokens[0])
+    ) {
+        throw QueryException("Invalid syntax for CREATE clause");
+    }
+    
+    if (queryTokens[1] == "NUMBER" && queryTokens.size() == 2) {
+        return TableField(queryTokens[0], DataTypeEnum::NUMBER);
+    } else if (queryTokens[1] == "TEXT" && queryTokens.size() == 5) {
+        if (
+            QueryHelper::searchKeyWordInVector(queryTokens, "(") == 2 ||
+            QueryHelper::searchKeyWordInVector(queryTokens, ")") == 4
+        ) {
+            // TODO: add queryTokens[3] to TableField* (which is length of VARCHAR)
+            return TableField(queryTokens[0], DataTypeEnum::VARCHAR);
+        }
+    } else {
+        throw QueryException("Invalid syntax for CREATE clause");
+    }
+    
 }
 
 // <WHERE-cluase> ::= WHERE <logic expression> | WHERE ALL
