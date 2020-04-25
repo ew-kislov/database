@@ -110,7 +110,7 @@ InsertObject* QueryParser::parseInsertQuery(vector<string> queryTokens) {
 // <UPDATE-statement> ::= UPDATE <table name> SET <field name> = <field value> <WHERE-clause>
 UpdateObject* QueryParser::parseUpdateQuery(vector<string> queryTokens) {
     if (
-        queryTokens.size() < 7 ||
+        queryTokens.size() < 6 ||
         QueryHelper::searchKeyWordInVector(queryTokens, "UPDATE") != 0 ||
         !LexicParser::isIdentifier(queryTokens[1]) ||
         QueryHelper::searchKeyWordInVector(queryTokens, "SET") != 2 ||
