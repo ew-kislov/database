@@ -6,6 +6,10 @@ DeleteObject::DeleteObject(string table, OrCondition* conditionTree): QueryObjec
     this->conditionTree = conditionTree;
 }
 
+OrCondition* DeleteObject::getConditionTree() {
+    return this->conditionTree;
+}
+
 string DeleteObject::toString() {
     string deleteString;
     

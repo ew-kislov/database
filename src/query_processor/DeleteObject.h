@@ -10,6 +10,8 @@ class DeleteObject: public QueryObject {
     public:
         DeleteObject(string table, OrCondition* conditionTree = nullptr);
     
+        OrCondition* getConditionTree();
+    
         string toString();
 };
 

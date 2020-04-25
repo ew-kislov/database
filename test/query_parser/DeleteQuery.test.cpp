@@ -9,16 +9,43 @@
 
 using namespace std;
 
-int main() {
+void testValidDelete() {
     try {
         string query = "DELETE FROM table WHERE f1=6 AND f2 IN (2,5,6) OR f3 LIKE 'b';";
         QueryObject* queryObject = QueryParser::parseQuery(query);
         DeleteObject* deleteObject = dynamic_cast<DeleteObject*>(queryObject);
         
-        cout << deleteObject->toString();
+        assert(deleteObject->getConditionTree() != nullptr);
     } catch (const exception &ex) {
-        cout << "Exception:\n\t" << ex.what();
+        assert(false);
     }
+}
+
+void testMissingWhereClause() {
+    try {
+        string query = "DELETE FROM table;";
+        QueryObject* queryObject = QueryParser::parseQuery(query);
+        DeleteObject* deleteObject = dynamic_cast<DeleteObject*>(queryObject);
+    } catch (const exception &ex) {
+        assert(true);
+    }
+}
+
+void testWrongTableName() {
+    try {
+        string query = "DELETE FROM 1table WHERE f1=6 AND f2 IN (2,5,6) OR f3 LIKE 'b';";
+        QueryObject* queryObject = QueryParser::parseQuery(query);
+        DeleteObject* deleteObject = dynamic_cast<DeleteObject*>(queryObject);
+    } catch (const exception &ex) {
+        assert(true);
+    }
+}
+
+int main() {
+    testValidDelete();
+    
+    testMissingWhereClause();
+    testWrongTableName();
     
     return 0;
 }

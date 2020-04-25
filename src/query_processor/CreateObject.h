@@ -11,6 +11,8 @@ class CreateObject: public QueryObject {
     public:
         CreateObject(string table, vector<TableField> tableFields);
     
+        vector<TableField> getTableFields();
+    
         string toString();
 };
 

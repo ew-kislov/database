@@ -6,6 +6,10 @@ CreateObject::CreateObject(string table, vector<TableField> tableFields): QueryO
     this->tableFields = tableFields;
 }
 
+vector<TableField> CreateObject::getTableFields() {
+    return this->tableFields;
+}
+
 string CreateObject::toString() {
     string createString;
     
