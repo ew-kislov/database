@@ -123,6 +123,8 @@ bool RelationCondition::calculate(vector<TableField> fields, vector<DataType*> r
 
 string RelationCondition::toString(int nestLevel) {
     string message;
+    
+    message += string(nestLevel - 1,'\t');
     message += "Relation\n";
     
     return message;

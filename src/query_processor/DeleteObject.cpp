@@ -14,8 +14,9 @@ string DeleteObject::toString() {
     string deleteString;
     
     deleteString += "DeleteObject {\n";
-    deleteString += "\tconditionTree:\n" + conditionTree->toString(4) + "\n";
-    deleteString += "}";
+    deleteString += "\ttable: " + getTable() + ",\n";
+    deleteString += "\tconditionTree:\n" + conditionTree->toString(3) + "\n";
+    deleteString += "}\n";
     
     return deleteString;
 }

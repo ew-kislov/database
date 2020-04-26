@@ -39,7 +39,7 @@ namespace QueryHelper {
             if (queryTokens[i] == "(") {
                 closures.push("(");
             } else if (queryTokens[i] == ")" && closures.empty()) {
-                throw QueryException("Wrong braces placement");
+                throw QueryException(QueryStatusEnum::WrongBracesPlacement);
             } else if (queryTokens[i] == ")" && !closures.empty()) {
                 closures.pop();
             }

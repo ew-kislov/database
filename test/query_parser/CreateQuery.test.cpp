@@ -17,24 +17,36 @@ using namespace std;
 
 void testValidCreateSingleField() {
     try {
-        string query = "CREATE TABLE table (cat TEXT (12));";
+        string query = "CREATE TABLE t (cat TEXT (12));";
         QueryObject* queryObject = QueryParser::parseQuery(query);
         CreateObject* createObject = dynamic_cast<CreateObject*>(queryObject);
         
-        vector<TableField> tableFields;
+        vector<TableField*> tableFields;
         
-        tableFields.push_back(TableField("cat", DataTypeEnum::VARCHAR));
+        tableFields.push_back(new TableField("cat", DataTypeEnum::VARCHAR));
         
-        assert(createObject->getTableFields() == tableFields);
+        for (int i = 0; i < tableFields.size() && i < createObject->getTableFields().size(); ++i) {
+            assert(*(createObject->getTableFields())[i] == *(tableFields[i]));
+        }
         
-        query = "CREATE TABLE table (lama NUMBER);";
+        assert(queryObject->getTable() == "t");
+        
+        cout << query << endl << createObject->toString() << endl;
+        
+        query = "CREATE TABLE t (lama NUMBER);";
         queryObject = QueryParser::parseQuery(query);
         createObject = dynamic_cast<CreateObject*>(queryObject);
         
         tableFields.clear();
-        tableFields.push_back(TableField("lama", DataTypeEnum::NUMBER));
+        tableFields.push_back(new TableField("lama", DataTypeEnum::NUMBER));
         
-        assert(createObject->getTableFields() == tableFields);
+        for (int i = 0; i < tableFields.size() && i < createObject->getTableFields().size(); ++i) {
+            assert(*(createObject->getTableFields())[i] == *(tableFields[i]));
+        }
+        
+        assert(queryObject->getTable() == "t");
+        
+        cout << query << endl << createObject->toString() << endl;
     } catch (exception &ex) {
         assert(false);
     }
@@ -42,17 +54,23 @@ void testValidCreateSingleField() {
 
 void testValidCreateNumberFields() {
     try {
-        string query = "CREATE TABLE table (cat NUMBER, doggo NUMBER, lama NUMBER);";
+        string query = "CREATE TABLE t (cat NUMBER, doggo NUMBER, lama NUMBER);";
         QueryObject* queryObject = QueryParser::parseQuery(query);
         CreateObject* createObject = dynamic_cast<CreateObject*>(queryObject);
         
-        vector<TableField> tableFields;
+        vector<TableField*> tableFields;
         
-        tableFields.push_back(TableField("cat", DataTypeEnum::NUMBER));
-        tableFields.push_back(TableField("doggo", DataTypeEnum::NUMBER));
-        tableFields.push_back(TableField("lama", DataTypeEnum::NUMBER));
+        tableFields.push_back(new TableField("cat", DataTypeEnum::NUMBER));
+        tableFields.push_back(new TableField("doggo", DataTypeEnum::NUMBER));
+        tableFields.push_back(new TableField("lama", DataTypeEnum::NUMBER));
         
-        assert(createObject->getTableFields() == tableFields);
+        for (int i = 0; i < tableFields.size() && i < createObject->getTableFields().size(); ++i) {
+            assert(*(createObject->getTableFields())[i] == *(tableFields[i]));
+        }
+        
+        assert(queryObject->getTable() == "t");
+        
+        cout << query << endl << createObject->toString() << endl;
     } catch (exception &ex) {
         assert(false);
     }
@@ -60,17 +78,23 @@ void testValidCreateNumberFields() {
 
 void testValidCreateVarcharFields() {
     try {
-        string query = "CREATE TABLE table (cat TEXT (10), doggo TEXT (12), lama TEXT (14));";
+        string query = "CREATE TABLE t (cat TEXT (10), doggo TEXT (12), lama TEXT (14));";
         QueryObject* queryObject = QueryParser::parseQuery(query);
         CreateObject* createObject = dynamic_cast<CreateObject*>(queryObject);
         
-        vector<TableField> tableFields;
+        vector<TableField*> tableFields;
         
-        tableFields.push_back(TableField("cat", DataTypeEnum::VARCHAR));
-        tableFields.push_back(TableField("doggo", DataTypeEnum::VARCHAR));
-        tableFields.push_back(TableField("lama", DataTypeEnum::VARCHAR));
+        tableFields.push_back(new TableField("cat", DataTypeEnum::VARCHAR));
+        tableFields.push_back(new TableField("doggo", DataTypeEnum::VARCHAR));
+        tableFields.push_back(new TableField("lama", DataTypeEnum::VARCHAR));
         
-        assert(createObject->getTableFields() == tableFields);
+        for (int i = 0; i < tableFields.size() && i < createObject->getTableFields().size(); ++i) {
+            assert(*(createObject->getTableFields())[i] == *(tableFields[i]));
+        }
+        
+        assert(queryObject->getTable() == "t");
+        
+        cout << query << endl << createObject->toString() << endl;
     } catch (exception &ex) {
         assert(false);
     }
@@ -78,17 +102,23 @@ void testValidCreateVarcharFields() {
 
 void testValidCreateMixedFields() {
     try {
-        string query = "CREATE TABLE table (cat NUMBER, doggo TEXT (12), lama NUMBER);";
+        string query = "CREATE TABLE t (cat NUMBER, doggo TEXT (12), lama NUMBER);";
         QueryObject* queryObject = QueryParser::parseQuery(query);
         CreateObject* createObject = dynamic_cast<CreateObject*>(queryObject);
         
-        vector<TableField> tableFields;
+        vector<TableField*> tableFields;
         
-        tableFields.push_back(TableField("cat", DataTypeEnum::NUMBER));
-        tableFields.push_back(TableField("doggo", DataTypeEnum::VARCHAR));
-        tableFields.push_back(TableField("lama", DataTypeEnum::NUMBER));
+        tableFields.push_back(new TableField("cat", DataTypeEnum::NUMBER));
+        tableFields.push_back(new TableField("doggo", DataTypeEnum::VARCHAR));
+        tableFields.push_back(new TableField("lama", DataTypeEnum::NUMBER));
         
-        assert(createObject->getTableFields() == tableFields);
+        for (int i = 0; i < tableFields.size() && i < createObject->getTableFields().size(); ++i) {
+            assert(*(createObject->getTableFields())[i] == *(tableFields[i]));
+        }
+        
+        assert(queryObject->getTable() == "t");
+        
+        cout << query << endl << createObject->toString() << endl;
     } catch (exception &ex) {
         assert(false);
     }
@@ -97,48 +127,54 @@ void testValidCreateMixedFields() {
 void testWrongTableName() {
     try {
         string query = "CREATE TABLE 'table' (cat NUMBER, doggo TEXT (12), lama NUMBER);";
+        cout << query << endl;
         QueryObject* queryObject = QueryParser::parseQuery(query);
     } catch (exception &ex) {
-        assert(true);
+        cout << ex.what() << endl;
     }
     
     try {
         string query = "CREATE TABLE 134 (cat NUMBER, doggo TEXT (12), lama NUMBER);";
+        cout << query << endl;
         QueryObject* queryObject = QueryParser::parseQuery(query);
     } catch (exception &ex) {
-        assert(true);
+        cout << ex.what() << endl;
     }
 }
 
 void testWrongFieldsDescritpion() {
     try {
         string query = "CREATE TABLE table (doggo TEXT, lama NUMBER);";
+        cout << query << endl;
         QueryObject* queryObject = QueryParser::parseQuery(query);
     } catch (exception &ex) {
-        assert(true);
+        cout << ex.what() << endl;
     }
     
     try {
         string query = "CREATE TABLE table (doggo TEXT (), lama NUMBER);";
+        cout << query << endl;
         QueryObject* queryObject = QueryParser::parseQuery(query);
     } catch (exception &ex) {
-        assert(true);
+        cout << ex.what() << endl;
     }
     
     try {
         string query = "CREATE TABLE table (doggo TEXT (34), lama);";
+        cout << query << endl;
         QueryObject* queryObject = QueryParser::parseQuery(query);
     } catch (exception &ex) {
-        assert(true);
+        cout << ex.what() << endl;
     }
 }
 
 void testMissingBrackets() {
     try {
         string query = "CREATE TABLE table doggo TEXT (12), lama NUMBER;";
+        cout << query << endl;
         QueryObject* queryObject = QueryParser::parseQuery(query);
     } catch (exception &ex) {
-        assert(true);
+        cout << ex.what() << endl;
     }
 }
 

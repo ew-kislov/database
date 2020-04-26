@@ -7,11 +7,11 @@
 
 class CreateObject: public QueryObject {
     protected:
-        vector<TableField> tableFields;
+        vector<TableField*> tableFields;
     public:
-        CreateObject(string table, vector<TableField> tableFields);
+        CreateObject(string table, vector<TableField*> tableFields);
     
-        vector<TableField> getTableFields();
+        vector<TableField*> getTableFields();
     
         string toString();
 };

@@ -94,7 +94,7 @@ namespace LexicParser {
             stringLexem.find('\'', 1) != stringLexem.size() - 1 ||
             stringLexem.size() < 3
         ) {
-            throw QueryException("Wrong string operand");
+            throw QueryException(QueryStatusEnum::InvalidStringOperand);
         }
 
         return stringLexem.substr(1, stringLexem.size() - 2);

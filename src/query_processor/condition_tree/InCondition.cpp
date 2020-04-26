@@ -52,6 +52,8 @@ bool InCondition::calculate(vector<TableField> fields, vector<DataType*> row) {
 string InCondition::toString(int nestLevel) {
     string message;
     
+    message += string(nestLevel - 1,'\t');
+    
     if (this->NegatableCondition::isNegated)
         message += "NOT ";
         

@@ -28,6 +28,9 @@ void testValidUpdateWithWhere() {
         assert(value->getValue() == "a");
 
         assert(updateObject->getConditionTree() != nullptr);
+        assert(queryObject->getTable() == "t");
+        
+        cout << query << endl << updateObject->toString() << endl;
     }
     catch(const exception& e) {
         assert(false);
@@ -47,6 +50,7 @@ void testValidUpdateWithoutWhere() {
         assert(value->getValue() == "a");
 
         assert(updateObject->getConditionTree() == nullptr);
+        assert(queryObject->getTable() == "t");
     }
     catch(const exception& e) {
         assert(false);
@@ -66,6 +70,7 @@ void testValidMixedCaseKeywords() {
         assert(value->getValue() == "a");
 
         assert(updateObject->getConditionTree() == nullptr);
+        assert(queryObject->getTable() == "t");
     }
     catch(const exception& e) {
         assert(false);

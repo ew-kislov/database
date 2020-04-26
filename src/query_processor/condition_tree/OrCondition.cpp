@@ -19,24 +19,36 @@ bool OrCondition::calculate(vector<TableField> fields, vector<DataType*> row) {
 string OrCondition::toString(int nestLevel) {
     string message;
     
-    message += string(nestLevel - 1,'\t');
+    if (this->NegatableCondition::isNegated || operands.size() > 1) {
+        message += string(nestLevel - 1,'\t');
+    }
     
-    if (this->NegatableCondition::isNegated)
+    if (this->NegatableCondition::isNegated) {
         message += "NOT ";
+    }
+    
     
     if (operands.size() > 1) {
-        message += "OR Condition (\n";
+        message += "OR Condition {\n";
         
         for (BaseCondition* it: operands) {
-            message += string(nestLevel,'\t');
             message += it->toString(nestLevel + 1);
         }
         
         message += string(nestLevel - 1,'\t');
-        message += ")";
+        message += "}";
         message += "\n";
     } else {
-        message += operands[0]->toString();
+        if (this->NegatableCondition::isNegated) {
+            message += "{\n\t";
+            message += operands[0]->toString(nestLevel);
+            message += string(nestLevel - 1,'\t');
+            message += "}\n";
+        } else {
+            message += operands[0]->toString(nestLevel);
+        }
+
+        
     }
     
     return message;

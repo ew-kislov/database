@@ -9,12 +9,12 @@ using namespace std;
 class SelectObject: public QueryObject {
     protected:
         vector<string> fields;
+        OrCondition* conditionTree;
     public:
-        OrCondition* treeRoot;
-    
-        SelectObject(string table, vector<string> fields);
+        SelectObject(string table, vector<string> fields, OrCondition* conditionTree);
     
         vector<string> getFields();
+        OrCondition* getConditionTree();
 
         string toString();
 };

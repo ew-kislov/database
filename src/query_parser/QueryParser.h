@@ -37,8 +37,8 @@ namespace QueryParser {
     DropObject* parseDropQuery(vector<string> queryTokens);
 
     vector<DataType*> parseFieldValues(vector<string> queryTokens);
-    vector<TableField> parseFieldDescriptions(vector<string> queryTokens);
-    TableField parseTableField(vector<string> tableInfo);
+    vector<TableField*> parseFieldDescriptions(vector<string> queryTokens);
+    TableField* parseTableField(vector<string> tableInfo);
 
     OrCondition* parseWhereClause(vector<string> queryTokens);
     OrCondition* parseLogicExpression(vector<string> queryTokens);

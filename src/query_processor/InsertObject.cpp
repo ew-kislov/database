@@ -15,5 +15,24 @@ vector<DataType*> InsertObject::getFieldValues() {
 }
 
 string InsertObject::toString() {
-    return "";
+    string insertString;
+    
+    insertString += "InsertObject {\n";
+    insertString += "\ttable: " + getTable() + ",\n";
+    insertString += "\tfieldValues: [\n";
+    
+    for (int i = 0; i < fieldValues.size(); ++i) {
+        insertString += "\t\t" + fieldValues[i]->toString();
+        
+        if (i != fieldValues.size() - 1) {
+            insertString += ",";
+        }
+        
+        insertString += "\n";
+    }
+    
+    insertString += "\t]\n";
+    insertString += "}\n";
+    
+    return insertString;
 }

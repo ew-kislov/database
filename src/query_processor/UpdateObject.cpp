@@ -26,10 +26,11 @@ string UpdateObject::toString() {
     string updateString;
 
     updateString += "UpdateObject {\n";
-    updateString += "\tfield: " + field->toString() + "\n";
-    updateString += "\tvalue: " + value->toString() + "\n";
-    updateString += "\tconditionTree:\n" + conditionTree->toString(5) + "\n";
-    updateString += "}";
+    updateString += "\ttable: " + getTable() + ",\n";
+    updateString += "\tfield: " + field->toString() + ",\n";
+    updateString += "\tvalue: " + value->toString() + ",\n";
+    updateString += "\tconditionTree:\n" + conditionTree->toString(3);
+    updateString += "}\n";
 
     return updateString;
 }
