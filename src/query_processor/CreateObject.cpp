@@ -14,11 +14,11 @@ string CreateObject::toString() {
     string createString;
     
     createString += "CreateObject {\n";
-    createString += "\ttable: " + getTable() + ",\n";
-    createString += "\ttableFields: [\n";
+    createString += "   table: " + getTable() + ",\n";
+    createString += "   tableFields: [\n";
     
     for (int i = 0; i < tableFields.size(); ++i) {
-        createString += "\t\t" + tableFields[i]->toString();
+        createString += "      " + tableFields[i]->toString();
         
         if (i != tableFields.size() - 1) {
             createString += ",";
@@ -27,7 +27,7 @@ string CreateObject::toString() {
         createString += "\n";
     }
     
-    createString += "\t]\n";
+    createString += "   ]\n";
     createString += "}\n";
     
     return createString;

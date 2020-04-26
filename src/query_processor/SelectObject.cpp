@@ -19,8 +19,8 @@ string SelectObject::toString() {
     string selectString;
     
     selectString += "SelectObject {\n";
-    selectString += "\ttable: " + getTable() + ",\n";
-    selectString += "\tconditionTree:\n" + conditionTree->toString(3);
+    selectString += "   table: " + getTable() + ",\n";
+    selectString += "   conditionTree:\n" + conditionTree->toString(3);
     selectString += "}\n";
     
     return selectString;

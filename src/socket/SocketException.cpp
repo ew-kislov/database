@@ -1,3 +1,5 @@
+#pragma once
+
 #include "SocketException.h"
 
 #include <iostream>

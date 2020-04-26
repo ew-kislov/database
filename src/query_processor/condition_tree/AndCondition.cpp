@@ -18,7 +18,7 @@ string AndCondition::toString(int nestLevel) {
     string message;
     
     if (this->NegatableCondition::isNegated || operands.size() > 1) {
-        message += string(nestLevel - 1,'\t');
+        message += string(3*(nestLevel - 1),' ');
     }
     
     if (this->NegatableCondition::isNegated) {
@@ -32,14 +32,14 @@ string AndCondition::toString(int nestLevel) {
             message += it->toString(nestLevel + 1);
         }
         
-        message += string(nestLevel - 1,'\t');
+        message += string(3*(nestLevel - 1),' ');
         message += "}";
         message += "\n";
     } else {
         if (this->NegatableCondition::isNegated) {
-            message += "{\n\t";
+            message += "{\n   ";
             message += operands[0]->toString(nestLevel);
-            message += string(nestLevel - 1,'\t');
+            message += string(3*(nestLevel - 1),' ');
             message += "}\n";
         } else {
             message += operands[0]->toString(nestLevel);

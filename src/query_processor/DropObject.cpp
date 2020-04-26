@@ -10,7 +10,7 @@ string DropObject::toString() {
     string dropString;
     
     dropString += "DropObject {\n";
-    dropString += "\ttable: " + getTable() + ",\n";
+    dropString += "   table: " + getTable() + "\n";
     dropString += "}\n";
     
     return dropString;

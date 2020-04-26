@@ -15,12 +15,113 @@
 
 using namespace std;
 
+void testOneField() {
+    try {
+        string query = "INSERT INTO t ('qwerty');";
+        QueryObject* queryObject = QueryParser::parseQuery(query);
+        InsertObject* insertObject = dynamic_cast<InsertObject*>(queryObject);
+
+        Varchar firstValue("qwerty", false);
+
+        assert(insertObject->getTable() == "t");
+        assert(insertObject->getFieldValues().size() == 1);
+        assert(*dynamic_cast<Varchar*>(insertObject->getFieldValues()[0]) == firstValue);
+        
+        cout << query << endl << insertObject->toString() << endl;
+    }
+    catch(const exception& e) {
+        cout << e.what();
+        assert(false);
+    }
+}
+
+void testMultipleFields() {
+    try {
+        string query = "INSERT INTO t ('qwerty', 12, '13');";
+        QueryObject* queryObject = QueryParser::parseQuery(query);
+        InsertObject* insertObject = dynamic_cast<InsertObject*>(queryObject);
+
+        Varchar firstValue("qwerty", false);
+        Number secondValue(12);
+        Varchar thirdValue("13", false);
+
+        assert(insertObject->getTable() == "t");
+        assert(insertObject->getFieldValues().size() == 3);
+        assert(*dynamic_cast<Varchar*>(insertObject->getFieldValues()[0]) == firstValue);
+        assert(*dynamic_cast<Number*>(insertObject->getFieldValues()[1]) == secondValue);
+        assert(*dynamic_cast<Varchar*>(insertObject->getFieldValues()[2]) == thirdValue);
+        
+        cout << query << endl << insertObject->toString() << endl;
+    }
+    catch(const exception& e) {
+        cout << e.what();
+        assert(false);
+    }
+}
+
+void testWithoutBracesError() {
+    try {
+        string query = "INSERT INTO t 'qwerty', 12, '13';";
+        QueryObject* queryObject = QueryParser::parseQuery(query);
+        InsertObject* insertObject = dynamic_cast<InsertObject*>(queryObject);
+
+        assert(false);
+    }
+    catch(const exception& e) {
+        cout << e.what();
+        assert(true);
+    }
+}
+
+void testMissingColonError() {
+    try {
+        string query = "INSERT INTO t ('qwerty' 12, '13');";
+        QueryObject* queryObject = QueryParser::parseQuery(query);
+        InsertObject* insertObject = dynamic_cast<InsertObject*>(queryObject);
+
+        cout << query << endl << insertObject->toString() << endl;
+        assert(false);
+    }
+    catch(const exception& e) {
+        cout << e.what();
+        assert(true);
+    }
+}
+
+void testMissingRightBraceError() {
+    try {
+        string query = "INSERT INTO t ('qwerty' 12, '13';";
+        QueryObject* queryObject = QueryParser::parseQuery(query);
+        InsertObject* insertObject = dynamic_cast<InsertObject*>(queryObject);
+
+        assert(false);
+    }
+    catch(const exception& e) {
+        cout << e.what();
+        assert(true);
+    }
+}
+
+void testMissingLeftBraceError() {
+    try {
+        string query = "INSERT INTO t 'qwerty' 12, '13');";
+        QueryObject* queryObject = QueryParser::parseQuery(query);
+        InsertObject* insertObject = dynamic_cast<InsertObject*>(queryObject);
+
+        assert(false);
+    }
+    catch(const exception& e) {
+        cout << e.what();
+        assert(true);
+    }
+}
+
 int main() {
-    string query = "INSERT INTO table ('qwerty', 12, 'adv');";
-    QueryObject* queryObject = QueryParser::parseQuery(query);
-    InsertObject* insertObject = dynamic_cast<InsertObject*>(queryObject);
-    
-    cout << query << endl << insertObject->toString() << endl;
-    
-    return 0;
+    testOneField();
+    testMultipleFields();
+
+    testWithoutBracesError();
+    // testMissingColonError();
+    testMissingRightBraceError();
+    testMissingLeftBraceError();
 }

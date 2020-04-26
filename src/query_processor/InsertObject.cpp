@@ -18,11 +18,11 @@ string InsertObject::toString() {
     string insertString;
     
     insertString += "InsertObject {\n";
-    insertString += "\ttable: " + getTable() + ",\n";
-    insertString += "\tfieldValues: [\n";
+    insertString += "   table: " + getTable() + ",\n";
+    insertString += "   fieldValues: [\n";
     
     for (int i = 0; i < fieldValues.size(); ++i) {
-        insertString += "\t\t" + fieldValues[i]->toString();
+        insertString += "      " + fieldValues[i]->toString();
         
         if (i != fieldValues.size() - 1) {
             insertString += ",";
@@ -31,7 +31,7 @@ string InsertObject::toString() {
         insertString += "\n";
     }
     
-    insertString += "\t]\n";
+    insertString += "   ]\n";
     insertString += "}\n";
     
     return insertString;

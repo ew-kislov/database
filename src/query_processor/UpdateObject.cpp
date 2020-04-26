@@ -26,10 +26,15 @@ string UpdateObject::toString() {
     string updateString;
 
     updateString += "UpdateObject {\n";
-    updateString += "\ttable: " + getTable() + ",\n";
-    updateString += "\tfield: " + field->toString() + ",\n";
-    updateString += "\tvalue: " + value->toString() + ",\n";
-    updateString += "\tconditionTree:\n" + conditionTree->toString(3);
+    updateString += "   table: " + getTable() + ",\n";
+    updateString += "   field: " + field->toString() + ",\n";
+    updateString += "   value: " + value->toString();
+    if (conditionTree) {
+        updateString += ",\n";
+        updateString += "   conditionTree:\n" + conditionTree->toString(3);
+    } else {
+        updateString += "\n";
+    }
     updateString += "}\n";
 
     return updateString;

@@ -5,6 +5,8 @@
 #include "BaseSocket.cpp"
 #include "ClientSocket.cpp"
 
+#include "SocketException.cpp"
+
 ServerSocket::ServerSocket(int port) {
     struct sockaddr_in serverParams;
 

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ClientSocket.h"
+#include "SocketException.cpp"
 
 ClientSocket::ClientSocket(string host, int port) {
     struct sockaddr_in serverParams;

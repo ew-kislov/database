@@ -51,6 +51,8 @@ void testValidUpdateWithoutWhere() {
 
         assert(updateObject->getConditionTree() == nullptr);
         assert(queryObject->getTable() == "t");
+
+        cout << query << endl << updateObject->toString() << endl;
     }
     catch(const exception& e) {
         assert(false);
@@ -71,6 +73,8 @@ void testValidMixedCaseKeywords() {
 
         assert(updateObject->getConditionTree() == nullptr);
         assert(queryObject->getTable() == "t");
+
+        cout << query << endl << updateObject->toString() << endl;
     }
     catch(const exception& e) {
         assert(false);
@@ -84,28 +88,31 @@ void testMissingSemicolon() {
         assert(false);
     }
     catch(const exception& e) {
+        cout << e.what();
         assert(true);
     }
 }
 
 void testWrongTableName() {
     try {
-        string query = "UPDATE 1table SET f1='a'";
+        string query = "UPDATE 1table SET f1='a';";
         QueryObject* queryObject = QueryParser::parseQuery(query);
         assert(false);
     }
     catch(const exception& e) {
+        cout << e.what();
         assert(true);
     }
 }
 
 void testWrongFieldName() {
     try {
-        string query = "UPDATE t SET 1f='a'";
+        string query = "UPDATE t SET 1f='a';";
         QueryObject* queryObject = QueryParser::parseQuery(query);
         assert(false);
     }
     catch(const exception& e) {
+        cout << e.what();
         assert(true);
     }
 }
