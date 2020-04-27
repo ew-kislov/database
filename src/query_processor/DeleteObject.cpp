@@ -14,8 +14,13 @@ string DeleteObject::toString() {
     string deleteString;
     
     deleteString += "DeleteObject {\n";
-    deleteString += "   table: " + getTable() + ",\n";
-    deleteString += "   conditionTree:\n" + conditionTree->toString(3) + "\n";
+    deleteString += "   table: " + getTable();
+    if (conditionTree) {
+        deleteString += ",\n";
+        deleteString += "   conditionTree:\n" + conditionTree->toString(3);
+    } else {
+        deleteString += "\n";
+    }
     deleteString += "}\n";
     
     return deleteString;

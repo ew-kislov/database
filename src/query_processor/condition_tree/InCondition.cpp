@@ -22,6 +22,7 @@ bool InCondition::calculate(vector<TableField> fields, vector<DataType*> row) {
         !(operand2->getType() == OperandTypeEnum::NUMBER_SET || operand2->getType() == OperandTypeEnum::STRING_SET)
     ) {
         cout << "Wrong arguments" << endl;
+        return false;
         // TODO: throw exception
     }
 
@@ -36,7 +37,8 @@ bool InCondition::calculate(vector<TableField> fields, vector<DataType*> row) {
 
     int fieldIndex = VectorHelper::findInVector(fields, *field);
     if (fieldIndex == -1) {
-        cout << "Couldn't find field with this type";
+        cout << "Couldn't find field with this type" << endl;
+        return false;
         // TODO: throw exception
     }
 
@@ -45,7 +47,9 @@ bool InCondition::calculate(vector<TableField> fields, vector<DataType*> row) {
         Number* numberOperand = dynamic_cast<Number*>(row[fieldIndex]);
         return setOperand->contains(*numberOperand)^isNegated;
     } else {
-        // TODO
+        StringSetOperand* setOperand = dynamic_cast<StringSetOperand*>(operand2);
+        Varchar* stringOperand = dynamic_cast<Varchar*>(row[fieldIndex]);
+        return setOperand->contains(*stringOperand)^isNegated;
     }
 }
 

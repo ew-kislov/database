@@ -5,6 +5,7 @@
 #include <string>
 
 #include "BaseOperand.h"
+#include "../../engine/Varchar.h"
 #include "../../engine/EngineException.h"
 
 using namespace std;
@@ -15,7 +16,7 @@ class StringSetOperand : public BaseOperand {
     public:
         StringSetOperand(set<string> value);
 
-        bool contains(string inpString);
+        bool contains(Varchar inpString);
 };
 
 #endif

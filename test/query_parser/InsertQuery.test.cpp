@@ -74,7 +74,7 @@ void testWithoutBracesError() {
     }
 }
 
-void testMissingColonError() {
+void testFirstMissingCommaError() {
     try {
         string query = "INSERT INTO t ('qwerty' 12, '13');";
         cout << query << endl;
@@ -90,9 +90,41 @@ void testMissingColonError() {
     }
 }
 
+void testSecondMissingCommaError() {
+    try {
+        string query = "INSERT INTO t ('qwerty', 12 '13');";
+        cout << query << endl;
+        QueryObject* queryObject = QueryParser::parseQuery(query);
+        InsertObject* insertObject = dynamic_cast<InsertObject*>(queryObject);
+
+        cout << query << endl << insertObject->toString() << endl;
+        assert(false);
+    }
+    catch(const exception& e) {
+        cout << e.what() << endl;
+        assert(true);
+    }
+}
+
+void testMissingMultipleCommaError() {
+    try {
+        string query = "INSERT INTO t ('qwerty' 12 '13');";
+        cout << query << endl;
+        QueryObject* queryObject = QueryParser::parseQuery(query);
+        InsertObject* insertObject = dynamic_cast<InsertObject*>(queryObject);
+
+        cout << query << endl << insertObject->toString() << endl;
+        assert(false);
+    }
+    catch(const exception& e) {
+        cout << e.what() << endl;
+        assert(true);
+    }
+}
+
 void testMissingRightBraceError() {
     try {
-        string query = "INSERT INTO t ('qwerty' 12, '13';";
+        string query = "INSERT INTO t ('qwerty', 12, '13';";
         cout << query << endl;
         QueryObject* queryObject = QueryParser::parseQuery(query);
         InsertObject* insertObject = dynamic_cast<InsertObject*>(queryObject);
@@ -107,7 +139,7 @@ void testMissingRightBraceError() {
 
 void testMissingLeftBraceError() {
     try {
-        string query = "INSERT INTO t 'qwerty' 12, '13');";
+        string query = "INSERT INTO t 'qwerty', 12, '13');";
         cout << query << endl;
         QueryObject* queryObject = QueryParser::parseQuery(query);
         InsertObject* insertObject = dynamic_cast<InsertObject*>(queryObject);
@@ -125,7 +157,9 @@ int main() {
     testMultipleFields();
 
     testWithoutBracesError();
-    testMissingColonError();
+    testFirstMissingCommaError();
+    testSecondMissingCommaError();
+    testMissingMultipleCommaError();
     testMissingRightBraceError();
     testMissingLeftBraceError();
 }
