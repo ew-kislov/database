@@ -17,36 +17,40 @@ using namespace std;
 
 #define PORT 8080
 
-void handler(ClientSocket clientSocket) {
-    while (1) {
-        string message = clientSocket.read();
-        message = "Replying: " + message;
-        cout << message << endl;
-        clientSocket.write(message); 
-    }
-}
+// void handler(ClientSocket clientSocket) {
+//     while (1) {
+//         string message = clientSocket.read();
+//         message = "Replying: " + message;
+//         cout << message << endl;
+//         clientSocket.write(message); 
+//     }
+// }
 
 int main() {
-    try {
-//        ServerSocket serverSocket(PORT);
-//        serverSocket.listen();
-//
-//        while (1) {
-//             ClientSocket clientSocket = serverSocket.accept();
-//             clientSocket.handle(handler);
-//        }
-//
-//        serverSocket.close();
+    // try {
+    //    ServerSocket serverSocket(PORT);
+    //    serverSocket.listen();
 
+    //    while (1) {
+    //         ClientSocket clientSocket = serverSocket.accept();
+    //         clientSocket.handle(handler);
+    //    }
+
+    //    serverSocket.close();
+    // } catch (const QueryException &ex) {
+    //         cout << "Query exception:\n\t" << ex.what() << endl;
+    // }
+
+    while (true) {
         string query;
         getline(cin, query);
 
-        QueryObject* queryObject = QueryParser::parseQuery(query);
-        cout << queryObject->toString() << endl;
-    } catch (const SocketException & ex) {
-        cout << "Socket exception:\n\t" << ex.what() << endl;
-    } catch (const QueryException & ex) {
-        cout << "Query exception:\n\t" << ex.what() << endl;
+        try {
+            QueryObject* queryObject = QueryParser::parseQuery(query);
+            cout << queryObject->toString() << endl;
+        } catch(const QueryException &ex) {
+            cout << ex.what() << endl;
+        }
     }
     
     return 0;
