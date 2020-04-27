@@ -6,6 +6,6 @@ NegatableCondition::NegatableCondition(bool isNegated) {
     this->isNegated = isNegated;
 }
 
-bool NegatableCondition::negate() {
+void NegatableCondition::negate() {
     isNegated = !isNegated;
 }

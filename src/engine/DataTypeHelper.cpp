@@ -55,11 +55,11 @@ namespace DataTypeHelper {
         } else if (value1->getType() == DataTypeEnum::NUMBER) {
             Number number1 = *dynamic_cast<Number*>(value1);
             Number number2 = *dynamic_cast<Number*>(value2);
-            return number1 < number2;
+            return number1 > number2;
         } else if (value1->getType() == DataTypeEnum::VARCHAR) {
             Varchar varchar1 = *dynamic_cast<Varchar*>(value1);
             Varchar varchar2 = *dynamic_cast<Varchar*>(value2);
-            return varchar1 < varchar2;
+            return varchar1 > varchar2;
         }
     }
 }

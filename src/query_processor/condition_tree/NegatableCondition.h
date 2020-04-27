@@ -9,7 +9,7 @@ class NegatableCondition {
     public:
         NegatableCondition(bool isNegated = false);
     
-        bool negate();
+        void negate();
         virtual string toString(int nestLevel = 1) = 0;
 };
 
