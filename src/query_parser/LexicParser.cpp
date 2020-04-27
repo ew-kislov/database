@@ -3,8 +3,10 @@
 #include <string>
 #include <sstream>
 #include <ctype.h>
+#include <set>
 
 #include "./QueryException.h"
+#include "../shared/StringHelper.cpp"
 
 using namespace std;
 
@@ -51,7 +53,7 @@ namespace LexicParser {
             return false;
         
         for (int i = 1; i < inpString.size(); ++i) {
-            if (!isalpha(inpString[i]) && !isdigit(inpString[i]))
+            if (!isalpha(inpString[i]) && !isdigit(inpString[i]) && (inpString[i] != '_'))
                 return false;
         }
         
