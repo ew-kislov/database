@@ -15,7 +15,7 @@
 #include "socket/ServerSocket.cpp"
 #include "socket/ClientSocket.cpp"
 
-#define PORT 8080
+#define PORT 3000
 
 using namespace std;
 

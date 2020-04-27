@@ -15,16 +15,21 @@
 
 using namespace std;
 
-#define PORT 8080
+#define PORT 3000
 
-// void handler(ClientSocket clientSocket) {
-//     while (1) {
-//         string message = clientSocket.read();
-//         message = "Replying: " + message;
-//         cout << message << endl;
-//         clientSocket.write(message); 
-//     }
-// }
+void handler(ClientSocket clientSocket) {
+    try {
+        while (1) {
+            string message = clientSocket.read();
+            message = "Replying: " + message;
+            cout << message << endl;
+            clientSocket.write(message); 
+        }
+    } catch (const SocketException &ex) {
+        cout << "Socket exception:\n\t" << ex.what() << endl;
+        exit(0);
+    }
+}
 
 int main() {
     // try {
@@ -37,8 +42,8 @@ int main() {
     //    }
 
     //    serverSocket.close();
-    // } catch (const QueryException &ex) {
-    //         cout << "Query exception:\n\t" << ex.what() << endl;
+    // } catch (const SocketException &ex) {
+    //         cout << "Socket exception:\n\t" << ex.what() << endl;
     // }
 
     while (true) {
