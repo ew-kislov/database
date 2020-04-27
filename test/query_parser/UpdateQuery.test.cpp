@@ -84,11 +84,12 @@ void testValidMixedCaseKeywords() {
 void testMissingSemicolon() {
     try {
         string query = "UPDATE t SET f1='a'";
+        cout << query << endl;
         QueryObject* queryObject = QueryParser::parseQuery(query);
         assert(false);
     }
     catch(const exception& e) {
-        cout << e.what();
+        cout << e.what() << endl;
         assert(true);
     }
 }
@@ -96,11 +97,12 @@ void testMissingSemicolon() {
 void testWrongTableName() {
     try {
         string query = "UPDATE 1table SET f1='a';";
+        cout << query << endl;
         QueryObject* queryObject = QueryParser::parseQuery(query);
         assert(false);
     }
     catch(const exception& e) {
-        cout << e.what();
+        cout << e.what() << endl;
         assert(true);
     }
 }
@@ -108,11 +110,12 @@ void testWrongTableName() {
 void testWrongFieldName() {
     try {
         string query = "UPDATE t SET 1f='a';";
+        cout << query << endl;
         QueryObject* queryObject = QueryParser::parseQuery(query);
         assert(false);
     }
     catch(const exception& e) {
-        cout << e.what();
+        cout << e.what() << endl;
         assert(true);
     }
 }

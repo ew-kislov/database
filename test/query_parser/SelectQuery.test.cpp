@@ -55,13 +55,14 @@ void testValidOneField() {
 void testMissingFields() {
     try {
         string query = "SELECT FROM qwert WHERE f1 = 5 OR NOT f2 = 'a' AND ( f3 NOT IN ( '1','2','3' ) OR f1 = 2 ) OR f3 NOT LIKE 'b%';";
+        cout << query << endl;
         QueryObject* queryObject = QueryParser::parseQuery(query);
         SelectObject* selectObject = dynamic_cast<SelectObject*>(queryObject);
 
         assert(false);
     }
     catch(const exception& e) {
-        cout << e.what();
+        cout << e.what() << endl;
         assert(true);
     }
 }
@@ -69,13 +70,14 @@ void testMissingFields() {
 void testMissingComma() {
     try {
         string query = "SELECT f1 f2 FROM qwert WHERE f1 = 5 OR NOT f2 = 'a' AND ( f3 NOT IN ( '1','2','3' ) OR f1 = 2 ) OR f3 NOT LIKE 'b%';";
+        cout << query << endl;
         QueryObject* queryObject = QueryParser::parseQuery(query);
         SelectObject* selectObject = dynamic_cast<SelectObject*>(queryObject);
 
         assert(false);
     }
     catch(const exception& e) {
-        cout << e.what();
+        cout << e.what() << endl;
         assert(true);
     }
 }
@@ -83,13 +85,14 @@ void testMissingComma() {
 void testTwoTableNames() {
     try {
         string query = "SELECT f1, f2 FROM qwert asdf WHERE f1 = 5 OR NOT f2 = 'a' AND ( f3 NOT IN ( '1','2','3' ) OR f1 = 2 ) OR f3 NOT LIKE 'b%';";
+        cout << query << endl;
         QueryObject* queryObject = QueryParser::parseQuery(query);
         SelectObject* selectObject = dynamic_cast<SelectObject*>(queryObject);
 
         assert(false);
     }
     catch(const exception& e) {
-        cout << e.what();
+        cout << e.what() << endl;
         assert(true);
     }
 }

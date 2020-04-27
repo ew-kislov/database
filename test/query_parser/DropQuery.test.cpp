@@ -34,13 +34,14 @@ void testValid() {
 void testMissingTableKeyword() {
     try {
         string query = "DROP qwert;";
+        cout << query << endl;
         QueryObject* queryObject = QueryParser::parseQuery(query);
         DropObject* dropObject = dynamic_cast<DropObject*>(queryObject);
 
         assert(true);
     }
     catch(const exception& e) {
-        cout << e.what();
+        cout << e.what() << endl;
         assert(true);
     }
 }
@@ -48,13 +49,14 @@ void testMissingTableKeyword() {
 void testMissingTableName() {
     try {
         string query = "DROP TABLE;";
+        cout << query << endl;
         QueryObject* queryObject = QueryParser::parseQuery(query);
         DropObject* dropObject = dynamic_cast<DropObject*>(queryObject);
 
         assert(true);
     }
     catch(const exception& e) {
-        cout << e.what();
+        cout << e.what() << endl;
         assert(true);
     }
 }
@@ -62,13 +64,14 @@ void testMissingTableName() {
 void testWrongTableName() {
     try {
         string query = "DROP TABLE (qwert);";
+        cout << query << endl;
         QueryObject* queryObject = QueryParser::parseQuery(query);
         DropObject* dropObject = dynamic_cast<DropObject*>(queryObject);
 
         assert(true);
     }
     catch(const exception& e) {
-        cout << e.what();
+        cout << e.what() << endl;
         assert(true);
     }
 }

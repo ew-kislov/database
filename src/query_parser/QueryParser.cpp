@@ -194,6 +194,10 @@ vector<DataType*> QueryParser::parseFieldValues(vector<string> queryTokens) {
     }
     
     queryTokens = VectorHelper::slice(queryTokens, 1, queryTokens.size() - 2);
+    if (queryTokens.size() != 1) {
+        throw QueryException(QueryStatusEnum::WrongInsertSyntax);
+    }
+    
     vector<string> fieldValues = StringHelper::splitToVector(queryTokens[0], ',');
     vector<DataType*> dataTypeVector;
     
