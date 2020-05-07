@@ -55,4 +55,13 @@ namespace VectorHelper {
             return -1;
         }
     }
+
+    template<typename T> int findInPointerVector(vector<T*>  &inpVector, T* &element) {
+        for (int i = 0; i < inpVector.size(); i++) {
+            if (*inpVector[i] == *element) {
+                return i;
+            }
+        }
+        return -1;
+    }
 }

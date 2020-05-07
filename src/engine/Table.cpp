@@ -38,6 +38,28 @@ int Table::getHeaderOffset() {
     return headerOffset;
 }
 
+string Table::toString() {
+    string tableString;
+    tableString += "Table {\n";
+    tableString += "  name: " + this->name + ",\n";
+
+    tableString += "  fields: [\n";
+    for (TableField* field : this->fields) {
+        tableString += "    " + field->toString() + "\n";
+    }
+    tableString += "  ]\n";
+
+    tableString += "  rows: [\n";
+    for (TableRow row: this->rows) {
+        tableString += "    " + row.toString() + "\n";
+    }
+    tableString += "  ]\n";
+
+    tableString += "}";
+
+    return tableString;
+}
+
 ostream& operator<< (ostream &out, const Table &table) {
     out << "Table {" << endl;
     out << "  name: " << table.name << "," << endl;

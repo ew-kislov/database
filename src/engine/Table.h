@@ -27,6 +27,8 @@ class Table {
         vector<TableRow> getRows();
         int getHeaderOffset();
 
+        string toString();
+
         friend ostream& operator<< (ostream &out, const Table &table);
 };
 

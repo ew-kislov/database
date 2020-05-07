@@ -14,6 +14,7 @@ namespace Engine {
     
     void createTable(Table table);
     void insertIntoTable(string tableName, vector<TableRow> rows);
+    void updateValuesInTable(string tableName, vector<TableRow> rows, TableField* field, DataType* value);
     void deleteFromTable(string table, vector<TableRow> rows);
 }
 

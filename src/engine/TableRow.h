@@ -18,6 +18,7 @@ class TableRow {
         TableRow();
         
         void addValue(DataType* value);
+        void setValue(int index, DataType* value);
 
         bool isDeleted();
         void setDeleted();

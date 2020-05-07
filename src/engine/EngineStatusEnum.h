@@ -9,7 +9,9 @@ enum EngineStatusEnum {
     WrongValuesNumber = 5,
     WrongValueType = 6,
     InvalidValue = 7,
-    InternalError = 8
+    NoSuchField = 8,
+    FieldValueTypesDontMatch = 9,
+    InternalError = 10,
 };
 
 #endif

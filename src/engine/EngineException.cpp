@@ -2,6 +2,8 @@
 
 #include "EngineException.h"
 
+#include "EngineStatusStrings.h"
+
 #include <iostream>
 #include <exception>
 
@@ -10,7 +12,7 @@ EngineException::EngineException(EngineStatusEnum status) {
 }
 
 const char* EngineException::what() const throw () {
-    return to_string(static_cast<int>(status)).c_str();
+    return engineStatusString[status].c_str();
 }
 
 int EngineException::getStatus() {

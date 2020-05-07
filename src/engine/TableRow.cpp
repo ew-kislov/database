@@ -12,6 +12,10 @@ void TableRow::addValue(DataType* value) {
     values.push_back(value);
 }
 
+void TableRow::setValue(int index, DataType* value) {
+    values[index] = value;
+}
+
 bool TableRow::isDeleted() {
     return deleted;
 }

@@ -27,6 +27,11 @@
 
 using namespace std;
 
+/*
+ * creates table with given name and fields
+ * @param table - Table object containing name and fields
+ * @throws EngineException
+ */
 void Engine::createTable(Table table) {
     int tableFD =  TableIO::getFD(table.getName(), TableIO::CREATE_WRITE_MODE);
     
@@ -39,6 +44,13 @@ void Engine::createTable(Table table) {
     TableIO::closeFD(tableFD);
 }
 
+/*
+ * loads table with given name, optionally with rows
+ * @param tableName - name of table
+ * @param withRows - if true returns table with rows and fields, otherwise only fields
+ * @throws EngineException
+ * @returns Table object
+ */
 Table Engine::loadTable(string tableName, bool withRows) {
     int tableFD =  TableIO::getFD(tableName, TableIO::READ_MODE);
     
@@ -91,6 +103,13 @@ Table Engine::loadTable(string tableName, bool withRows) {
     return Table(tableName, fields, rows, headerOffset);
 }
 
+
+/*
+ * inserts rows into table
+ * @param tableName - name of table
+ * @param rows - rows to be inserted
+ * @throws EngineException
+ */
 void Engine::insertIntoTable(string tableName, vector<TableRow> rows) {
     int tableFD = TableIO::getFD(tableName, TableIO::WRITE_MODE);
     int seekResult = lseek(tableFD, 0, SEEK_END);
@@ -101,6 +120,7 @@ void Engine::insertIntoTable(string tableName, vector<TableRow> rows) {
         vector<DataType*> values = row.getValues();
 
         if (table.getFields().size() != values.size()) {
+            cout << table.getFields().size() << " " << values.size() << endl;
             throw EngineException(EngineStatusEnum::WrongValuesNumber);
         }
 
@@ -118,6 +138,89 @@ void Engine::insertIntoTable(string tableName, vector<TableRow> rows) {
     TableIO::closeFD(tableFD);
 }
 
+
+/*
+ * updates table rows with given value
+ * @param tableName - name of table
+ * @param rows - rows to be updated
+ * @param field - field to be updated
+ * @param value - new value of field
+ * @throws EngineException
+ */
+void Engine::updateValuesInTable(string tableName, vector<TableRow> rows, TableField* field, DataType* value) {
+    if (field->getType() != value->getType()) {
+        throw EngineException(EngineStatusEnum::FieldValueTypesDontMatch);
+    }
+    
+    int tableFD =  TableIO::getFD(tableName, TableIO::READ_WRITE_MODE);
+    int fieldsNumber = TableIO::readFieldsNumber(tableFD);
+
+    int headerOffset = 0;
+    int bytesRead = 0;
+
+    vector<TableField*> fields;
+    for (int i = 0; i < fieldsNumber; i++) {
+        fields.push_back(TableIO::readTableField(tableFD, bytesRead));
+        headerOffset += bytesRead;
+    }
+
+    int fieldIndex = VectorHelper::findInPointerVector(fields, field);
+    if (fieldIndex == -1) {
+        throw EngineException(EngineStatusEnum::NoSuchField);
+    }
+
+    bool isRowFound = true;
+    while (isRowFound) {
+        TableRow row;
+        int rowSize = 0;
+        int bytesRead = 0;
+
+        for (int i = 0; i < fieldsNumber; i++) {
+            bytesRead = 0;
+            DataType* value;
+
+            try {
+                value = TableIO::readTableValue(tableFD, fields[i]->getType(), bytesRead);
+                rowSize += bytesRead;
+            } catch(EngineException& e) {
+                if (i == 0) {
+                    isRowFound = false;
+                    break;
+                } else {
+                    throw;
+                }
+            }
+            
+            row.addValue(value);
+        }
+        if (isRowFound) {
+            bytesRead = 0;
+            bool deleted = TableIO::readRowDeletedFlag(tableFD, bytesRead);
+            rowSize += bytesRead;
+
+            if (VectorHelper::findInVector(rows, row) != -1) {
+                row.setValue(fieldIndex, value);
+
+                TableIO::seek(tableFD, TableIO::CURRENT_WHENCE, -rowSize);
+
+                vector<DataType*> values = row.getValues();
+                for (int i = 0; i < values.size(); i++) {
+                    TableIO::writeTableValue(tableFD, values[i]);
+                }
+                TableIO::writeRowDeletedFlag(tableFD, row.isDeleted());
+            }
+        }
+    }
+
+    TableIO::closeFD(tableFD);
+}
+
+/*
+ * deletes given rows from table
+ * @param tableName - name of table
+ * @param rows - rows to be deleted
+ * @throws EngineException
+ */
 void Engine::deleteFromTable(string tableName, vector<TableRow> rows) {
     int tableFD =  TableIO::getFD(tableName, TableIO::READ_WRITE_MODE);
     
@@ -161,37 +264,4 @@ void Engine::deleteFromTable(string tableName, vector<TableRow> rows) {
     }
 
     TableIO::closeFD(tableFD);
-}
-
-int main() {
-    // vector<TableField*> fields;
-    // fields.push_back(new TableField("f1", DataTypeEnum::NUMBER));
-    // fields.push_back(new TableField("f2", DataTypeEnum::VARCHAR));
-    // fields.push_back(new TableField("f3", DataTypeEnum::VARCHAR));
-
-    // Table table("some_table", fields);
-
-    // Engine::createTable(table);
-
-    TableRow row;
-    row.addValue(new Number(2));
-    row.addValue(new Varchar("'qweffgfgrt'"));
-    row.addValue(new Varchar("'ddffergwrgwrff'"));
-
-    vector<TableRow> rows;
-    rows.push_back(row);
-
-    // TableRow row2;
-    // row2.addValue(new Number(4));
-    // row2.addValue(new Varchar("'aaaaaa'"));
-    // row2.addValue(new Varchar("'bbbbb'"));
-
-    // rows.push_back(row2);
-
-    // Engine::insertIntoTable("some_table", rows);
-
-    // Engine::deleteFromTable("some_table", rows);
-
-    Table table2 = Engine::loadTable("some_table", true);
-    cout << table2 << endl;
 }

@@ -20,20 +20,28 @@ using namespace std;
 
 namespace TableIO {
     enum TableModeEnum {
-        CREATE_WRITE_MODE = O_CREAT | O_WRONLY,
+        CREATE_WRITE_MODE = O_CREAT | O_EXCL | O_WRONLY,
         READ_MODE = O_RDONLY,
         WRITE_MODE = O_WRONLY | O_APPEND,
         READ_WRITE_MODE = O_RDWR
     };
 
     enum SeekWhence {
-            START_WHENCE = SEEK_SET,
-            CURRENT_WHENCE = SEEK_CUR,
-            END_WHENCE = SEEK_END
+        START_WHENCE = SEEK_SET,
+        CURRENT_WHENCE = SEEK_CUR,
+        END_WHENCE = SEEK_END
     };
 
+    int lastReadBytes = 0;
+
+    /*
+     * moves file pointer by given offset using given whence
+     * @param tableFD - descriptor of given table
+     * @param whence - whence mode
+     * @param offset - offset the pointer will be moved
+     */
     void seek(int tableFD, SeekWhence whence, int offset) {
-        int result = lseek(tableFD, -1, SEEK_CUR);
+        int result = lseek(tableFD, offset, SEEK_CUR);
         if (result == -1) {
             throw EngineException(EngineStatusEnum::TableStructureCorrupted);
         }
@@ -142,8 +150,9 @@ namespace TableIO {
      * @throws EngineException if couldn't read from file
      * @returns pointer to value
      */
-    DataType* readTableValue(int tableFD, DataTypeEnum type) {
+    DataType* readTableValue(int tableFD, DataTypeEnum type, int& bytesRead = lastReadBytes) {
         int result;
+        bytesRead = 0;
 
         if (type == DataTypeEnum::NUMBER) {
             long double numberValue;
@@ -153,6 +162,7 @@ namespace TableIO {
                 throw EngineException(EngineStatusEnum::TableStructureCorrupted);
             }
 
+            bytesRead += result;
             return new Number(numberValue);
         } else if (type == DataTypeEnum::VARCHAR) {
             char varcharValue[50]; // TODO: add length to varchar and pass TableField*
@@ -162,20 +172,22 @@ namespace TableIO {
             if (result <= 0) {
                 throw EngineException(EngineStatusEnum::TableStructureCorrupted);
             }
+            bytesRead += result;
 
-            result = read(tableFD, varcharValue, length * sizeof(char));
+            result = read(tableFD, varcharValue, 50 * sizeof(char));
             if (result <= 0) {
                 throw EngineException(EngineStatusEnum::TableStructureCorrupted);
             }
+            bytesRead += result;
 
             varcharValue[length] = '\0';
             return new Varchar(varcharValue, false);
         }
     }
 
-    bool readRowDeletedFlag(int tableFD) {
+    bool readRowDeletedFlag(int tableFD, int& bytesRead = lastReadBytes) {
         bool deleted;
-        read(tableFD, &deleted, sizeof(bool));
+        bytesRead = read(tableFD, &deleted, sizeof(bool));
         return deleted;
     }
 
@@ -250,7 +262,8 @@ namespace TableIO {
                 throw EngineException(EngineStatusEnum::TableStructureCorrupted);
             }
 
-            result = write(tableFD, varcharValue.c_str(), length * sizeof(char));
+            varcharValue += string(50 - length, ' ');
+            result = write(tableFD, varcharValue.c_str(), 50 * sizeof(char));
             if (result <= 0) {
                 throw EngineException(EngineStatusEnum::TableStructureCorrupted);
             }
