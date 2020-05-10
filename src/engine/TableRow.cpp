@@ -8,6 +8,11 @@ TableRow::TableRow() {
     deleted = false;
 }
 
+TableRow::TableRow(vector<DataType*> values) {
+    this->values = values;
+    deleted = false;
+}
+
 void TableRow::addValue(DataType* value) {
     values.push_back(value);
 }

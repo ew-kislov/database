@@ -8,6 +8,8 @@
 #include "QueryHelper.cpp"
 #include "LexicParser.cpp"
 
+#include "QueryParserException.cpp"
+
 #include "../query_processor/QueryObject.cpp"
 #include "../query_processor/SelectObject.cpp"
 #include "../query_processor/InsertObject.cpp"
@@ -41,7 +43,7 @@
 //                 <DELETE-statement> | <CREATE-statement> | <DROP-statement>);
 QueryObject* QueryParser::parseQuery(string query) {
     if (query.find(';') != query.size() - 1) {
-        throw QueryException(QueryStatusEnum::MissingSemicolon);
+        throw QueryParserException(QueryStatusEnum::MissingSemicolon);
     }
 
     vector<string> queryTokens = QueryHelper::queryToTokenVector(query);
@@ -64,7 +66,7 @@ QueryObject* QueryParser::parseQuery(string query) {
     } else if (command == "DROP") {
         queryObject = QueryParser::parseDropQuery(queryTokens);
     } else {
-        throw QueryException(QueryStatusEnum::UnknownCommand);
+        throw QueryParserException(QueryStatusEnum::UnknownCommand);
     }
 
     return queryObject;
@@ -77,10 +79,17 @@ SelectObject* QueryParser::parseSelectQuery(vector<string> queryTokens) {
         QueryHelper::searchKeyWordInVector(queryTokens, "FROM") != 2 ||
         !LexicParser::isIdentifier(queryTokens[3])
     ) {
-        throw QueryException(QueryStatusEnum::WrongSelectSyntax);
+        throw QueryParserException(QueryStatusEnum::WrongSelectSyntax);
     }
     
     vector<string> fields = StringHelper::splitToVector(queryTokens[1], ',');
+    if (!(fields.size() == 1 && fields[0] == "*")) {
+        for (string field: fields) {
+            if (!LexicParser::isIdentifier(field)) {
+                throw QueryParserException(QueryStatusEnum::WrongTableFieldName);
+            }
+        }
+    }
 
     OrCondition* conditionTree = nullptr;
 
@@ -98,7 +107,7 @@ InsertObject* QueryParser::parseInsertQuery(vector<string> queryTokens) {
         QueryHelper::searchKeyWordInVector(queryTokens, "INTO") != 1 ||
         !LexicParser::isIdentifier(queryTokens[2])
     ) {
-        throw QueryException(QueryStatusEnum::WrongInsertSyntax);
+        throw QueryParserException(QueryStatusEnum::WrongInsertSyntax);
     }
 
     InsertObject* insertObject = new InsertObject(queryTokens[2]);
@@ -118,7 +127,7 @@ UpdateObject* QueryParser::parseUpdateQuery(vector<string> queryTokens) {
         queryTokens[4] != "=" ||
         !LexicParser::isDataType(queryTokens[5])
     ) {
-        throw QueryException(QueryStatusEnum::WrongUpdateSyntax);
+        throw QueryParserException(QueryStatusEnum::WrongUpdateSyntax);
     }
 
     TableField* field;
@@ -136,7 +145,7 @@ UpdateObject* QueryParser::parseUpdateQuery(vector<string> queryTokens) {
     if (wherePosition == -1) {
         return new UpdateObject(queryTokens[1], field, value);
     } else if (wherePosition != 6) {
-        throw QueryException(QueryStatusEnum::WrongUpdateSyntax);
+        throw QueryParserException(QueryStatusEnum::WrongUpdateSyntax);
     } else {
         BaseCondition* conditionTree = QueryParser::parseWhereClause(VectorHelper::slice(queryTokens, wherePosition));
         return new UpdateObject(queryTokens[1], field, value, conditionTree);
@@ -150,9 +159,9 @@ DeleteObject* QueryParser::parseDeleteQuery(vector<string> queryTokens) {
         QueryHelper::searchKeyWordInVector(queryTokens, "FROM") != 1 ||
         !LexicParser::isIdentifier(queryTokens[2])
     ) {
-        throw QueryException(QueryStatusEnum::WrongDeleteSyntax);
+        throw QueryParserException(QueryStatusEnum::WrongDeleteSyntax);
     }
-    
+
     return new DeleteObject(queryTokens[2], QueryParser::parseWhereClause(VectorHelper::slice(queryTokens, 3)));
 }
 
@@ -165,7 +174,7 @@ CreateObject* QueryParser::parseCreateQuery(vector<string> queryTokens) {
         queryTokens[3] != "("||
         queryTokens[queryTokens.size() - 1] != ")"
     ) {
-        throw QueryException(QueryStatusEnum::WrongCreateSyntax);
+        throw QueryParserException(QueryStatusEnum::WrongCreateSyntax);
     }
     
     return new CreateObject(queryTokens[2], QueryParser::parseFieldDescriptions(VectorHelper::slice(queryTokens, 4, queryTokens.size() - 2)));
@@ -178,7 +187,7 @@ DropObject* QueryParser::parseDropQuery(vector<string> queryTokens) {
         QueryHelper::searchKeyWordInVector(queryTokens, "TABLE") != 1 ||
         !LexicParser::isIdentifier(queryTokens[2])
     ) {
-        throw QueryException(QueryStatusEnum::WrongDropSyntax);
+        throw QueryParserException(QueryStatusEnum::WrongDropSyntax);
     }
     
     return new DropObject(queryTokens[2]);
@@ -190,12 +199,12 @@ vector<DataType*> QueryParser::parseFieldValues(vector<string> queryTokens) {
         QueryHelper::searchKeyWordInVector(queryTokens, "(") != 0 ||
         QueryHelper::searchKeyWordInVector(queryTokens, ")") != queryTokens.size() - 1
     ) {
-        throw QueryException(QueryStatusEnum::WrongInsertSyntax);
+        throw QueryParserException(QueryStatusEnum::WrongInsertSyntax);
     }
     
     queryTokens = VectorHelper::slice(queryTokens, 1, queryTokens.size() - 2);
     if (queryTokens.size() != 1) {
-        throw QueryException(QueryStatusEnum::WrongInsertSyntax);
+        throw QueryParserException(QueryStatusEnum::WrongInsertSyntax);
     }
     
     vector<string> fieldValues = StringHelper::splitToVector(queryTokens[0], ',');
@@ -207,7 +216,7 @@ vector<DataType*> QueryParser::parseFieldValues(vector<string> queryTokens) {
         } else if (LexicParser::isNumber(fieldValues[i])) {
             dataTypeVector.push_back(new Number(fieldValues[i]));
         } else {
-            throw QueryException(QueryStatusEnum::WrongInsertSyntax);
+            throw QueryParserException(QueryStatusEnum::WrongInsertSyntax);
         }
     }
     
@@ -243,18 +252,18 @@ vector<TableField*> QueryParser::parseFieldDescriptions(vector<string> queryToke
 }
 
 // <field description> ::= <field name> <field type>
-// <field type> ::= TEXT (<unsigned>) | NUMBER
+// <field type> ::= VARCHAR (<unsigned>) | NUMBER
 TableField* QueryParser::parseTableField(vector<string> queryTokens) {
     if (
         queryTokens.size() < 2 ||
         !LexicParser::isIdentifier(queryTokens[0])
     ) {
-        throw QueryException(QueryStatusEnum::WrongCreateSyntax);
+        throw QueryParserException(QueryStatusEnum::WrongCreateSyntax);
     }
     
-    if (queryTokens[1] == "NUMBER" && queryTokens.size() == 2) {
+    if (StringHelper::getUpperString(queryTokens[1]) == "NUMBER" && queryTokens.size() == 2) {
         return new TableField(queryTokens[0], DataTypeEnum::NUMBER);
-    } else if (queryTokens[1] == "TEXT" && queryTokens.size() == 5) {
+    } else if (StringHelper::getUpperString(queryTokens[1]) == "VARCHAR" && queryTokens.size() == 5) {
         if (
             QueryHelper::searchKeyWordInVector(queryTokens, "(") == 2 ||
             QueryHelper::searchKeyWordInVector(queryTokens, ")") == 4
@@ -263,9 +272,8 @@ TableField* QueryParser::parseTableField(vector<string> queryTokens) {
             return new TableField(queryTokens[0], DataTypeEnum::VARCHAR);
         }
     } else {
-        throw QueryException(QueryStatusEnum::WrongCreateSyntax);
+        throw QueryParserException(QueryStatusEnum::WrongCreateSyntax);
     }
-    
 }
 
 // <WHERE-cluase> ::= WHERE <logic expression> | WHERE ALL
@@ -274,7 +282,7 @@ OrCondition* QueryParser::parseWhereClause(vector<string> queryTokens) {
     StringHelper::toUpperCase(command);
 
     if (command != "WHERE") {
-        throw QueryException(QueryStatusEnum::WrongWhereClauseSyntax);
+        throw QueryParserException(QueryStatusEnum::WrongWhereClauseSyntax);
     }
     
     int andKeyWordIndex = QueryHelper::searchKeyWordInVector(queryTokens, "ALL");
@@ -284,7 +292,7 @@ OrCondition* QueryParser::parseWhereClause(vector<string> queryTokens) {
     } else if (andKeyWordIndex == 1) {
         return NULL;
     } else {
-        throw QueryException(QueryStatusEnum::WrongWhereClauseSyntax);
+        throw QueryParserException(QueryStatusEnum::WrongWhereClauseSyntax);
     }
 }
 
@@ -294,7 +302,7 @@ OrCondition* QueryParser::parseLogicExpression(vector<string> queryTokens) {
         StringHelper::getUpperString(queryTokens[0]) == "OR" ||
         StringHelper::getUpperString(queryTokens[queryTokens.size() - 1]) == "OR"
     ) {
-        throw QueryException(QueryStatusEnum::WrongWhereClauseSyntax);
+        throw QueryParserException(QueryStatusEnum::WrongWhereClauseSyntax);
     }
     
     OrCondition* node = new OrCondition;
@@ -318,7 +326,7 @@ AndCondition* QueryParser::parseLogicTerm(vector<string> queryTokens) {
         StringHelper::getUpperString(queryTokens[0]) == "AND" ||
         StringHelper::getUpperString(queryTokens[queryTokens.size() - 1]) == "AND"
     ) {
-        throw QueryException(QueryStatusEnum::WrongWhereClauseSyntax);
+        throw QueryParserException(QueryStatusEnum::WrongWhereClauseSyntax);
     }
     
     AndCondition* node = new AndCondition;
@@ -363,7 +371,7 @@ BinaryCondition* QueryParser::parseOperation(vector<string> queryTokens) {
     } else if (QueryHelper::searchKeyWordInVector(queryTokens, "IN") != -1) {
         return QueryParser::parseSetOperation(queryTokens);
     } else {
-        throw QueryException(QueryStatusEnum::WrongWhereClauseSyntax);
+        throw QueryParserException(QueryStatusEnum::WrongWhereClauseSyntax);
     }
 }
 
@@ -377,23 +385,23 @@ RelationCondition* QueryParser::parseRelation(vector<string> queryTokens) {
             QueryHelper::searchKeyWordInVector(queryTokens, ">") != 1 &&
             QueryHelper::searchKeyWordInVector(queryTokens, "<") != 1
         ) {
-            throw QueryException(QueryStatusEnum::WrongWhereClauseSyntax);
+            throw QueryParserException(QueryStatusEnum::WrongWhereClauseSyntax);
         }
         relationType = queryTokens[1];
     } else if (queryTokens.size() == 4) {
         if (QueryHelper::searchKeyWordInVector(queryTokens, "=") != 2) {
-            throw QueryException(QueryStatusEnum::WrongWhereClauseSyntax);
+            throw QueryParserException(QueryStatusEnum::WrongWhereClauseSyntax);
         }
         if (
             QueryHelper::searchKeyWordInVector(queryTokens, "!") != 1 &&
             QueryHelper::searchKeyWordInVector(queryTokens, ">") != 1 &&
             QueryHelper::searchKeyWordInVector(queryTokens, "<") != 1
         ) {
-            throw QueryException(QueryStatusEnum::WrongWhereClauseSyntax);
+            throw QueryParserException(QueryStatusEnum::WrongWhereClauseSyntax);
         }
         relationType = queryTokens[1] + queryTokens[2];
     } else {
-        throw QueryException(QueryStatusEnum::WrongWhereClauseSyntax);
+        throw QueryParserException(QueryStatusEnum::WrongWhereClauseSyntax);
     }
     
     BaseOperand* operand1;
@@ -406,7 +414,7 @@ RelationCondition* QueryParser::parseRelation(vector<string> queryTokens) {
     } else if (LexicParser::isNumber(queryTokens[0])) {
         operand1 = new NumberOperand(stold(queryTokens[0]));
     } else {
-        throw QueryException(QueryStatusEnum::WrongWhereClauseSyntax);
+        throw QueryParserException(QueryStatusEnum::WrongWhereClauseSyntax);
     }
     
     if (LexicParser::isIdentifier(queryTokens[queryTokens.size() - 1])) {
@@ -416,7 +424,7 @@ RelationCondition* QueryParser::parseRelation(vector<string> queryTokens) {
     } else if (LexicParser::isNumber(queryTokens[queryTokens.size() - 1])) {
         operand2 = new NumberOperand(stold(queryTokens[queryTokens.size() - 1]));
     } else {
-        throw QueryException(QueryStatusEnum::WrongWhereClauseSyntax);
+        throw QueryParserException(QueryStatusEnum::WrongWhereClauseSyntax);
     }
     
     return new RelationCondition(operand1, operand2, relationType);
@@ -428,7 +436,7 @@ LikeCondition* QueryParser::parseLikeOperation(vector<string> queryTokens) {
     bool isNegated = notKeyWordIndex != -1;
 
     if (isNegated && notKeyWordIndex != 1) {
-        throw QueryException(QueryStatusEnum::WrongWhereClauseSyntax);
+        throw QueryParserException(QueryStatusEnum::WrongWhereClauseSyntax);
     } else if (isNegated) {
         VectorHelper::removeByIndex(queryTokens, notKeyWordIndex);
     }
@@ -439,7 +447,7 @@ LikeCondition* QueryParser::parseLikeOperation(vector<string> queryTokens) {
         !LexicParser::isIdentifier(queryTokens[0]) ||
         !LexicParser::isString(queryTokens[2])
     ) {
-        throw QueryException(QueryStatusEnum::WrongWhereClauseSyntax);
+        throw QueryParserException(QueryStatusEnum::WrongWhereClauseSyntax);
     }
     
     return new LikeCondition(new TableFieldOperand(queryTokens[0]), new StringOperand(queryTokens[2]), isNegated);
@@ -451,7 +459,7 @@ InCondition* QueryParser::parseSetOperation(vector<string> queryTokens) {
     bool isNegated = (notKeyWordIndex != -1);
     
     if (isNegated && (notKeyWordIndex != 1)) {
-        throw QueryException(QueryStatusEnum::WrongWhereClauseSyntax);
+        throw QueryParserException(QueryStatusEnum::WrongWhereClauseSyntax);
     } else if (isNegated) {
         VectorHelper::removeByIndex(queryTokens, notKeyWordIndex);
     }
@@ -462,7 +470,7 @@ InCondition* QueryParser::parseSetOperation(vector<string> queryTokens) {
         !LexicParser::isIdentifier(queryTokens[0]) ||
         !LexicParser::isSet(queryTokens[3])
     ) {
-        throw QueryException(QueryStatusEnum::WrongWhereClauseSyntax);
+        throw QueryParserException(QueryStatusEnum::WrongWhereClauseSyntax);
     }
     
     BaseOperand* operandSet;

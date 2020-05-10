@@ -16,7 +16,7 @@ InCondition::InCondition(BaseOperand* operand1, BaseOperand* operand2, bool isNe
 
 }
 
-bool InCondition::calculate(vector<TableField> fields, vector<DataType*> row) {
+bool InCondition::calculate(vector<TableField*> fields, vector<DataType*> row) {
     if (
         operand1->getType() != OperandTypeEnum::TABLE_FIELD ||
         !(operand2->getType() == OperandTypeEnum::NUMBER_SET || operand2->getType() == OperandTypeEnum::STRING_SET)
@@ -35,7 +35,7 @@ bool InCondition::calculate(vector<TableField> fields, vector<DataType*> row) {
         field = new TableField(fieldOperand->getValue(), DataTypeEnum::VARCHAR);
     }
 
-    int fieldIndex = VectorHelper::findInVector(fields, *field);
+    int fieldIndex = VectorHelper::findInPointerVector(fields, field);
     if (fieldIndex == -1) {
         cout << "Couldn't find field with this type" << endl;
         return false;

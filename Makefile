@@ -15,5 +15,6 @@ test:
 	g++ test/query_parser/InsertQuery.test.cpp -w -o out/test/insert.test.out
 	g++ test/query_parser/LexicParser.test.cpp -w -o out/test/lexic.test.out
 	g++ test/query_processor/conditionTree.test.cpp -w -o out/test/tree.test.out
+	g++ test/engine/Engine.test.cpp -w -o out/test/engine.test.out
 
 .PHONY: all test

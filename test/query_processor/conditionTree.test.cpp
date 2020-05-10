@@ -40,11 +40,11 @@ template<typename T> string rowToString(vector<T> object) {
     return message;
 }
 
-template<typename T> string fieldsToString(vector<T> object) {
+template<typename T> string fieldsToString(vector<T*> object) {
     string message;
     message += "Fields: {\n";
     for (int i = 0; i < object.size(); ++i) {
-        message += "   " + object[i].toString();
+        message += "   " + object[i]->toString();
         if (i != object.size() - 1) {
             message += ",";
         }
@@ -59,10 +59,10 @@ template<typename T> string fieldsToString(vector<T> object) {
 void testRelationCondition() {
     cout << "WHERE f2 = 'qwerty'" << endl << endl;
 
-    vector<TableField> fields;
-    fields.push_back(TableField("f1", DataTypeEnum::NUMBER));
-    fields.push_back(TableField("f2", DataTypeEnum::VARCHAR));
-    fields.push_back(TableField("f3", DataTypeEnum::NUMBER));
+    vector<TableField*> fields;
+    fields.push_back(new TableField("f1", DataTypeEnum::NUMBER));
+    fields.push_back(new TableField("f2", DataTypeEnum::VARCHAR));
+    fields.push_back(new TableField("f3", DataTypeEnum::NUMBER));
 
     vector<DataType*> row;
     row.push_back(new Number("1"));
@@ -160,10 +160,10 @@ void testRelationCondition() {
 void testInCondition() {
     cout << "WHERE f1 IN (6, 10, 28)" << endl << endl;
 
-    vector<TableField> fields;
-    fields.push_back(TableField("f1", DataTypeEnum::NUMBER));
-    fields.push_back(TableField("f2", DataTypeEnum::VARCHAR));
-    fields.push_back(TableField("f3", DataTypeEnum::NUMBER));
+    vector<TableField*> fields;
+    fields.push_back(new TableField("f1", DataTypeEnum::NUMBER));
+    fields.push_back(new TableField("f2", DataTypeEnum::VARCHAR));
+    fields.push_back(new TableField("f3", DataTypeEnum::NUMBER));
 
     vector<DataType*> row;
     row.push_back(new Number("1"));
@@ -281,10 +281,10 @@ void testInCondition() {
 void testLikeCondition() {
     cout << "WHERE f2 LIKE '%ab'" << endl << endl;
 
-    vector<TableField> fields;
-    fields.push_back(TableField("f1", DataTypeEnum::NUMBER));
-    fields.push_back(TableField("f2", DataTypeEnum::VARCHAR));
-    fields.push_back(TableField("f3", DataTypeEnum::NUMBER));
+    vector<TableField*> fields;
+    fields.push_back(new TableField("f1", DataTypeEnum::NUMBER));
+    fields.push_back(new TableField("f2", DataTypeEnum::VARCHAR));
+    fields.push_back(new TableField("f3", DataTypeEnum::NUMBER));
 
     vector<DataType*> row;
     row.push_back(new Number("1"));
@@ -416,10 +416,10 @@ void testLikeCondition() {
 }
 
 void testAndCondition() {
-    vector<TableField> fields;
-    fields.push_back(TableField("f1", DataTypeEnum::NUMBER));
-    fields.push_back(TableField("f2", DataTypeEnum::VARCHAR));
-    fields.push_back(TableField("f3", DataTypeEnum::NUMBER));
+    vector<TableField*> fields;
+    fields.push_back(new TableField("f1", DataTypeEnum::NUMBER));
+    fields.push_back(new TableField("f2", DataTypeEnum::VARCHAR));
+    fields.push_back(new TableField("f3", DataTypeEnum::NUMBER));
 
     vector<DataType*> row;
     row.push_back(new Number("3"));
@@ -515,10 +515,10 @@ void testAndCondition() {
 }
 
 void testOrCondition() {
-    vector<TableField> fields;
-    fields.push_back(TableField("f1", DataTypeEnum::NUMBER));
-    fields.push_back(TableField("f2", DataTypeEnum::VARCHAR));
-    fields.push_back(TableField("f3", DataTypeEnum::NUMBER));
+    vector<TableField*> fields;
+    fields.push_back(new TableField("f1", DataTypeEnum::NUMBER));
+    fields.push_back(new TableField("f2", DataTypeEnum::VARCHAR));
+    fields.push_back(new TableField("f3", DataTypeEnum::NUMBER));
 
     vector<DataType*> row;
     row.push_back(new Number("3"));

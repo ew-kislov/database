@@ -3,7 +3,7 @@
 
 #include <string>
 
-string queryStatusStrings[11] = {
+string queryStatusStrings[13] = {
     "Query must end with semicolon",
     "Unknown command",
     "Wrong SELECT query syntax",
@@ -14,7 +14,8 @@ string queryStatusStrings[11] = {
     "Wrong DROP query syntax",
     "Wrong WHERE clause syntax",
     "Wrong braces placement",
-    "Invalid string operand"
+    "Invalid string operand",
+    "Wrong table field name",
 };
 
 #endif

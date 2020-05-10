@@ -12,6 +12,8 @@
 #include "query_processor/SelectObject.cpp"
 #include "query_processor/QueryProcessor.cpp"
 
+#include "engine/EngineException.cpp"
+
 using namespace std;
 
 #define PORT 3000
@@ -20,42 +22,38 @@ void handler(ClientSocket clientSocket) {
     try {
         while (1) {
             string message = clientSocket.read();
-            message = "Replying: " + message;
-            cout << message << endl;
-            clientSocket.write(message); 
+            string result;
+            
+            try {
+                QueryObject* queryObject = QueryParser::parseQuery(message);
+                result = QueryProcessor::executeQuery(queryObject)->toString();
+            } catch(const QueryParserException &ex) {
+                result = ex.what();
+            } catch(const EngineException &ex) {
+                result = ex.what();
+            }
+
+            clientSocket.write(result);
         }
     } catch (const SocketException &ex) {
-        cout << "Socket exception:\n\t" << ex.what() << endl;
+        cout << "Socket exception: " << ex.what() << endl;
         exit(0);
     }
 }
 
 int main() {
-    // try {
-    //    ServerSocket serverSocket(PORT);
-    //    serverSocket.listen();
+    try {
+       ServerSocket serverSocket(PORT);
+       serverSocket.listen();
 
-    //    while (1) {
-    //         ClientSocket clientSocket = serverSocket.accept();
-    //         clientSocket.handle(handler);
-    //    }
+       while (1) {
+            ClientSocket clientSocket = serverSocket.accept();
+            clientSocket.handle(handler);
+       }
 
-    //    serverSocket.close();
-    // } catch (const SocketException &ex) {
-    //         cout << "Socket exception:\n\t" << ex.what() << endl;
-    // }
-
-    while (true) {
-        string query;
-        getline(cin, query);
-
-        try {
-            QueryObject* queryObject = QueryParser::parseQuery(query);
-            string result = QueryProcessor::executeQuery(queryObject);
-            cout << result << endl;
-        } catch(const exception &ex) {
-            cout << ex.what() << endl;
-        }
+       serverSocket.close();
+    } catch (const SocketException &ex) {
+        cout << "Socket exception: " << ex.what() << endl;
     }
     
     return 0;

@@ -2,8 +2,7 @@
 
 #include "QueryResult.h"
 
-QueryResult::QueryResult(string table, QueryStatusEnum status, int executionTime) {
+QueryResult::QueryResult(string table, int time) {
     this->table = table;
-    this->status = status;
-    this->executionTime = executionTime;
+    this->time = time;
 }

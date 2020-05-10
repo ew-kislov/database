@@ -12,7 +12,8 @@ enum QueryStatusEnum {
     WrongDropSyntax,
     WrongWhereClauseSyntax,
     WrongBracesPlacement,
-    InvalidStringOperand
+    InvalidStringOperand,
+    WrongTableFieldName
 };
 
 #endif

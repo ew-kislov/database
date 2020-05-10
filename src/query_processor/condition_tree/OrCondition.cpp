@@ -7,7 +7,7 @@
 
 #include <string>
 
-bool OrCondition::calculate(vector<TableField> fields, vector<DataType*> row) {
+bool OrCondition::calculate(vector<TableField*> fields, vector<DataType*> row) {
     for (BaseCondition* operand: operands) {
         if (operand->calculate(fields, row) == true) {
             return true^isNegated;

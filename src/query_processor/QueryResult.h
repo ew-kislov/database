@@ -4,17 +4,15 @@
 #include <string>
 #include <vector>
 
-#include "QueryStatusEnum.h"
-
 using namespace std;
 
 class QueryResult {
     protected:
         string table;
-        QueryStatusEnum status;
-        int executionTime;
+        int time;
     public:
-        QueryResult(string table, QueryStatusEnum status, int executionTime);
+        QueryResult(string table, int time);
+        virtual string toString() = 0;
 };
 
 #endif

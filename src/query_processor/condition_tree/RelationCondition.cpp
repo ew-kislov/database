@@ -10,7 +10,6 @@
 #include <string>
 
 
-// TODO: put in another file
 DataType* getDataTypeOperand(int fieldIndex, vector<DataType*> row, BaseOperand* operand) {
     if (fieldIndex != -1) {
         return row[fieldIndex];
@@ -18,7 +17,7 @@ DataType* getDataTypeOperand(int fieldIndex, vector<DataType*> row, BaseOperand*
         if (operand->getType() == OperandTypeEnum::NUMBER) {
             return new Number(dynamic_cast<NumberOperand*>(operand)->getValue());
         } else {
-            return new Varchar(dynamic_cast<StringOperand*>(operand)->getValue(), false);
+            return new Varchar(dynamic_cast<StringOperand*>(operand)->getValue(), true);
         }
     }
 }
@@ -39,12 +38,12 @@ RelationCondition::RelationCondition(BaseOperand* operand1, BaseOperand* operand
     }
 }
 
-bool RelationCondition::calculate(vector<TableField> fields, vector<DataType*> row) {
+bool RelationCondition::calculate(vector<TableField*> fields, vector<DataType*> row) {
     int fieldIndex1 = -1, fieldIndex2 = -1;
     vector<string> fieldNames;
     
-    for (TableField it: fields) {
-        fieldNames.push_back(it.getName());
+    for (TableField* it: fields) {
+        fieldNames.push_back(it->getName());
     }
     
     if (
@@ -91,7 +90,7 @@ bool RelationCondition::calculate(vector<TableField> fields, vector<DataType*> r
             field = new TableField(fieldOperand->getValue(), DataTypeEnum::VARCHAR);
         }
         
-        *fieldIndex = VectorHelper::findInVector(fields, *field);
+        *fieldIndex = VectorHelper::findInPointerVector(fields, field);
         
         if (*fieldIndex == -1) {
             cout << "Couldn't find field with this type" << endl;

@@ -13,7 +13,7 @@ using namespace std;
 
 class OrCondition: public MultipleCondition, public NegatableCondition {
     public:
-        bool calculate(vector<TableField> fields, vector<DataType*> row);
+        bool calculate(vector<TableField*> fields, vector<DataType*> row);
         string toString(int nestLevel = 1);
 };
 

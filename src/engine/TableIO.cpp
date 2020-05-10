@@ -4,6 +4,7 @@
 
 #include "fcntl.h"
 #include "unistd.h"
+#include <stdio.h>
 
 #include "TableField.cpp"
 #include "Number.cpp"
@@ -272,5 +273,12 @@ namespace TableIO {
 
     void writeRowDeletedFlag(int tableFD, bool deleted) {
         write(tableFD, &deleted, sizeof(bool));
+    }
+
+    void deleteTable(string tableName) {
+        int result = remove((Config::STORAGE_LOCATION + tableName + Config::TABLE_FILE_EXTENSION).c_str());
+        if (result != 0) {
+            throw EngineException(EngineStatusEnum::TableDoesNotExist);
+        }
     }
 }

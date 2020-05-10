@@ -265,3 +265,7 @@ void Engine::deleteFromTable(string tableName, vector<TableRow> rows) {
 
     TableIO::closeFD(tableFD);
 }
+
+void Engine::deleteTable(string table) {
+    TableIO::deleteTable(table);
+}

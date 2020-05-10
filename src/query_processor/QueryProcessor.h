@@ -4,16 +4,16 @@
 #include "../engine/Table.h"
 
 #include "QueryObject.h"
-// #include "QueryResult.h"
+#include "QueryResult.h"
 
 namespace QueryProcessor {
-    string executeQuery(QueryObject* queryObject);
-    string executeSelect(QueryObject* queryObject);
-    string executeInsert(QueryObject* queryObject);
-    string executeUpdate(QueryObject* queryObject);
-    string executeDelete(QueryObject* queryObject);
-    string executeCreate(QueryObject* queryObject);
-    string executeDrop(QueryObject* queryObject);
+    QueryResult* executeQuery(QueryObject* queryObject);
+    QueryResult* executeSelect(QueryObject* queryObject);
+    QueryResult* executeInsert(QueryObject* queryObject);
+    QueryResult* executeUpdate(QueryObject* queryObject);
+    QueryResult* executeDelete(QueryObject* queryObject);
+    QueryResult* executeCreate(QueryObject* queryObject);
+    QueryResult* executeDrop(QueryObject* queryObject);
 }
 
 #endif

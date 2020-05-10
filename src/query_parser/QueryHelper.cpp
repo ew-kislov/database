@@ -5,7 +5,7 @@
 #include <stack>
 
 #include "../shared/StringHelper.cpp"
-#include "QueryException.h"
+#include "QueryParserException.cpp"
 
 using namespace std;
 
@@ -39,7 +39,7 @@ namespace QueryHelper {
             if (queryTokens[i] == "(") {
                 closures.push("(");
             } else if (queryTokens[i] == ")" && closures.empty()) {
-                throw QueryException(QueryStatusEnum::WrongBracesPlacement);
+                throw QueryParserException(QueryStatusEnum::WrongBracesPlacement);
             } else if (queryTokens[i] == ")" && !closures.empty()) {
                 closures.pop();
             }
@@ -61,7 +61,23 @@ namespace QueryHelper {
         StringHelper::replace(query, "\\s*[)]\\s*", " ) ");
         StringHelper::replace(query, "\\s*\\s\\s*", " ");
 
+        bool isQuote = false;
+
+        for (int i = 0; i < query.size(); i++) {
+            if (query[i] == '\'') {
+                isQuote = !isQuote;
+            } else if (query[i] == ' ' && isQuote) {
+                query[i] = '\e';
+            }
+        }
+
         vector<string> queryTokens = StringHelper::splitToVector(query, ' ');
+
+        for (int i = 0; i < queryTokens.size(); i++) {
+            string tokenCopy = queryTokens[i];
+            StringHelper::replace(tokenCopy, "\e", " ");
+            queryTokens[i] = tokenCopy;
+        }
 
         return queryTokens;
     }

@@ -16,6 +16,7 @@ class TableRow {
 
     public:
         TableRow();
+        TableRow(vector<DataType*> values);
         
         void addValue(DataType* value);
         void setValue(int index, DataType* value);

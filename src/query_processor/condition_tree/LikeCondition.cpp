@@ -14,7 +14,7 @@ LikeCondition::LikeCondition(BaseOperand* operand1, BaseOperand* operand2, bool 
     
 }
 
-bool LikeCondition::calculate(vector<TableField> fields, vector<DataType*> row) {
+bool LikeCondition::calculate(vector<TableField*> fields, vector<DataType*> row) {
     if (
         operand1->getType() != OperandTypeEnum::TABLE_FIELD ||
         operand2->getType() != OperandTypeEnum::STRING
@@ -26,7 +26,7 @@ bool LikeCondition::calculate(vector<TableField> fields, vector<DataType*> row) 
     TableFieldOperand* fieldOperand = dynamic_cast<TableFieldOperand*>(operand1);
     TableField* field = new TableField(fieldOperand->getValue(), DataTypeEnum::VARCHAR);
 
-    int fieldIndex = VectorHelper::findInVector(fields, *field);
+    int fieldIndex = VectorHelper::findInPointerVector(fields, field);
     if (fieldIndex == -1) {
         cout << "Couldn't find field with this type";
         // TODO: throw exception

@@ -5,7 +5,7 @@
 #include <ctype.h>
 #include <set>
 
-#include "./QueryException.h"
+#include "./QueryParserException.h"
 #include "../shared/StringHelper.cpp"
 
 using namespace std;
@@ -96,7 +96,7 @@ namespace LexicParser {
             stringLexem.find('\'', 1) != stringLexem.size() - 1 ||
             stringLexem.size() < 3
         ) {
-            throw QueryException(QueryStatusEnum::InvalidStringOperand);
+            throw QueryParserException(QueryStatusEnum::InvalidStringOperand);
         }
 
         return stringLexem.substr(1, stringLexem.size() - 2);
