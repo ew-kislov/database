@@ -14,9 +14,9 @@
 
 #include "engine/EngineException.cpp"
 
-using namespace std;
+#include "ServerConfig.h"
 
-#define PORT 3000
+using namespace std;
 
 void handler(ClientSocket clientSocket) {
     try {
@@ -43,7 +43,7 @@ void handler(ClientSocket clientSocket) {
 
 int main() {
     try {
-       ServerSocket serverSocket(PORT);
+       ServerSocket serverSocket(ServerConfig::PORT);
        serverSocket.listen();
 
        while (1) {

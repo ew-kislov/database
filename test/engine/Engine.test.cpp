@@ -103,9 +103,14 @@ void testUpdate() {
     cout << table2 << endl << endl;
 }
 
+void testDrop() {
+    Engine::deleteTable("some_table");
+}
+
 int main() {
     testCreate();
     testInsert();
     testDelete();
     testUpdate();
+    testDrop();
 }

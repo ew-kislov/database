@@ -22,7 +22,7 @@
 #include "query_processor/SelectObject.cpp"
 #include "query_processor/QueryProcessor.cpp"
 
-#define PORT 3000
+#include "ServerConfig.h"
 
 using namespace std;
 
@@ -41,7 +41,7 @@ void handler(ClientSocket clientSocket) {
 
 int main() {
     try {
-        ClientSocket clientSocket("127.0.0.1", PORT);
+        ClientSocket clientSocket(ServerConfig::HOST, ServerConfig::PORT);
         clientSocket.handle(handler, false);
     } catch (const SocketException &ex) {
         cout << "Socket exception: " << ex.what() << endl;
