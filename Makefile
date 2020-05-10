@@ -3,6 +3,7 @@ main: create_directory compile_main
 test: create_directory compile_test
 create_directory:
 	mkdir -p db
+	chmod -R 777 db
 	mkdir -p out
 	mkdir -p out/main
 	mkdir -p out/test
