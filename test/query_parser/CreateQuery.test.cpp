@@ -17,7 +17,7 @@ using namespace std;
 
 void testValidCreateSingleField() {
     try {
-        string query = "CREATE TABLE t (cat TEXT (12));";
+        string query = "CREATE TABLE t (cat VARCHAR (12));";
         QueryObject* queryObject = QueryParser::parseQuery(query);
         CreateObject* createObject = dynamic_cast<CreateObject*>(queryObject);
         
@@ -78,7 +78,7 @@ void testValidCreateNumberFields() {
 
 void testValidCreateVarcharFields() {
     try {
-        string query = "CREATE TABLE t (cat TEXT (10), doggo TEXT (12), lama TEXT (14));";
+        string query = "CREATE TABLE t (cat VARCHAR (10), doggo VARCHAR (12), lama VARCHAR (14));";
         QueryObject* queryObject = QueryParser::parseQuery(query);
         CreateObject* createObject = dynamic_cast<CreateObject*>(queryObject);
         
@@ -102,7 +102,7 @@ void testValidCreateVarcharFields() {
 
 void testValidCreateMixedFields() {
     try {
-        string query = "CREATE TABLE t (cat NUMBER, doggo TEXT (12), lama NUMBER);";
+        string query = "CREATE TABLE t (cat NUMBER, doggo VARCHAR (12), lama NUMBER);";
         QueryObject* queryObject = QueryParser::parseQuery(query);
         CreateObject* createObject = dynamic_cast<CreateObject*>(queryObject);
         
@@ -126,7 +126,7 @@ void testValidCreateMixedFields() {
 
 void testWrongTableName() {
     try {
-        string query = "CREATE TABLE 'table' (cat NUMBER, doggo TEXT (12), lama NUMBER);";
+        string query = "CREATE TABLE 'table' (cat NUMBER, doggo VARCHAR (12), lama NUMBER);";
         cout << query << endl;
         QueryObject* queryObject = QueryParser::parseQuery(query);
     } catch (exception &ex) {
@@ -134,7 +134,7 @@ void testWrongTableName() {
     }
     
     try {
-        string query = "CREATE TABLE 134 (cat NUMBER, doggo TEXT (12), lama NUMBER);";
+        string query = "CREATE TABLE 134 (cat NUMBER, doggo VARCHAR (12), lama NUMBER);";
         cout << query << endl;
         QueryObject* queryObject = QueryParser::parseQuery(query);
     } catch (exception &ex) {
@@ -144,7 +144,7 @@ void testWrongTableName() {
 
 void testWrongFieldsDescritpion() {
     try {
-        string query = "CREATE TABLE table (doggo TEXT, lama NUMBER);";
+        string query = "CREATE TABLE table (doggo VARCHAR, lama NUMBER);";
         cout << query << endl;
         QueryObject* queryObject = QueryParser::parseQuery(query);
     } catch (exception &ex) {
@@ -152,7 +152,7 @@ void testWrongFieldsDescritpion() {
     }
     
     try {
-        string query = "CREATE TABLE table (doggo TEXT (), lama NUMBER);";
+        string query = "CREATE TABLE table (doggo VARCHAR (), lama NUMBER);";
         cout << query << endl;
         QueryObject* queryObject = QueryParser::parseQuery(query);
     } catch (exception &ex) {
@@ -160,7 +160,7 @@ void testWrongFieldsDescritpion() {
     }
     
     try {
-        string query = "CREATE TABLE table (doggo TEXT (34), lama);";
+        string query = "CREATE TABLE table (doggo VARCHAR (34), lama);";
         cout << query << endl;
         QueryObject* queryObject = QueryParser::parseQuery(query);
     } catch (exception &ex) {
@@ -170,7 +170,7 @@ void testWrongFieldsDescritpion() {
 
 void testMissingBrackets() {
     try {
-        string query = "CREATE TABLE table doggo TEXT (12), lama NUMBER;";
+        string query = "CREATE TABLE table doggo VARCHAR (12), lama NUMBER;";
         cout << query << endl;
         QueryObject* queryObject = QueryParser::parseQuery(query);
     } catch (exception &ex) {

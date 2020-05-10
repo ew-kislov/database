@@ -12,37 +12,13 @@ class DataType {
     protected:
         DataTypeEnum type;
 
-        virtual void parse(string valueString);
+        virtual void parse(string valueString) = 0;
     public:
         DataType(DataTypeEnum type);
 
         DataTypeEnum getType();
 
-        virtual string toString();
-
-        virtual bool operator == (const DataType &dataType) const;
-        virtual bool operator == (const long double numberValue) const;
-        virtual bool operator == (const string stringValue) const;
-
-        virtual bool operator > (const DataType &dataType) const;
-        virtual bool operator > (const long double numberValue) const;
-        virtual bool operator > (const string stringValue) const;
-
-        virtual bool operator < (const DataType &dataType) const;
-        virtual bool operator < (const long double numberValue) const;
-        virtual bool operator < (const string stringValue) const;
-
-        virtual bool operator >= (const DataType &dataType) const;
-        virtual bool operator >= (const long double numberValue) const;
-        virtual bool operator >= (const string stringValue) const;
-
-        virtual bool operator <= (const DataType &dataType) const;
-        virtual bool operator <= (const long double numberValue) const;
-        virtual bool operator <= (const string stringValue) const;
-
-        virtual bool operator != (const DataType &dataType) const;
-        virtual bool operator != (const long double numberValue) const;
-        virtual bool operator != (const string stringValue) const;
+        virtual string toString() = 0;
 };
 
 #endif
