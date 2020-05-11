@@ -243,7 +243,7 @@ void Engine::deleteFromTable(string tableName, vector<TableRow> rows) {
 
             try {
                 value = TableIO::readTableValue(tableFD, fields[i]->getType());
-            } catch(EngineException& e) {
+            } catch(EngineException& e) { // TODO: EOF
                 if (i == 0) {
                     isRowFound = false;
                     break;

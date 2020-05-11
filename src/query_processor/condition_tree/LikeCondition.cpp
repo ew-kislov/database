@@ -36,6 +36,8 @@ bool LikeCondition::calculate(vector<TableField*> fields, vector<DataType*> row)
     StringOperand* stringOperand = dynamic_cast<StringOperand*>(operand2);
 
     string regex = stringOperand->getValue();
+    regex = regex.substr(1, regex.size() - 2);
+
     StringHelper::replace(regex, "%", ".*");
     StringHelper::replace(regex, "_", ".");
 
