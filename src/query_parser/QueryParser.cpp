@@ -35,6 +35,8 @@
 #include "../query_processor/condition_tree/TableFieldOperand.cpp"
 
 #include "../engine/TableField.cpp"
+#include "../engine/NumberField.cpp"
+#include "../engine/VarcharField.cpp"
 
 #include <set>
 #include <string>
@@ -176,7 +178,6 @@ CreateObject* QueryParser::parseCreateQuery(vector<string> queryTokens) {
     ) {
         throw QueryParserException(QueryStatusEnum::WrongCreateSyntax);
     }
-    
     return new CreateObject(queryTokens[2], QueryParser::parseFieldDescriptions(VectorHelper::slice(queryTokens, 4, queryTokens.size() - 2)));
 }
 
@@ -262,14 +263,16 @@ TableField* QueryParser::parseTableField(vector<string> queryTokens) {
     }
     
     if (StringHelper::getUpperString(queryTokens[1]) == "NUMBER" && queryTokens.size() == 2) {
-        return new TableField(queryTokens[0], DataTypeEnum::NUMBER);
+        return new NumberField(queryTokens[0]);
     } else if (StringHelper::getUpperString(queryTokens[1]) == "VARCHAR" && queryTokens.size() == 5) {
         if (
-            QueryHelper::searchKeyWordInVector(queryTokens, "(") == 2 ||
-            QueryHelper::searchKeyWordInVector(queryTokens, ")") == 4
+            QueryHelper::searchKeyWordInVector(queryTokens, "(") == 2 &&
+            QueryHelper::searchKeyWordInVector(queryTokens, ")") == 4 &&
+            StringHelper::matches(queryTokens[3], "[0-9]+")
         ) {
-            // TODO: add queryTokens[3] to TableField* (which is length of VARCHAR)
-            return new TableField(queryTokens[0], DataTypeEnum::VARCHAR);
+            return new VarcharField(queryTokens[0], stoi(queryTokens[3]));
+        } else {
+            throw QueryParserException(QueryStatusEnum::WrongCreateSyntax);
         }
     } else {
         throw QueryParserException(QueryStatusEnum::WrongCreateSyntax);

@@ -11,7 +11,11 @@ enum EngineStatusEnum {
     InvalidValue = 7,
     NoSuchField = 8,
     FieldValueTypesDontMatch = 9,
-    InternalError = 10,
+    WrongFieldType = 10,
+    BadTableDescriptor = 11,
+    TableFieldNameTooLong = 12,
+    WrongTableValueType = 13,
+    VarcharValueTooLong = 14
 };
 
 #endif

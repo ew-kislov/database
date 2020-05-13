@@ -5,8 +5,6 @@
 using namespace std;
 
 namespace Config {
-    string STORAGE_LOCATION = "/Users/evgeniykislov/Documents/msu/prak/sql/db/";
-    string TABLE_FILE_EXTENSION = ".table";
-
-    int MAX_FIELD_NAME_SIZE = 20;
+    const string STORAGE_LOCATION = "/Users/evgeniykislov/Documents/msu/prak/sql/db/";
+    const string TABLE_FILE_EXTENSION = ".table";
 }

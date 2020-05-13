@@ -5,7 +5,7 @@
 
 using namespace std;
 
-const string engineStatusString[11] = {
+const string engineStatusString[15] = {
     "",
     "Table already exists",
     "You don't have permission for this operation",
@@ -16,7 +16,11 @@ const string engineStatusString[11] = {
     "Invalid value given",
     "No such field",
     "Field and value fields don't match",
-    "Internal error"
+    "Wrong table field type",
+    "Bad table descriptor",
+    "Table field name is too long",
+    "Wrong table value type",
+    "Varchar value too long"
 };
 
 #endif

@@ -13,7 +13,7 @@ class CreateObject: public QueryObject {
     
         vector<TableField*> getTableFields();
     
-        string toString();
+        virtual string toString();
 };
 
 #endif

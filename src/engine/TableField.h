@@ -12,6 +12,8 @@ class TableField {
         string name;
         DataTypeEnum type;
     public:
+        static const int MAX_FIELD_LENGTH = 20;
+
         TableField(string name, DataTypeEnum type);
 
         string getName();

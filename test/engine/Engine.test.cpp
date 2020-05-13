@@ -5,6 +5,8 @@
 #include "../../src/engine/Varchar.cpp"
 #include "../../src/engine/Number.cpp"
 #include "../../src/engine/TableField.cpp"
+#include "../../src/engine/NumberField.cpp"
+#include "../../src/engine/VarcharField.cpp"
 #include "../../src/engine/Table.cpp"
 #include "../../src/engine/Engine.cpp"
 #include "../../src/engine/DataTypeEnum.h"
@@ -15,9 +17,9 @@ void testCreate() {
     cout << "Test: Engine::create" << endl << endl;
 
     vector<TableField*> fields;
-    fields.push_back(new TableField("f1", DataTypeEnum::NUMBER));
-    fields.push_back(new TableField("f2", DataTypeEnum::VARCHAR));
-    fields.push_back(new TableField("f3", DataTypeEnum::VARCHAR));
+    fields.push_back(new NumberField("f1"));
+    fields.push_back(new VarcharField("f2", 20));
+    fields.push_back(new VarcharField("f3", 20));
 
     Table table("some_table", fields);
 
@@ -62,6 +64,7 @@ void testInsert() {
     Engine::insertIntoTable("some_table", rows);
 
     Table table2 = Engine::loadTable("some_table", true);
+
     cout << table2 << endl << endl;
 }
 

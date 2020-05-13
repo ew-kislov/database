@@ -10,13 +10,18 @@
 #include "../shared/VectorHelper.cpp"
 
 #include "Table.cpp"
+#include "TableRow.cpp"
+
 #include "TableField.cpp"
+#include "NumberField.cpp"
+#include "VarcharField.cpp"
+
 #include "DataTypeHelper.cpp"
 #include "DataTypeEnum.h"
+
 #include "DataType.cpp"
 #include "Varchar.cpp"
 #include "Number.cpp"
-#include "TableRow.cpp"
 
 #include "TableIO.cpp"
 
@@ -32,12 +37,15 @@ using namespace std;
  * @param table - Table object containing name and fields
  * @throws EngineException
  */
-void Engine::createTable(Table table) {
-    int tableFD =  TableIO::getFD(table.getName(), TableIO::CREATE_WRITE_MODE);
+void Engine::createTable(Table table) throw(EngineException) {
+    int tableFD = TableIO::getFD(table.getName(), TableIO::CREATE_WRITE_MODE);
     
     TableIO::writeFieldsNumber(tableFD, table.getFields().size());
 
     for (TableField* field : table.getFields()) {
+        if (field->getName().size() > TableField::MAX_FIELD_LENGTH) {
+            throw EngineException(EngineStatusEnum::TableFieldNameTooLong);
+        }
         TableIO::writeTableField(tableFD, field);
     }
 
@@ -51,7 +59,7 @@ void Engine::createTable(Table table) {
  * @throws EngineException
  * @returns Table object
  */
-Table Engine::loadTable(string tableName, bool withRows) {
+Table Engine::loadTable(string tableName, bool withRows) throw (EngineException) {
     int tableFD =  TableIO::getFD(tableName, TableIO::READ_MODE);
     
     int fieldsNumber = TableIO::readFieldsNumber(tableFD);
@@ -78,7 +86,7 @@ Table Engine::loadTable(string tableName, bool withRows) {
             DataType* value;
 
             try {
-                value = TableIO::readTableValue(tableFD, fields[i]->getType());
+                value = TableIO::readTableValue(tableFD, fields[i]);
             } catch(EngineException& e) {
                 if (i == 0) {
                     isRowFound = false;
@@ -110,11 +118,12 @@ Table Engine::loadTable(string tableName, bool withRows) {
  * @param rows - rows to be inserted
  * @throws EngineException
  */
-void Engine::insertIntoTable(string tableName, vector<TableRow> rows) {
+void Engine::insertIntoTable(string tableName, vector<TableRow> rows) throw (EngineException) {
     int tableFD = TableIO::getFD(tableName, TableIO::WRITE_MODE);
     int seekResult = lseek(tableFD, 0, SEEK_END);
 
     Table table = Engine::loadTable(tableName);
+    vector<TableField*> fields = table.getFields();
 
     for (TableRow row: rows) {
         vector<DataType*> values = row.getValues();
@@ -129,7 +138,7 @@ void Engine::insertIntoTable(string tableName, vector<TableRow> rows) {
                 throw EngineException(EngineStatusEnum::WrongValueType);
             }
 
-            TableIO::writeTableValue(tableFD, values[i]);
+            TableIO::writeTableValue(tableFD, fields[i], values[i]);
         }
 
         TableIO::writeRowDeletedFlag(tableFD, row.isDeleted());
@@ -147,7 +156,7 @@ void Engine::insertIntoTable(string tableName, vector<TableRow> rows) {
  * @param value - new value of field
  * @throws EngineException
  */
-void Engine::updateValuesInTable(string tableName, vector<TableRow> rows, TableField* field, DataType* value) {
+void Engine::updateValuesInTable(string tableName, vector<TableRow> rows, TableField* field, DataType* value) throw (EngineException) {
     if (field->getType() != value->getType()) {
         throw EngineException(EngineStatusEnum::FieldValueTypesDontMatch);
     }
@@ -180,7 +189,7 @@ void Engine::updateValuesInTable(string tableName, vector<TableRow> rows, TableF
             DataType* value;
 
             try {
-                value = TableIO::readTableValue(tableFD, fields[i]->getType(), bytesRead);
+                value = TableIO::readTableValue(tableFD, fields[i], bytesRead);
                 rowSize += bytesRead;
             } catch(EngineException& e) {
                 if (i == 0) {
@@ -205,7 +214,7 @@ void Engine::updateValuesInTable(string tableName, vector<TableRow> rows, TableF
 
                 vector<DataType*> values = row.getValues();
                 for (int i = 0; i < values.size(); i++) {
-                    TableIO::writeTableValue(tableFD, values[i]);
+                    TableIO::writeTableValue(tableFD, fields[i], values[i]);
                 }
                 TableIO::writeRowDeletedFlag(tableFD, row.isDeleted());
             }
@@ -221,7 +230,7 @@ void Engine::updateValuesInTable(string tableName, vector<TableRow> rows, TableF
  * @param rows - rows to be deleted
  * @throws EngineException
  */
-void Engine::deleteFromTable(string tableName, vector<TableRow> rows) {
+void Engine::deleteFromTable(string tableName, vector<TableRow> rows) throw (EngineException) {
     int tableFD =  TableIO::getFD(tableName, TableIO::READ_WRITE_MODE);
     
     int fieldsNumber = TableIO::readFieldsNumber(tableFD);
@@ -242,7 +251,7 @@ void Engine::deleteFromTable(string tableName, vector<TableRow> rows) {
             DataType* value;
 
             try {
-                value = TableIO::readTableValue(tableFD, fields[i]->getType());
+                value = TableIO::readTableValue(tableFD, fields[i]);
             } catch(EngineException& e) { // TODO: EOF
                 if (i == 0) {
                     isRowFound = false;
@@ -266,6 +275,6 @@ void Engine::deleteFromTable(string tableName, vector<TableRow> rows) {
     TableIO::closeFD(tableFD);
 }
 
-void Engine::deleteTable(string table) {
+void Engine::deleteTable(string table) throw (EngineException) {
     TableIO::deleteTable(table);
 }

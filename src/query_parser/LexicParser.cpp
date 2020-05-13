@@ -137,4 +137,13 @@ namespace LexicParser {
         
         return outpSet;
     }
+
+    bool isInt(const string& inpString) {
+        for (int i = 0; i < inpString.size(); i++) {
+            if (!isdigit(inpString[i])) {
+                return false;
+            }
+        }
+        return true;
+    }
 }
