@@ -41,10 +41,21 @@ namespace VectorHelper {
         return vector<T>(inpVector.begin() + startIndex, inpVector.begin() + endIndex + 1);
     }
 
+    /*
+     * Removes element by index
+     * @param inpVector - input vector
+     * @param index
+     */
     template<class T> void removeByIndex(vector<T> &inpVector, int index) {
         inpVector.erase(inpVector.begin() + index);
     }
 
+    /*
+     * Finds element in vector
+     * @param inpVector - input vector
+     * @param element - element to be found
+     * @returns index of found element or -1
+     */
     template<typename T> int findInVector(const vector<T>  &inpVector, const T &element) {
         auto it = std::find(inpVector.begin(), inpVector.end(), element);
     
@@ -56,6 +67,12 @@ namespace VectorHelper {
         }
     }
 
+    /*
+     * Finds element in pointer vector
+     * @param inpVector - input vector
+     * @param element - pointer element to be found
+     * @returns index of found element or -1
+     */
     template<typename T> int findInPointerVector(vector<T*>  &inpVector, T* &element) {
         for (int i = 0; i < inpVector.size(); i++) {
             if (*inpVector[i] == *element) {

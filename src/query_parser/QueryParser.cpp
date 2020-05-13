@@ -140,7 +140,7 @@ UpdateObject* QueryParser::parseUpdateQuery(vector<string> queryTokens) {
         value = new Number(queryTokens[5]);
     } else {
         field = new TableField(queryTokens[3], DataTypeEnum::VARCHAR);
-        value = new Varchar(queryTokens[5]);
+        value = new Varchar(queryTokens[5], true);
     }
 
     int wherePosition = QueryHelper::searchKeyWordInVector(queryTokens, "WHERE");
@@ -213,7 +213,7 @@ vector<DataType*> QueryParser::parseFieldValues(vector<string> queryTokens) {
     
     for (int i = 0; i < fieldValues.size(); ++i) {
         if (LexicParser::isString(fieldValues[i])) {
-            dataTypeVector.push_back(new Varchar(fieldValues[i]));
+            dataTypeVector.push_back(new Varchar(fieldValues[i], true));
         } else if (LexicParser::isNumber(fieldValues[i])) {
             dataTypeVector.push_back(new Number(fieldValues[i]));
         } else {

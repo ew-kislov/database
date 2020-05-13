@@ -33,7 +33,7 @@
 using namespace std;
 
 /*
- * creates table with given name and fields
+ * Creates table with given name and fields
  * @param table - Table object containing name and fields
  * @throws EngineException
  */
@@ -53,7 +53,7 @@ void Engine::createTable(Table table) throw(EngineException) {
 }
 
 /*
- * loads table with given name, optionally with rows
+ * Loads table with given name, optionally with rows
  * @param tableName - name of table
  * @param withRows - if true returns table with rows and fields, otherwise only fields
  * @throws EngineException
@@ -61,20 +61,15 @@ void Engine::createTable(Table table) throw(EngineException) {
  */
 Table Engine::loadTable(string tableName, bool withRows) throw (EngineException) {
     int tableFD =  TableIO::getFD(tableName, TableIO::READ_MODE);
-    
     int fieldsNumber = TableIO::readFieldsNumber(tableFD);
-
-    int headerOffset = 0;
-    int bytesRead = 0;
 
     vector<TableField*> fields;
     for (int i = 0; i < fieldsNumber; i++) {
-        fields.push_back(TableIO::readTableField(tableFD, bytesRead));
-        headerOffset += bytesRead;
+        fields.push_back(TableIO::readTableField(tableFD));
     }
 
     if (!withRows) {
-        return Table(tableName, fields, headerOffset);
+        return Table(tableName, fields);
     }
 
     vector<TableRow> rows;
@@ -108,12 +103,12 @@ Table Engine::loadTable(string tableName, bool withRows) throw (EngineException)
 
     TableIO::closeFD(tableFD);
 
-    return Table(tableName, fields, rows, headerOffset);
+    return Table(tableName, fields, rows);
 }
 
 
 /*
- * inserts rows into table
+ * Inserts rows into table
  * @param tableName - name of table
  * @param rows - rows to be inserted
  * @throws EngineException
@@ -149,7 +144,7 @@ void Engine::insertIntoTable(string tableName, vector<TableRow> rows) throw (Eng
 
 
 /*
- * updates table rows with given value
+ * Updates table rows with given value
  * @param tableName - name of table
  * @param rows - rows to be updated
  * @param field - field to be updated
@@ -225,7 +220,7 @@ void Engine::updateValuesInTable(string tableName, vector<TableRow> rows, TableF
 }
 
 /*
- * deletes given rows from table
+ * Deletes given rows from table
  * @param tableName - name of table
  * @param rows - rows to be deleted
  * @throws EngineException
@@ -275,6 +270,10 @@ void Engine::deleteFromTable(string tableName, vector<TableRow> rows) throw (Eng
     TableIO::closeFD(tableFD);
 }
 
+/*
+ * Deletes table with given name
+ * @param table - table name to be deleted
+ */
 void Engine::deleteTable(string table) throw (EngineException) {
     TableIO::deleteTable(table);
 }

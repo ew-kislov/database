@@ -14,7 +14,7 @@ class Varchar: public DataType {
 
         void parse(string valueString);
     public:
-        Varchar(string valueString, bool shouldParse = true);
+        Varchar(string valueString, bool shouldParse);
 
         string getValue();
         string toString();

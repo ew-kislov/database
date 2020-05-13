@@ -11,7 +11,6 @@ using namespace std;
 class TableRow {
     private:
         vector<DataType*> values;
-        vector<DataType*> prevValues;
         bool deleted;
 
     public:

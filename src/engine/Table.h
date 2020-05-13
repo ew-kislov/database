@@ -15,17 +15,14 @@ class Table {
         string name;
         vector<TableField*> fields;
         vector<TableRow> rows;
-        int headerOffset;
     public:
         Table();
         Table(string name, vector<TableField*> fields);
-        Table(string name, vector<TableField*> fields, int headerOffset);
-        Table(string name, vector<TableField*> fields, vector<TableRow> rows, int headerOffset);
+        Table(string name, vector<TableField*> fields, vector<TableRow> rows);
 
         string getName();
         vector<TableField*> getFields();
         vector<TableRow> getRows();
-        int getHeaderOffset();
 
         string toString();
 

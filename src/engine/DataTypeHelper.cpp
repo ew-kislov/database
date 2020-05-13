@@ -17,7 +17,7 @@ namespace DataTypeHelper {
         if (dataTypeEnum == DataTypeEnum::NUMBER) {
             return new Number(valueString);
         } else if (dataTypeEnum == DataTypeEnum::VARCHAR) {
-            return new Varchar(valueString);
+            return new Varchar(valueString, true);
         }
     }
 
