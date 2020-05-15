@@ -17,7 +17,7 @@ using namespace std;
 
 class BaseSocket {
     private:
-        static const int BUFFER_SIZE = 512;
+        static const int BUFFER_SIZE = 1E5;
     protected:
         int socketFd;
         string host;

@@ -145,7 +145,6 @@ TableField *TableIO::readTableField(int tableFD, int &bytesRead) throw (EngineEx
             return new VarcharField(name, length);
         }
         default:
-            cout << "readTableField" << endl;
             throw EngineException(EngineStatusEnum::WrongFieldType);
     }
 }
@@ -167,7 +166,9 @@ DataType *TableIO::readTableValue(int tableFD, TableField *field, int &bytesRead
             long double numberValue;
 
             result = read(tableFD, &numberValue, sizeof(long double));
-            if (result <= 0) {
+            if (result == 0) {
+                return nullptr;
+            } else if (result < 0) {
                 throw EngineException(EngineStatusEnum::TableStructureCorrupted);
             }
 
@@ -181,13 +182,15 @@ DataType *TableIO::readTableValue(int tableFD, TableField *field, int &bytesRead
             int length;
 
             result = read(tableFD, &length, sizeof(int));
-            if (result <= 0) {
+            if (result == 0) {
+                return nullptr;
+            } else if (result < 0) {
                 throw EngineException(EngineStatusEnum::TableStructureCorrupted);
             }
             bytesRead += result;
 
             result = read(tableFD, varcharValue, varcharField->getLength() * sizeof(char));
-            if (result <= 0) {
+            if (result < 0) {
                 throw EngineException(EngineStatusEnum::TableStructureCorrupted);
             }
             bytesRead += result;
@@ -244,17 +247,17 @@ void TableIO::writeTableField(int tableFD, TableField *field) throw (EngineExcep
     int result;
 
     result = write(tableFD, &nameLength, sizeof(int));
-    if (result < 0) {
+    if (result <= 0) {
         throw EngineException(EngineStatusEnum::TableStructureCorrupted);
     }
 
     result = write(tableFD, name, nameLength * sizeof(char));
-    if (result < 0) {
+    if (result <= 0) {
         throw EngineException(EngineStatusEnum::TableStructureCorrupted);
     }
 
     result = write(tableFD, &type, sizeof(int));
-    if (result < 0) {
+    if (result <= 0) {
         throw EngineException(EngineStatusEnum::TableStructureCorrupted);
     }
 
@@ -266,14 +269,13 @@ void TableIO::writeTableField(int tableFD, TableField *field) throw (EngineExcep
             int length = varcharField->getLength();
 
             result = write(tableFD, &length, sizeof(int));
-            if (result < 0) {
+            if (result <= 0) {
                 throw EngineException(EngineStatusEnum::TableStructureCorrupted);
             }
 
             break;
         }
         default:
-            cout << "writeTableField " << name << " " << type << endl;
             throw EngineException(EngineStatusEnum::WrongFieldType);
     }
 }
@@ -337,8 +339,8 @@ void TableIO::writeTableValue(int tableFD, TableField *field, DataType *value) t
  */
 void TableIO::writeRowDeletedFlag(int tableFD, bool deleted) throw (EngineException) {
     int result = write(tableFD, &deleted, sizeof(bool));
-    if (result != 0) {
-        throw EngineException(EngineStatusEnum::TableDoesNotExist);
+    if (result <= 0) {
+        throw EngineException(EngineStatusEnum::TableStructureCorrupted);
     }
 }
 
@@ -349,7 +351,7 @@ void TableIO::writeRowDeletedFlag(int tableFD, bool deleted) throw (EngineExcept
  */
 void TableIO::deleteTable(string tableName) throw (EngineException) {
     int result = remove((Config::STORAGE_LOCATION + tableName + Config::TABLE_FILE_EXTENSION).c_str());
-    if (result != 0) {
-        throw EngineException(EngineStatusEnum::TableDoesNotExist);
+    if (result <= 0) {
+        throw EngineException(EngineStatusEnum::TableStructureCorrupted);
     }
 }

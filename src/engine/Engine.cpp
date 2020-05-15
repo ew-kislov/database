@@ -76,19 +76,14 @@ Table Engine::loadTable(string tableName, bool withRows) throw (EngineException)
 
     bool isRowFound = true;
     while (isRowFound) {
+        int bytesRead = 0;
         TableRow row;
         for (int i = 0; i < fieldsNumber; i++) {
             DataType* value;
 
-            try {
-                value = TableIO::readTableValue(tableFD, fields[i]);
-            } catch(EngineException& e) {
-                if (i == 0) {
-                    isRowFound = false;
-                    break;
-                } else {
-                    throw;
-                }
+            value = TableIO::readTableValue(tableFD, fields[i], bytesRead);
+            if (bytesRead == 0 && i == 0) {
+                isRowFound = false;
             }
             
             row.addValue(value);
@@ -124,7 +119,6 @@ void Engine::insertIntoTable(string tableName, vector<TableRow> rows) throw (Eng
         vector<DataType*> values = row.getValues();
 
         if (table.getFields().size() != values.size()) {
-            cout << table.getFields().size() << " " << values.size() << endl;
             throw EngineException(EngineStatusEnum::WrongValuesNumber);
         }
 
@@ -183,17 +177,11 @@ void Engine::updateValuesInTable(string tableName, vector<TableRow> rows, TableF
             bytesRead = 0;
             DataType* value;
 
-            try {
-                value = TableIO::readTableValue(tableFD, fields[i], bytesRead);
-                rowSize += bytesRead;
-            } catch(EngineException& e) {
-                if (i == 0) {
-                    isRowFound = false;
-                    break;
-                } else {
-                    throw;
-                }
+            value = TableIO::readTableValue(tableFD, fields[i], bytesRead);
+            if (bytesRead == 0 && i == 0) {
+                isRowFound = false;
             }
+            rowSize += bytesRead;
             
             row.addValue(value);
         }
@@ -243,17 +231,12 @@ void Engine::deleteFromTable(string tableName, vector<TableRow> rows) throw (Eng
     while (isRowFound) {
         TableRow row;
         for (int i = 0; i < fieldsNumber; i++) {
+            int bytesRead = 0;
             DataType* value;
 
-            try {
-                value = TableIO::readTableValue(tableFD, fields[i]);
-            } catch(EngineException& e) { // TODO: EOF
-                if (i == 0) {
-                    isRowFound = false;
-                    break;
-                } else {
-                    throw;
-                }
+            value = TableIO::readTableValue(tableFD, fields[i], bytesRead);
+            if (bytesRead == 0 && i == 0) {
+                isRowFound = false;
             }
             
             row.addValue(value);
