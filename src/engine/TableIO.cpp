@@ -173,7 +173,7 @@ DataType *TableIO::readTableValue(int tableFD, TableField *field, int &bytesRead
             }
 
             bytesRead += result;
-            return new Number(numberValue);
+            return Number::create(numberValue);
         }
         case DataTypeEnum::VARCHAR: {
             VarcharField *varcharField = dynamic_cast<VarcharField *>(field);
@@ -196,7 +196,7 @@ DataType *TableIO::readTableValue(int tableFD, TableField *field, int &bytesRead
             bytesRead += result;
 
             varcharValue[length] = '\0';
-            return new Varchar(varcharValue, false);
+            return Varchar::create(varcharValue);
         }
         default:
             throw EngineException(EngineStatusEnum::WrongValueType);

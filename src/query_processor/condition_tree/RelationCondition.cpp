@@ -15,9 +15,9 @@ DataType* getDataTypeOperand(int fieldIndex, vector<DataType*> row, BaseOperand*
         return row[fieldIndex];
     } else {
         if (operand->getType() == OperandTypeEnum::NUMBER) {
-            return new Number(dynamic_cast<NumberOperand*>(operand)->getValue());
+            return Number::create(dynamic_cast<NumberOperand*>(operand)->getValue());
         } else {
-            return new Varchar(dynamic_cast<StringOperand*>(operand)->getValue(), true);
+            return Varchar::parse(dynamic_cast<StringOperand*>(operand)->getValue()); // ?
         }
     }
 }

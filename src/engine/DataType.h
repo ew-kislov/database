@@ -11,8 +11,6 @@ using namespace std;
 class DataType {
     protected:
         DataTypeEnum type;
-
-        virtual void parse(string valueString) = 0;
     public:
         DataType(DataTypeEnum type);
 

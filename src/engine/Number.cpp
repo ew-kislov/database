@@ -9,20 +9,21 @@
 
 using namespace std;
 
-void Number::parse(string valueString) {
+Number::Number(long double value): DataType(DataTypeEnum::NUMBER) {
+    this->value = value;
+}
+
+Number* Number::parse(string valueString) {
     try {
-        this->value = stold(valueString);
+        long double value = stold(valueString);
+        return new Number(value);
     } catch(const exception& e) {
         throw EngineException(EngineStatusEnum::InvalidValue);
     }
 }
 
-Number::Number(string valueString) : DataType(DataTypeEnum::NUMBER) {
-    parse(valueString);
-}
-
-Number::Number(long double value) : DataType(DataTypeEnum::NUMBER) {
-    this->value = value;
+Number* Number::create(long double value) {
+    return new Number(value);
 }
 
 long double Number::getValue() {

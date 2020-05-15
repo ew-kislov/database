@@ -11,20 +11,20 @@
 
 using namespace std;
 
-void Varchar::parse(string valueString) {
+Varchar::Varchar(string value): DataType(DataTypeEnum::VARCHAR) {
+    this->value = value;
+}
+
+Varchar* Varchar::parse(string valueString) {
     if (valueString[0] != '\'' || valueString[valueString.size() - 1] != '\'') {
         throw EngineException(EngineStatusEnum::InvalidValue);
     }
 
-    this->value = valueString.substr(1, valueString.size() - 2);
+    return new Varchar(valueString.substr(1, valueString.size() - 2));
 }
 
-Varchar::Varchar(string valueString, bool shouldParse) : DataType(DataTypeEnum::VARCHAR) {
-    if (shouldParse) {
-        parse(valueString);
-    } else {
-        this->value = valueString;
-    }
+Varchar* Varchar::create(string value) {
+    return new Varchar(value);
 }
 
 string Varchar::toString() {

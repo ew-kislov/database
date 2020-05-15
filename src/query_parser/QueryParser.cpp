@@ -137,16 +137,16 @@ UpdateObject* QueryParser::parseUpdateQuery(vector<string> queryTokens) {
 
     if (LexicParser::isNumber(queryTokens[5])) {
         field = new TableField(queryTokens[3], DataTypeEnum::NUMBER);
-        value = new Number(queryTokens[5]);
+        value = Number::parse(queryTokens[5]);
     } else {
         field = new TableField(queryTokens[3], DataTypeEnum::VARCHAR);
-        value = new Varchar(queryTokens[5], true);
+        value = Varchar::parse(queryTokens[5]);
     }
 
     int wherePosition = QueryHelper::searchKeyWordInVector(queryTokens, "WHERE");
-    if (wherePosition == -1) {
+    if (wherePosition == -1 && wherePosition == 6) {
         return new UpdateObject(queryTokens[1], field, value);
-    } else if (wherePosition != 6) {
+    } else if (wherePosition == -1 && wherePosition != 6) {
         throw QueryParserException(QueryStatusEnum::WrongUpdateSyntax);
     } else {
         BaseCondition* conditionTree = QueryParser::parseWhereClause(VectorHelper::slice(queryTokens, wherePosition));
@@ -213,9 +213,9 @@ vector<DataType*> QueryParser::parseFieldValues(vector<string> queryTokens) {
     
     for (int i = 0; i < fieldValues.size(); ++i) {
         if (LexicParser::isString(fieldValues[i])) {
-            dataTypeVector.push_back(new Varchar(fieldValues[i], true));
+            dataTypeVector.push_back(Varchar::parse(fieldValues[i]));
         } else if (LexicParser::isNumber(fieldValues[i])) {
-            dataTypeVector.push_back(new Number(fieldValues[i]));
+            dataTypeVector.push_back(Number::parse(fieldValues[i]));
         } else {
             throw QueryParserException(QueryStatusEnum::WrongInsertSyntax);
         }

@@ -15,9 +15,9 @@ using namespace std;
 namespace DataTypeHelper {
     DataType* create(string valueString, DataTypeEnum dataTypeEnum) {
         if (dataTypeEnum == DataTypeEnum::NUMBER) {
-            return new Number(valueString);
+            return Number::parse(valueString);
         } else if (dataTypeEnum == DataTypeEnum::VARCHAR) {
-            return new Varchar(valueString, true);
+            return Varchar::parse(valueString);
         }
     }
 

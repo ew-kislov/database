@@ -8,13 +8,14 @@
 using namespace std;
 
 class Varchar: public DataType {
-    protected:
+    private:
         string value;
         int length;
 
-        void parse(string valueString);
+        Varchar(string value);
     public:
-        Varchar(string valueString, bool shouldParse);
+        static Varchar* parse(string valueString);
+        static Varchar* create(string value);
 
         string getValue();
         string toString();

@@ -9,13 +9,13 @@
 using namespace std;
 
 class Number: public DataType {
-    protected:
+    private:
         long double value;
 
-        void parse(string valueString);
-    public:
-        Number(string valueString);
         Number(long double value);
+    public:
+        static Number* parse(string valueString);
+        static Number* create(long double value);
 
         long double getValue();
         string toString();
