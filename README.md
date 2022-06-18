@@ -1,107 +1,100 @@
-# Task4 - SQL
+# Data Base Management System
 
-## Структура проекта
+## Project structure
 
-`db` - место, где БД хранит таблицы  
-`out` - исполняемые файлы  
-`src` - исходный код  
-`src/engine` - модуль движка БД  
-`src/query_parser` - модуль парсинга запросов  
-`src/query_processor` - модуль исполнения запросов  
-`src/socket` - ООП-обертка сокетов
-`src/shared` - вспомогательные функции для работы со std::string/std::vector/std::set  
+`src/engine` - engine component  
+`src/query_parser` - parser component  
+`src/query_processor` - query execution component  
+`src/socket` - socket library  
+`src/shared` - helper library for work with std::string/std::vector/std::set  
 
-## Синтаксис языка
+## Implemented SQL
 
-### SQL запрос
+### SQL query
 
-- <SQL-запрос> ::= <SELECT-запрос> | <INSERT-запрос> | <UPDATE-запрос> | <DELETE-запрос> | <CREATE-запрос> | <DROP-запрос>  
+- \<SQL-query> ::= \<SELECT-query> | \<INSERT-query> | \<UPDATE-query> | \<DELETE-query> | \<CREATE-query> | \<DROP-query>  
 
-### Виды запросов
+### Query types
 
-- <SELECT-запрос> ::= SELECT <список полей> FROM <имя таблицы> [<WHERE-клауза>]  
-- <INSERT-запрос> ::= INSERT INTO <имя таблицы> (<значение поля> { , <значение поля> })  
-- <UPDATE-запрос> ::= UPDATE <имя таблицы> SET <имя поля> = <выражение> [<WHERE-клауза>]  
-- <DELETE-запрос> ::= DELETE FROM <имя таблицы> <WHERE-клауза>  
-- <CREATE-запрос> ::= CREATE TABLE <имя таблицы> ( <список описаний полей> )  
-- <DROP-запрос> ::= DROP TABLE <имя таблицы>  
+- \<SELECT-query> ::= SELECT \<fields> FROM \<table name> [\<WHERE-clause>]  
+- \<INSERT-query> ::= INSERT INTO \<table name> (\<field value> { , \<field value> })  
+- \<UPDATE-query> ::= UPDATE \<table name> SET \<field name> = \<expression> [\<WHERE-clause>]  
+- \<DELETE-query> ::= DELETE FROM \<table name> \<WHERE-clause>  
+- \<CREATE-query> ::= CREATE TABLE \<table name> ( \<field descriptions list> )  
+- \<DROP-query> ::= DROP TABLE \<table name>  
 
-### WHERE клауза
+### WHERE clause
 
-- <WHERE-клауза> ::= WHERE (<логическое выражение> | ALL)  
-- <логическое выражение> ::= <логическое слагаемое> { OR <логическое слагаемое> }  
-- <логическое слагаемое> ::= <логический множитель> { AND <логический множитель> }  
-- <логический множитель> ::= ( NOT <логический множитель> ) | ((<логическое выражение>)) | <операция>  
-- <операция> ::= <отношение> | <like-выражение> | <in-выражение>  
-- <like-выражение> ::= <имя поля> [ NOT ] LIKE <строка>  
-- <in-выражение> ::= <выражение> [ NOT ] IN ( <список констант> )  
-- <отношение> ::= <string-отношение> | <number-отношение>  
-- <string-отношение> ::= <string-выражение> <операция сравнения> <string-выражение>  
-- <number-отношение> ::= <number-выражение> <операция сравнения> <number-выражение>  
-- <операция сравнения> ::= = | > | < | >= | <= | !=  
+- \<WHERE-clause> ::= WHERE (\<boolean expression> | ALL)  
+- \<boolean expression> ::= \<boolean term> { OR \<boolean term> }  
+- \<boolean term> ::= \<boolean factor> { AND \<boolean factor> }  
+- \<boolean factor> ::= ( NOT \<boolean factor> ) | ((\<boolean expression>)) | \<operation>  
+- \<operation> ::= \<equation> | \<like-expression> | \<in-expression>  
+- \<like-expression> ::= \<field name> [ NOT ] LIKE \<string>  
+- \<in-expression> ::= \<expression> [ NOT ] IN ( \<constants list> )  
+- \<equation> ::= \<string-equation> | \<number-equation>  
+- \<string-equation> ::= \<string-expression> \<comparation> \<string-expression>  
+- \<number-equation> ::= \<number-expression> \<comparation> \<number-expression>  
+- \<comparation> ::= = | > | \< | >= | \<= | !=  
 
-### Общие определения
+### Common
 
-- <список полей> ::= <имя поля> { , <имя поля> } | *  
-- <имя таблицы> ::= <имя>  
-- <имя поля> ::= <имя>  
-- <значение поля> ::= <строка> | <число>  
-- <имя> ::= <имя> [ <буква> | <цифра> | _ ] | <буква>  
-- <значение поля> ::= <строка> | <число>  
-- <строка> ::= '<символ> { <символ> }'  
-- <символ> ::= <любой символ клавиатуры кроме '>  
-- <список описаний полей> ::= <описание поля> { , <описание поля> }  
-- <описание поля> ::= <имя поля> <тип поля>  
-- <тип поля> ::= VARCHAR ( <целое без знака> ) | NUMBER  
-- <выражение> ::= <string-выражение> | <number-выражение>  
-- <string-выражение> ::= <имя поля> | <строка>  
-- <number-выражение> ::= <имя поля> | <число>  
-- <число> ::= <цифра кроме нуля><последовательность цифр>[ .[ <последовательность цифр> ] <цифра кроме нуля> ]  
-- <последовательность цифр> ::= <цифра> [ <последовательность цифр> ]  
+- \<fields> ::= \<field name> { , \<field name> } | *  
+- \<table name> ::= \<name>  
+- \<field name> ::= \<name>  
+- \<field value> ::= \<string> | \<number>  
+- \<name> ::= \<name> [ \<char> | \<digit> | _ ] | \<char>  
+- \<field value> ::= \<string> | \<number>  
+- \<string> ::= '\<symbol> { \<symbol> }'  
+- \<symbol> ::= \<any symbol but '>  
+- \<field descriptions list> ::= \<field description> { , \<field description> }  
+- \<field description> ::= \<field name> \<field type>  
+- \<field type> ::= VARCHAR ( \<unsigned> ) | NUMBER  
+- \<expression> ::= \<string-expression> | \<number-expression>  
+- \<string-expression> ::= \<field name> | \<string>  
+- \<number-expression> ::= \<field name> | \<number>  
+- \<number> ::= \<digit without 0>\<digits sequence>[ .[ \<digits sequence> ] \<digit without 0> ]  
+- \<digits sequence> ::= \<digit> [ \<digits sequence> ]  
 
-## Модуль 1 - ООП-обертка сокетов
+## Components
 
-- BaseSocket - абстрактный базовый класс  
-- ServerSocket - управялющий сокет сервера, осуществляющий подключение клиентов  
-- ClientSocket - клиентский сокет, осуществляющий обмен сообщениями  
-- SocketException - ислкючение, возникающее при некорректной работе сокетов  
+### Sockets library
 
-## Модуль 2 - Движок
+- `BaseSocket` - Abstract base class  
+- `ServerSocket`  
+- `ClientSocket`  
+- `SocketException`  
 
-- DataType <- Number, Varcher - типы данных, поддерживаемые БД  
-- Table, TableField, TableRow - классы, задающие структуру таблицы  
-- TableIO - обертка для низкоуровневого файлового IO  
-- Engine - область имен, содержащая функции для работы с движком  
-- EngineException, EngineStatusEnum - система исключений движка  
+### Engine
 
-## Модуль 3 - Парсер запросов
+- `DataType` \<- `Number`, `Varcher` - supported types  
+- `Table`, `TableField`, `TableRow` - table structure classes  
+- `TableIO` - interface for low-level file I/O    
+- `Engine` - namespace providing interface for engine interaction    
+- `EngineException`, `EngineStatusEnum`  
 
-- LexicParser - лексический парсер  
-- QueryParser - синтаксический парсер запросов  
-- QueryParserException, QueryStatusEnum - система исключений парсера  
+### Query parser
 
-## Модуль 4 - Исполнитель запросов
+- `LexicParser`  
+- `QueryParse`  
+- `QueryParserException`, `QueryStatusEnum`  
 
-- condition_tree/* - классы для работы с деревом WHERE-клаузы  
-- QueryObject <- SelectObject, InsertObject, ... - классы для внутреннего представления запроса  
-- QueryResult <- SelectQueryResult, InsertQueryResult, ... - классы для представления результата выполнения запроса  
+### Query executor
 
-## Перед запуском
+- `condition_tree/*` - WHERE-clause processing  
+- `QueryObject` \<- `SelectObject`, `InsertObject`, ... - query internal representation  
+- `QueryResult` \<- `SelectQueryResult`, `InsertQueryResult`, ... - query result representation    
 
-- В `src/engine/Config.h` поменять путь в распололожению БД `STORAGE_LOCATION` на свой  
+## Before running
 
-## Компилирование
+- `src/engine/Config.h` change `STORAGE_LOCATION` to yours  
 
-- Исполняемые файлы клиента/сервера - `make main`  
-- Тесты - `make test`  
-- Полное компилирование - `make`  
+## Compilation
 
-## Запуск
+- Build - `make main`  
+- Test - `make test`  
 
-- Запуск сервера - `./out/main/server.out`  
-- Запуск клиента - `./out/main/client.out`  
+## Run
 
-## Авторы
-
-- Кислов Евгений  
-- Зайденварг Елизавета  
+- Run server - `./out/main/server.out`  
+- Run client - `./out/main/client.out`  
