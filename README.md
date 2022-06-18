@@ -1,5 +1,7 @@
 # Data Base Management System
 
+Light database management system written in C++
+
 ## Project structure
 
 `src/engine` - engine component  
